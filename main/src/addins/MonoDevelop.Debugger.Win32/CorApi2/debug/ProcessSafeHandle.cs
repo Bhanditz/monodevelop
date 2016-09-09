@@ -16,7 +16,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
      
     override protected bool ReleaseHandle()
     {
-      return NativeMethods.CloseHandle(handle);
+      return Kernel32.CloseHandle(handle);
     }
   }
 }

@@ -88,7 +88,7 @@
     <Compile Include="debug\Module.cs" />
     <Compile Include="debug\ModuleBreakpoint.cs" />
     <Compile Include="debug\ModuleEnumerator.cs" />
-    <Compile Include="debug\NativeMethods.cs" />
+    <Compile Include="debug\MsCorEE.cs" />
     <Compile Include="debug\ObjectEnumerator.cs" />
     <Compile Include="debug\PdbHResult.cs" />
     <Compile Include="debug\Process.cs" />

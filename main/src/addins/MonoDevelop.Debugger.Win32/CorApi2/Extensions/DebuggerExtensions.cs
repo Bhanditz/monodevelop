@@ -110,7 +110,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 			if (!DuplicateHandle (curProc, errorReadPipeTmp, curProc, out errorReadPipe, 0, false, DUPLICATE_SAME_ACCESS))
 				throw new Exception ("Pipe creation failed");
 
-			NativeMethods.CloseHandle (curProc);
+			Kernel32.CloseHandle (curProc);
 
 			// Close inheritable copies of the handles you do not want to be
 			// inherited.

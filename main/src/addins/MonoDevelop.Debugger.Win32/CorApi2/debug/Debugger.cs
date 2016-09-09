@@ -41,16 +41,16 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 throw new ArgumentException("Value cannot be null or empty.", "pathToExe");
             int neededSize;
             StringBuilder sb = new StringBuilder(MaxVersionStringLength);
-            NativeMethods.GetRequestedRuntimeVersion(pathToExe, sb, sb.Capacity, out neededSize); 
+            MsCorEE.GetRequestedRuntimeVersion(pathToExe, sb, sb.Capacity, out neededSize);
             return sb.ToString();
         }
 
         public static string GetDebuggerVersionFromPid(int pid)
         {
-            using(ProcessSafeHandle ph = NativeMethods.OpenProcess((int)(NativeMethods.ProcessAccessOptions.PROCESS_VM_READ |
-                                                                         NativeMethods.ProcessAccessOptions.PROCESS_QUERY_INFORMATION |
-                                                                         NativeMethods.ProcessAccessOptions.PROCESS_DUP_HANDLE |
-                                                                         NativeMethods.ProcessAccessOptions.SYNCHRONIZE),
+            using(ProcessSafeHandle ph = Kernel32.OpenProcess((int)(ProcessAccessOptions.PROCESS_VM_READ |
+                                                                         ProcessAccessOptions.PROCESS_QUERY_INFORMATION |
+                                                                         ProcessAccessOptions.PROCESS_DUP_HANDLE |
+                                                                         ProcessAccessOptions.SYNCHRONIZE),
                                                                    false, // inherit handle
                                                                    pid) )
             {
@@ -58,17 +58,17 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
                 int neededSize;
                 StringBuilder sb = new StringBuilder(MaxVersionStringLength);
-                NativeMethods.GetVersionFromProcess(ph, sb, sb.Capacity, out neededSize);
+                MsCorEE.GetVersionFromProcess(ph, sb, sb.Capacity, out neededSize);
                 return sb.ToString();
             }
         }
 
         public static List<string> GetProcessLoadedRuntimes(int pid)
         {
-          using (ProcessSafeHandle ph = NativeMethods.OpenProcess((int)(NativeMethods.ProcessAccessOptions.PROCESS_VM_READ |
-                                                                       NativeMethods.ProcessAccessOptions.PROCESS_QUERY_INFORMATION |
-                                                                       NativeMethods.ProcessAccessOptions.PROCESS_DUP_HANDLE |
-                                                                       NativeMethods.ProcessAccessOptions.SYNCHRONIZE),
+          using (ProcessSafeHandle ph = Kernel32.OpenProcess((int)(ProcessAccessOptions.PROCESS_VM_READ |
+                                                                       ProcessAccessOptions.PROCESS_QUERY_INFORMATION |
+                                                                       ProcessAccessOptions.PROCESS_DUP_HANDLE |
+                                                                       ProcessAccessOptions.SYNCHRONIZE),
                                                                  false, // inherit handle
                                                                  pid))
           {
@@ -76,7 +76,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
               return new List<string>();
             int neededSize = MaxVersionStringLength;
             IClrMetaHost host;
-            NativeMethods.CLRCreateInstance(ref NativeMethods.CLSID_CLRMetaHost, ref NativeMethods.IID_ICLRMetaHost, out host);
+            MsCorEE.CLRCreateInstance(ref MsCorEE.CLSID_CLRMetaHost, ref MsCorEE.IID_ICLRMetaHost, out host);
             var result = new List<string>();
             var runtimes = host.EnumerateLoadedRuntimes(ph);
             var array = new object[1];
@@ -97,26 +97,15 @@ namespace Microsoft.Samples.Debugging.CorDebug
         public static string GetDefaultDebuggerVersion()
         {
             int size;
-            NativeMethods.GetCORVersion(null,0,out size);
+            MsCorEE.GetCORVersion(null,0,out size);
             Debug.Assert(size>0);
             StringBuilder sb = new StringBuilder(size);
-            int hr = NativeMethods.GetCORVersion(sb,sb.Capacity,out size);
+            int hr = MsCorEE.GetCORVersion(sb,sb.Capacity,out size);
             Marshal.ThrowExceptionForHR(hr);
             return sb.ToString();
         }
      
 
-        /// <summary>Creates a debugger wrapper from Guid.</summary>
-        public CorDebugger(Guid debuggerGuid)
-        {
-            ICorDebug rawDebuggingAPI;
-            NativeMethods.CoCreateInstance(ref debuggerGuid,
-                                           IntPtr.Zero, // pUnkOuter
-                                           1, // CLSCTX_INPROC_SERVER
-                                           ref NativeMethods.IIDICorDebug,
-                                           out rawDebuggingAPI);
-            InitFromICorDebug(rawDebuggingAPI);
-        }
         /// <summary>Creates a debugger interface that is able debug requested verison of CLR</summary>
         /// <param name="debuggerVerison">Version number of the debugging interface.</param>
         /// <remarks>The version number is usually retrieved either by calling one of following mscoree functions:
@@ -260,8 +249,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                      si,     // startup info
                                      ref pi, // process information
                                      CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS);
-                NativeMethods.CloseHandle (pi.hProcess);
-                NativeMethods.CloseHandle (pi.hThread);
+                Kernel32.CloseHandle (pi.hProcess);
+                Kernel32.CloseHandle (pi.hThread);
             }
 
 			DebuggerExtensions.TearDownEnvironment (env);
@@ -398,7 +387,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			rawDebuggingAPI = new NativeApi.CorDebugClass(pUnk);
 #else
 			int apiVersion = debuggerVersion.StartsWith ("v4") ? 4 : 3;
-			rawDebuggingAPI = NativeMethods.CreateDebuggingInterfaceFromVersion (apiVersion, debuggerVersion);
+			rawDebuggingAPI = MsCorEE.CreateDebuggingInterfaceFromVersion (apiVersion, debuggerVersion);
 #endif
 		    InitFromICorDebug(rawDebuggingAPI);
     	}
