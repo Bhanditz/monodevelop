@@ -397,7 +397,7 @@ namespace Mono.Debugging.Win32
 			else
 				flags |= BindingFlags.Static;
 
-			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
+			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
 			MethodInfo method = OverloadResolve (ctx, methodName, targetType, argTypes, flags, true);
 			ParameterInfo[] parameters = method.GetParameters ();
 			// TODO: Check this.
@@ -405,32 +405,28 @@ namespace Mono.Debugging.Win32
 				if (parameters[n].ParameterType == typeof(object) && IsValueType (ctx, argValues[n]) && !IsEnum (ctx, argValues[n]))
 					argValues[n] = Box (ctx, argValues[n]);
 			}
-
-			try {
-				if (method != null) {
-					CorValRef v = new CorValRef (delegate {
-						CorModule mod = null;
-						if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-							mod = ((CorType)ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
-						} else {
-							mod = targetType.Class.Module;
-						}
-						CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
-						CorValue[] args = new CorValue[argValues.Length];
-						for (int n = 0; n < args.Length; n++)
-							args[n] = argValues[n].Val;
-						if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-							return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
-						} else {
-							return ctx.RuntimeInvoke (func, targetType.TypeParameters, target != null ? target.Val : null, args);
-						}
-					});
-					return v.Val == null ? null : v;
+			CorValRef v = new CorValRef (delegate {
+				CorModule mod = null;
+				if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY || targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY
+					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (targetType.Type)) {
+					mod = ((CorType) ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
 				}
-			} catch (Exception e) {
-				gctx.WriteDebuggerError (e);
-			}
-			return null;
+				else {
+					mod = targetType.Class.Module;
+				}
+				CorFunction func = mod.GetFunctionFromToken (method.MetadataToken);
+				CorValue[] args = new CorValue[argValues.Length];
+				for (int n = 0; n < args.Length; n++)
+					args[n] = argValues[n].Val;
+				if (targetType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
+					targetType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+					return ctx.RuntimeInvoke (func, new CorType[0], target != null ? target.Val : null, args);
+				}
+				else {
+					return ctx.RuntimeInvoke (func, targetType.TypeParameters, target != null ? target.Val : null, args);
+				}
+			});
+			return v.Val == null ? null : v;
 		}
 
 
@@ -462,7 +458,13 @@ namespace Mono.Debugging.Win32
 				    currentType.Type == CorElementType.ELEMENT_TYPE_STRING) {
 					currentType = ctx.Adapter.GetType (ctx, "System.Object") as CorType;
 				} else {
-					currentType = currentType.Base;
+					// if the currentType is not a class .Base throws an exception ArgumentOutOfRange (thx for coreclr repo for figure it out)
+					try {
+						currentType = currentType.Base;
+					}
+					catch (Exception) {
+						currentType = null;
+					}
 				}
 			}
 
