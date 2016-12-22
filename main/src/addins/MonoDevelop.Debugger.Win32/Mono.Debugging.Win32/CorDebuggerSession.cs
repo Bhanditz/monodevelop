@@ -177,29 +177,29 @@ namespace Mono.Debugging.Win32
 				var dir = startInfo.WorkingDirectory;
 				if (string.IsNullOrEmpty (dir))
 					dir = System.IO.Path.GetDirectoryName (startInfo.Command);
-				
+
 				process = dbg.CreateProcess (startInfo.Command, cmdLine, dir, env, flags);
 				processId = process.Id;
 
-				process.OnCreateProcess += new CorProcessEventHandler (OnCreateProcess);
-				process.OnCreateAppDomain += new CorAppDomainEventHandler (OnCreateAppDomain);
-				process.OnAssemblyLoad += new CorAssemblyEventHandler (OnAssemblyLoad);
-				process.OnAssemblyUnload += new CorAssemblyEventHandler (OnAssemblyUnload);
-				process.OnCreateThread += new CorThreadEventHandler (OnCreateThread);
-				process.OnThreadExit += new CorThreadEventHandler (OnThreadExit);
-				process.OnModuleLoad += new CorModuleEventHandler (OnModuleLoad);
-				process.OnModuleUnload += new CorModuleEventHandler (OnModuleUnload);
-				process.OnProcessExit += new CorProcessEventHandler (OnProcessExit);
-				process.OnUpdateModuleSymbols += new UpdateModuleSymbolsEventHandler (OnUpdateModuleSymbols);
-				process.OnDebuggerError += new DebuggerErrorEventHandler (OnDebuggerError);
-				process.OnBreakpoint += new BreakpointEventHandler (OnBreakpoint);
-				process.OnStepComplete += new StepCompleteEventHandler (OnStepComplete);
-				process.OnBreak += new CorThreadEventHandler (OnBreak);
-				process.OnNameChange += new CorThreadEventHandler (OnNameChange);
-				process.OnEvalComplete += new EvalEventHandler (OnEvalComplete);
-				process.OnEvalException += new EvalEventHandler (OnEvalException);
-				process.OnLogMessage += new LogMessageEventHandler (OnLogMessage);
-				process.OnException2 += new CorException2EventHandler (OnException2);
+				process.OnCreateProcess += OnCreateProcess;
+				process.OnCreateAppDomain += OnCreateAppDomain;
+				process.OnAssemblyLoad += OnAssemblyLoad;
+				process.OnAssemblyUnload += OnAssemblyUnload;
+				process.OnCreateThread += OnCreateThread;
+				process.OnThreadExit += OnThreadExit;
+				process.OnModuleLoad += OnModuleLoad;
+				process.OnModuleUnload += OnModuleUnload;
+				process.OnProcessExit += OnProcessExit;
+				process.OnUpdateModuleSymbols += OnUpdateModuleSymbols;
+				process.OnDebuggerError += OnDebuggerError;
+				process.OnBreakpoint += OnBreakpoint;
+				process.OnStepComplete += OnStepComplete;
+				process.OnBreak += OnBreak;
+				process.OnNameChange += OnNameChange;
+				process.OnEvalComplete += OnEvalComplete;
+				process.OnEvalException += OnEvalException;
+				process.OnLogMessage += OnLogMessage;
+				process.OnException2 += OnException2;
 
 				process.RegisterStdOutput (OnStdOutput);
 
@@ -1070,13 +1070,13 @@ namespace Mono.Debugging.Win32
 			CorValue exception = null;
 			CorEval eval = ctx.Eval;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				mc.DoneEvent.Set ();
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				exception = eargs.Eval.Result;
 				mc.DoneEvent.Set ();
@@ -1151,14 +1151,14 @@ namespace Mono.Debugging.Win32
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs) {
+			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs) {
+			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs) {
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
 				doneEvent.Set ();
@@ -1190,7 +1190,7 @@ namespace Mono.Debugging.Win32
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			CorValue result = null;
 
-			EvalEventHandler completeHandler = delegate (object o, CorEvalEventArgs eargs)
+			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
@@ -1198,7 +1198,7 @@ namespace Mono.Debugging.Win32
 				eargs.Continue = false;
 			};
 
-			EvalEventHandler exceptionHandler = delegate (object o, CorEvalEventArgs eargs)
+			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
 				OnEndEvaluating ();
 				result = eargs.Eval.Result;
