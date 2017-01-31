@@ -1232,6 +1232,11 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
+		protected override void OnCancelAsyncEvaluations ()
+		{
+			ObjectAdapter.CancelAsyncOperations ();
+		}
+
 		protected override void OnNextInstruction ( )
 		{
 			MtaThread.Run (delegate {
