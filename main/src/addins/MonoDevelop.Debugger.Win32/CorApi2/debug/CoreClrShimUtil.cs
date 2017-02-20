@@ -20,7 +20,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     envPtr = DebuggerExtensions.SetupEnvironment (env);
                     void* resumeHandle;
                     uint processId;
-                    var hret =  (HResults)dbgShimInterop.CreateProcessForLaunch (command, true, envPtr, workingDir, &processId, &resumeHandle);
+                    var hret =  (HResults)dbgShimInterop.CreateProcessForLaunch (command, 1, envPtr, workingDir, &processId, &resumeHandle);
                     if (hret != HResults.S_OK)
                         throw new COMException(string.Format ("Failed call RegisterForRuntimeStartup: {0}", hret), (int)hret);
                     procId = (int) processId;
@@ -46,7 +46,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             ICorDebug corDebug = null;
             Exception callbackException = null;
             void* token;
-            DbgShimInterop.RuntimeStartupCallback callback = delegate (void* pCordb, void* parameter, int hr) {
+            DbgShimInterop.PSTARTUP_CALLBACK callback = delegate (void* pCordb, void* parameter, int hr) {
                 try {
                     if (hr < 0) {
                         Marshal.ThrowExceptionForHR (hr);
