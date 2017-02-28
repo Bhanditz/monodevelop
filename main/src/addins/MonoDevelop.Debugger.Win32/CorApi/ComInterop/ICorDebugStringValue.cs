@@ -1,36 +1,116 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
 {
-    [Guid ("CC7BCAFD-8A68-11D2-983C-0000F808342D")]
-    [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-    [ComImport]
-    public unsafe interface ICorDebugStringValue : ICorDebugHeapValue
-    {
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetType (out CorElementType elementType);
+  /// <summary>
+  ///  ICorDebugStringValue is a subclass of ICorDebugValue which
+  ///  applies to values which contain a string.  This interface
+  ///  provides an easy way to get the string contents.
+  /// </summary>
+  /// <example><code>
+  ///  /*
+  ///  * ICorDebugStringValue is a subclass of ICorDebugValue which
+  ///  * applies to values which contain a string.  This interface
+  ///  * provides an easy way to get the string contents.
+  ///  */
+  /// 
+  /// [
+  ///     object,
+  ///     local,
+  ///     uuid(CC7BCAFD-8A68-11d2-983C-0000F808342D),
+  ///     pointer_default(unique)
+  /// ]
+  /// interface ICorDebugStringValue : ICorDebugHeapValue
+  /// {
+  ///     /*
+  ///      * GetLength returns the number of characters in the string.
+  ///      */
+  /// 
+  ///     HRESULT GetLength([out] ULONG32 *pcchString);
+  /// 
+  ///     /*
+  ///      * GetString returns the contents of the string.
+  ///      */
+  /// 
+  ///     HRESULT GetString([in] ULONG32 cchString,
+  ///                       [out] ULONG32 *pcchString,
+  ///                       [out, size_is(cchString),
+  ///                       length_is(*pcchString)] WCHAR szString[]);
+  /// };
+  /// 
+  ///  </code></example>
+  [Guid ("CC7BCAFD-8A68-11D2-983C-0000F808342D")]
+  [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+  [ComImport]
+  public unsafe interface ICorDebugStringValue : ICorDebugHeapValue
+  {
+    /// <summary>
+    /// GetType returns the simple type of the value.  If the object
+    /// has a more complex runtime type, that type may be examined through the
+    /// appropriate subclasses (e.g. ICorDebugObjectValue can get the class of
+    /// an object.)
+    /// </summary>
+    /// <param name="elementType"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void GetType ([Out] CorElementType* elementType);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetSize (out uint pSize);
+    /// <summary>
+    /// GetSize returns the size of the value in bytes. Note that for reference
+    /// types this will be the size of the pointer rather than the size of
+    /// the object.
+    /// </summary>
+    /// <param name="pSize"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void GetSize (uint* pSize);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetAddress (out ulong pAddress);
+    /// <summary>
+    /// GetAddress returns the address of the value in the debugee
+    /// process.  This might be useful information for the debugger to
+    /// show.
+    /// If the value is unavailable, 0 is returned. This could happen if
+    /// it is at least partly in registers or stored in a GC Handle.
+    /// </summary>
+    /// <param name="pAddress"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    /// <summary>
+    /// NOT YET IMPLEMENTED
+    /// </summary>
+    /// <param name="ppBreakpoint"></param>
+    [Obsolete ("NOT YET IMPLEMENTED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void IsValid (out int pbValid);
+    /// <summary>
+    /// DEPRECATED.
+    ///     * All objects are only valid until Continue is called, at which time they are neutered.
+    /// </summary>
+    /// <param name="pbValid"></param>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void IsValid (int* pbValid);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CreateRelocBreakpoint (
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    [Obsolete ("NOT YET IMPLEMENTED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetLength (out uint pcchString);
+    /// <summary>
+    /// GetLength returns the number of characters in the string.
+    /// </summary>
+    /// <param name="pcchString"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetLength (uint* pcchString);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetString ([In] uint cchString, out uint pcchString, ushort* szString);
-    }
+    /// <summary>
+    /// GetString returns the contents of the string.
+    /// </summary>
+    /// <param name="cchString"></param>
+    /// <param name="pcchString"></param>
+    /// <param name="szString"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetString ([In] uint cchString, uint* pcchString, ushort* szString);
+  }
 }

@@ -1,56 +1,216 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
 {
+  /// <summary>
+  /// ICorDebugArrayValue is a subclass of ICorDebugValue which applies
+  /// to values which contain an array. This interface supports both
+  /// single and multidimension arrays.
+  /// </summary>
+  /// <example><code>
+  /// /*
+  /// * ICorDebugArrayValue is a subclass of ICorDebugValue which applies
+  /// * to values which contain an array. This interface supports both
+  /// * single and multidimension arrays.
+  /// */
+  ///
+  ///[
+  ///    object,
+  ///    local,
+  ///    uuid(0405B0DF-A660-11d2-BD02-0000F80849BD),
+  ///    pointer_default(unique)
+  ///]
+  ///interface ICorDebugArrayValue : ICorDebugHeapValue
+  ///{
+  ///    /*
+  ///     * GetElementType returns the simple type of the elements in the
+  ///     * array.
+  ///     */
+  ///
+  ///    HRESULT GetElementType([out] CorElementType *pType);
+  ///
+  ///    /*
+  ///     * GetRank returns the number of dimensions in the array.
+  ///     */
+  ///
+  ///    HRESULT GetRank([out] ULONG32 *pnRank);
+  ///
+  ///    /*
+  ///     * GetCount returns the total number of elements in the array.
+  ///     */
+  ///
+  ///    HRESULT GetCount([out] ULONG32 *pnCount);
+  ///
+  ///    /*
+  ///     * GetDimensions returns the dimensions of the array.
+  ///     */
+  ///
+  ///    HRESULT GetDimensions([in] ULONG32 cdim,
+  ///                          [out, size_is(cdim),
+  ///                           length_is(cdim)] ULONG32 dims[]);
+  ///
+  ///    /*
+  ///     * HasBaseIndicies returns whether or not the array has base indicies.
+  ///     * If the answer is no, then all dimensions have a base index of 0.
+  ///     */
+  ///
+  ///    HRESULT HasBaseIndicies([out] BOOL *pbHasBaseIndicies);
+  ///
+  ///    /*
+  ///     * GetBaseIndicies returns the base index of each dimension in
+  ///     * the array
+  ///     */
+  ///
+  ///    HRESULT GetBaseIndicies([in] ULONG32 cdim,
+  ///                            [out, size_is(cdim),
+  ///                            length_is(cdim)] ULONG32 indicies[]);
+  ///
+  ///    /*
+  ///     * GetElement returns a value representing the given element in the array.
+  ///     * The indices array must not be null.
+  ///     */
+  ///
+  ///    HRESULT GetElement([in] ULONG32 cdim,
+  ///                       [in, size_is(cdim),
+  ///                        length_is(cdim)] ULONG32 indices[],
+  ///                       [out] ICorDebugValue **ppValue);
+  ///    /*
+  ///     * GetElementAtPosition returns the element at the given position,
+  ///     * treating the array as a zero-based, single-dimensional array.
+  ///     *
+  ///     * Multidimensional array layout follows the C++ style of array layout.
+  ///     */
+  ///
+  ///    HRESULT GetElementAtPosition([in] ULONG32 nPosition,
+  ///                                 [out] ICorDebugValue **ppValue);
+  ///};
+  ///
+  /// </code></example>
     [Guid ("0405B0DF-A660-11D2-BD02-0000F80849BD")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public unsafe interface ICorDebugArrayValue : ICorDebugHeapValue
+    [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
+  public unsafe interface ICorDebugArrayValue : ICorDebugHeapValue
     {
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetType (out CorElementType elementType);
+      /// <summary>
+      /// GetType returns the simple type of the value.  If the object
+      /// has a more complex runtime type, that type may be examined through the
+      /// appropriate subclasses (e.g. ICorDebugObjectValue can get the class of
+      /// an object.)
+      /// </summary>
+      /// <param name="elementType"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      new void GetType ([Out] CorElementType* elementType);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetSize (out uint pSize);
+      /// <summary>
+      /// GetSize returns the size of the value in bytes. Note that for reference
+      /// types this will be the size of the pointer rather than the size of
+      /// the object.
+      /// </summary>
+      /// <param name="pSize"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      new void GetSize (UInt32* pSize);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetAddress (out ulong pAddress);
+      /// <summary>
+      /// GetAddress returns the address of the value in the debugee
+      /// process.  This might be useful information for the debugger to
+      /// show.
+      /// If the value is unavailable, 0 is returned. This could happen if
+      /// it is at least partly in registers or stored in a GC Handle.
+      /// </summary>
+      /// <param name="pAddress"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] UInt64* pAddress);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+      /// <summary>
+      /// NOT YET IMPLEMENTED
+      /// </summary>
+      /// <param name="ppBreakpoint"></param>
+      [Obsolete ("NOT YET IMPLEMENTED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void IsValid (out int pbValid);
+      /// <summary>
+      /// DEPRECATED.
+      ///     * All objects are only valid until Continue is called, at which time they are neutered.
+      /// </summary>
+      /// <param name="pbValid"></param>
+      [Obsolete ("DEPRECATED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      new void IsValid (Int32* pbValid);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CreateRelocBreakpoint (
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+      [Obsolete ("NOT YET IMPLEMENTED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      new void CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetElementType (out CorElementType elementType);
+      /// <summary>
+      /// GetElementType returns the simple type of the elements in the
+      /// array.
+      /// </summary>
+      /// <param name="elementType"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetElementType (CorElementType* elementType);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetRank (out uint pnRank);
+      /// <summary>
+      /// GetRank returns the number of dimensions in the array.
+      /// </summary>
+      /// <param name="pnRank"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetRank (UInt32* pnRank);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetCount (out uint pnCount);
+      /// <summary>
+      /// GetCount returns the total number of elements in the array.
+      /// </summary>
+      /// <param name="pnCount"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetCount (UInt32* pnCount);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetDimensions ([In] uint cdim, [Out] uint* dims);
+      /// <summary>
+      /// GetDimensions returns the dimensions of the array.
+      /// </summary>
+      /// <param name="cdim"></param>
+      /// <param name="dims"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetDimensions ([In] UInt32 cdim, [Out] UInt32* dims);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void HasBaseIndicies (out int pbHasBaseIndicies);
+      /// <summary>
+      /// HasBaseIndicies returns whether or not the array has base indicies.
+      /// If the answer is no, then all dimensions have a base index of 0.
+      /// </summary>
+      /// <param name="pbHasBaseIndicies"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void HasBaseIndicies (Int32* pbHasBaseIndicies);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetBaseIndicies ([In] uint cdim, [Out] uint* indicies);
+      /// <summary>
+      /// GetBaseIndicies returns the base index of each dimension in
+      /// the array
+      /// </summary>
+      /// <param name="cdim"></param>
+      /// <param name="indicies"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetBaseIndicies ([In] UInt32 cdim, [Out] UInt32* indicies);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetElement ([In] uint cdim, [In] uint* indices,
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+      /// <summary>
+      /// GetElement returns a value representing the given element in the array.
+      /// The indices array must not be null.
+      /// </summary>
+      /// <param name="cdim"></param>
+      /// <param name="indices"></param>
+      /// <param name="ppValue"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetElement ([In] UInt32 cdim, [In] UInt32* indices, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetElementAtPosition ([In] uint nPosition,
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+      /// <summary>
+      /// GetElementAtPosition returns the element at the given position,
+      /// treating the array as a zero-based, single-dimensional array.
+      /// Multidimensional array layout follows the C++ style of array layout.
+      /// </summary>
+      /// <param name="nPosition"></param>
+      /// <param name="ppValue"></param>
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void GetElementAtPosition ([In] UInt32 nPosition, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 }

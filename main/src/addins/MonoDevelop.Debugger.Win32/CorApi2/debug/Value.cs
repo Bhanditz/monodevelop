@@ -316,7 +316,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private ICorDebugObjectValue m_objVal = null;
     }
 
-    public sealed class CorGenericValue : CorValue
+    public unsafe sealed class CorGenericValue : CorValue
     {
         internal CorGenericValue(ICorDebugGenericValue genericValue) : base(genericValue)
         {
@@ -502,7 +502,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(byte));
-                        this.GetValueInternal(new IntPtr(&bValue));
+                        this.GetValueInternal(&bValue);
                     }
                     return (object) (bValue!=0);
                                     
@@ -511,7 +511,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(char));
-                        this.GetValueInternal(new IntPtr(&cValue));
+                        this.GetValueInternal(&cValue);
                     }
                     return (object) cValue;
 
@@ -520,7 +520,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(SByte));
-                        this.GetValueInternal(new IntPtr(&i1Value));
+                        this.GetValueInternal(&i1Value);
                     }
                     return (object) i1Value;
                     
@@ -529,7 +529,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(Byte));
-                        this.GetValueInternal(new IntPtr(&u1Value));
+                        this.GetValueInternal(&u1Value);
                     }
                     return (object) u1Value;
                     
@@ -538,7 +538,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(Int16));
-                        this.GetValueInternal(new IntPtr(&i2Value));
+                        this.GetValueInternal(&i2Value);
                     }
                     return (object) i2Value;
                     
@@ -547,7 +547,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(UInt16));
-                        this.GetValueInternal(new IntPtr(&u2Value));
+                        this.GetValueInternal(&u2Value);
                     }
                     return (object) u2Value;
                     
@@ -556,7 +556,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(IntPtr));
-                        this.GetValueInternal(new IntPtr(&ipValue));
+                        this.GetValueInternal(&ipValue);
                     }
                     return (object) ipValue;
 
@@ -565,7 +565,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(UIntPtr));
-                        this.GetValueInternal(new IntPtr(&uipValue));
+                        this.GetValueInternal(&uipValue);
                     }
                     return (object) uipValue;
                     
@@ -574,7 +574,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(Int32));
-                        this.GetValueInternal(new IntPtr(&i4Value));
+                        this.GetValueInternal(&i4Value);
                     }
                     return (object) i4Value;
 
@@ -583,7 +583,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(UInt32));
-                        this.GetValueInternal(new IntPtr(&u4Value));
+                        this.GetValueInternal(&u4Value);
                     }
                     return (object) u4Value;
 
@@ -592,7 +592,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(Int64));
-                        this.GetValueInternal(new IntPtr(&i8Value));
+                        this.GetValueInternal(&i8Value);
                     }
                     return (object) i8Value;
 
@@ -601,7 +601,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(UInt64));
-                        this.GetValueInternal(new IntPtr(&u8Value));
+                        this.GetValueInternal(&u8Value);
                     }
                     return (object) u8Value;
 
@@ -610,7 +610,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(Single));
-                        this.GetValueInternal(new IntPtr(&r4Value));
+                        this.GetValueInternal(&r4Value);
                     }
                     return (object) r4Value;
 
@@ -619,7 +619,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     unsafe 
                     {
                         Debug.Assert(this.Size==sizeof(Double));
-                        this.GetValueInternal(new IntPtr(&r8Value));
+                        this.GetValueInternal(&r8Value);
                     }
                     return (object) r8Value;
 
@@ -631,7 +631,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                         fixed (byte* bufferPtr = &buffer[0]) 
                         {
                             Debug.Assert(this.Size == buffer.Length);           
-                            this.GetValueInternal( new IntPtr(bufferPtr));               
+                            this.GetValueInternal( bufferPtr);               
                         }
                     }
                     return buffer;
@@ -643,12 +643,12 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
 
-        private void SetValueInternal(IntPtr valPtr) 
+        private void SetValueInternal(void* valPtr) 
         {
             m_genVal.SetValue(valPtr);
         }
 
-        private void GetValueInternal( IntPtr valPtr )
+        private void GetValueInternal( void* valPtr )
         {
             m_genVal.GetValue(valPtr);
         }

@@ -1,33 +1,95 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
 {
-    [Guid ("CC7BCAFC-8A68-11D2-983C-0000F808342D")]
-    [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-    [ComImport]
-    public unsafe interface ICorDebugBoxValue : ICorDebugHeapValue
-    {
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetType (out CorElementType elementType);
+  /// <summary>
+  ///  ICorDebugBoxValue is a subclass of ICorDebugValue which represents a boxed value class object.
+  /// </summary>
+  /// <example><code>
+  ///  
+  ///  /*
+  ///  * ICorDebugBoxValue is a subclass of ICorDebugValue which
+  ///  * represents a boxed value class object.
+  ///  */
+  /// 
+  /// [
+  ///     object,
+  ///     local,
+  ///     uuid(CC7BCAFC-8A68-11d2-983C-0000F808342D),
+  ///     pointer_default(unique)
+  /// ]
+  /// interface ICorDebugBoxValue : ICorDebugHeapValue
+  /// {
+  ///     /*
+  ///      * GetObject returns the value object which is in the box.
+  ///      */
+  /// 
+  ///     HRESULT GetObject([out] ICorDebugObjectValue **ppObject);
+  /// };
+  ///  </code></example>
+  [Guid ("CC7BCAFC-8A68-11D2-983C-0000F808342D")]
+  [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+  [ComImport]
+  public unsafe interface ICorDebugBoxValue : ICorDebugHeapValue
+  {
+    /// <summary>
+    /// GetType returns the simple type of the value.  If the object
+    /// has a more complex runtime type, that type may be examined through the
+    /// appropriate subclasses (e.g. ICorDebugObjectValue can get the class of
+    /// an object.)
+    /// </summary>
+    /// <param name="elementType"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void GetType ([Out] CorElementType* elementType);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetSize (out uint pSize);
+    /// <summary>
+    /// GetSize returns the size of the value in bytes. Note that for reference
+    /// types this will be the size of the pointer rather than the size of
+    /// the object.
+    /// </summary>
+    /// <param name="pSize"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void GetSize (uint* pSize);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetAddress (out ulong pAddress);
+    /// <summary>
+    /// GetAddress returns the address of the value in the debugee
+    /// process.  This might be useful information for the debugger to
+    /// show.
+    /// If the value is unavailable, 0 is returned. This could happen if
+    /// it is at least partly in registers or stored in a GC Handle.
+    /// </summary>
+    /// <param name="pAddress"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    /// <summary>
+    /// NOT YET IMPLEMENTED
+    /// </summary>
+    /// <param name="ppBreakpoint"></param>
+    [Obsolete ("NOT YET IMPLEMENTED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void IsValid (out int pbValid);
+    /// <summary>
+    /// DEPRECATED.
+    ///     * All objects are only valid until Continue is called, at which time they are neutered.
+    /// </summary>
+    /// <param name="pbValid"></param>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void IsValid (int* pbValid);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CreateRelocBreakpoint (
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    [Obsolete ("NOT YET IMPLEMENTED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    new void CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugObjectValue ppObject);
-    }
+    /// <summary>
+    /// GetObject returns the value object which is in the box.
+    /// </summary>
+    /// <param name="ppObject"></param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugObjectValue ppObject);
+  }
 }
