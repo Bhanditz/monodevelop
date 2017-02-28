@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("B008EA8D-7AB1-43F7-BB20-FBB5A04038AE")]
     [ComImport]
-    public interface ICorDebugClass2
+    public unsafe interface ICorDebugClass2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetParameterizedType ([In] CorElementType elementType, [In] uint nTypeArgs,

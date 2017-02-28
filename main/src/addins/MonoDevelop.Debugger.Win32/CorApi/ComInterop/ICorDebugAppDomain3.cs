@@ -16,7 +16,7 @@ namespace CorApi.ComInterop
     [Guid ("8CB96A16-B588-42E2-B71C-DD849FC2ECCC")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugAppDomain3
+    public unsafe interface ICorDebugAppDomain3
     {
         /// <summary>
         /// Returns an enumeration of types corresponding to the IIDs passed in

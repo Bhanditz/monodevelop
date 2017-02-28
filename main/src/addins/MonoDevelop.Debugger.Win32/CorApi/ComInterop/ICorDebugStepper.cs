@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("CC7BCAEC-8A68-11D2-983C-0000F808342D")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugStepper
+    public unsafe interface ICorDebugStepper
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void IsActive (out int pbActive);

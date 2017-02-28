@@ -17,7 +17,7 @@ namespace CorApi.ComInterop
     [Guid ("3D6F5F62-7538-11D3-8D5B-00104B35E7EF")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugController
+    public unsafe interface ICorDebugController
     {
         /// <summary>
         /// Stop performs a cooperative stop on all threads running managed

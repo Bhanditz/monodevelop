@@ -7,7 +7,7 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("DBA2D8C1-E5C5-4069-8C13-10A7C6ABF43D")]
     [ComImport]
-    public interface ICorDebugModule
+    public unsafe interface ICorDebugModule
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);

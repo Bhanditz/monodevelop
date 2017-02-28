@@ -16,7 +16,7 @@ namespace CorApi.ComInterop
     [Guid ("096E81D5-ECDA-4202-83F5-C65980A9EF75")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugAppDomain2
+    public unsafe interface ICorDebugAppDomain2
     {
         /// <summary>
         /// GetArrayOrPointerType returns an array, pointer, byref or function pointer type.

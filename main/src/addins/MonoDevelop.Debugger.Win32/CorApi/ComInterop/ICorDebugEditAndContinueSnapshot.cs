@@ -7,7 +7,7 @@ namespace CorApi.ComInterop
     [Guid ("6DC3FA01-D7CB-11D2-8A95-0080C792E5D8")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugEditAndContinueSnapshot
+    public unsafe interface ICorDebugEditAndContinueSnapshot
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void CopyMetaData ([MarshalAs (UnmanagedType.Interface), In] IStream pIStream, out Guid pMvid);

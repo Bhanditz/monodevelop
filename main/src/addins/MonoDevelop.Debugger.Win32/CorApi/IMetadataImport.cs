@@ -24,7 +24,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
     // we cannot do that becuase we are then getting an exception
     // "The specified type must be visible from COM." @ CorMetadataImport::GetRawInterface
     [CLSCompliant(false)]
-    public interface IMetadataImport
+    public unsafe interface IMetadataImport
     {
         //STDMETHOD_(void, CloseEnum)(HCORENUM hEnum) PURE;
         [PreserveSig]  void CloseEnum(IntPtr hEnum);
@@ -627,7 +627,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
         InterfaceType(ComInterfaceType.InterfaceIsIUnknown)
     ] 
     [CLSCompliant(false)]
-    public interface IMetadataImport2 : IMetadataImport
+    public unsafe interface IMetadataImport2 : IMetadataImport
     {    
         
         // Need imports from IMetaDataImport to adjust IM2 vtable slots.
@@ -1319,7 +1319,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi
     // we cannot do that becuase we are then getting an exception
     // "The specified type must be visible from COM." @ CorMetadataImport::GetRawInterface
     [CLSCompliant(false)]
-    public interface IMetadataAssemblyImport
+    public unsafe interface IMetadataAssemblyImport
     {
         //     STDMETHOD(GetAssemblyProps)(            // S_OK or error.
         //         mdAssembly  mda,                    // [IN] The Assembly for which to get the properties.

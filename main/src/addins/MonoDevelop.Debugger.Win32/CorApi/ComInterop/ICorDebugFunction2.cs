@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("EF0C490B-94C3-4E4D-B629-DDC134C532D8")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugFunction2
+    public unsafe interface ICorDebugFunction2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void SetJMCStatus ([In] int bIsJustMyCode);

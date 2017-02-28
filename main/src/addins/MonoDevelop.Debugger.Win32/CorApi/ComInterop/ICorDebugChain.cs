@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("CC7BCAEE-8A68-11D2-983C-0000F808342D")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugChain
+    public unsafe interface ICorDebugChain
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetThread ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);

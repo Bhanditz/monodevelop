@@ -58,6 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComInterop\CodeChunkInfo.cs" />
+    <Compile Include="ComInterop\CorDebugBlockingObject.cs" />
+    <Compile Include="ComInterop\CorDebugBlockingReason.cs" />
     <Compile Include="ComInterop\CorDebugChainReason.cs" />
     <Compile Include="ComInterop\CorDebugCreateProcessFlags.cs" />
     <Compile Include="ComInterop\CorDebugExceptionCallbackType.cs" />
@@ -85,6 +87,7 @@
     <Compile Include="ComInterop\ICorDebugAssembly.cs" />
     <Compile Include="ComInterop\ICorDebugAssembly2.cs" />
     <Compile Include="ComInterop\ICorDebugAssemblyEnum.cs" />
+    <Compile Include="ComInterop\ICorDebugBlockingObjectEnum.cs" />
     <Compile Include="ComInterop\ICorDebugBoxValue.cs" />
     <Compile Include="ComInterop\ICorDebugBreakpoint.cs" />
     <Compile Include="ComInterop\ICorDebugBreakpointEnum.cs" />
@@ -144,6 +147,7 @@
     <Compile Include="ComInterop\ICorDebugThread.cs" />
     <Compile Include="ComInterop\ICorDebugThread2.cs" />
     <Compile Include="ComInterop\ICorDebugThread3.cs" />
+    <Compile Include="ComInterop\ICorDebugThread4.cs" />
     <Compile Include="ComInterop\ICorDebugThreadEnum.cs" />
     <Compile Include="ComInterop\ICorDebugType.cs" />
     <Compile Include="ComInterop\ICorDebugTypeEnum.cs" />
@@ -165,6 +169,7 @@
     <Compile Include="ComInterop\STARTUPINFOW.cs" />
     <Compile Include="ComInterop\STREAM_SEEK.cs" />
     <Compile Include="ComInterop\ULARGE_INTEGER.cs" />
+    <Compile Include="ComInterop\COR_ACTIVE_FUNCTION.cs" />
     <Compile Include="ICorDebugWrappers.cs" />
     <Compile Include="IMetadataImport.cs" />
     <Compile Include="ICorPublishWrappers.cs" />

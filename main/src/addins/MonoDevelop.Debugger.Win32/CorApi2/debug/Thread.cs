@@ -6,6 +6,8 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+
 using CorApi.ComInterop;
 using System.Runtime.Serialization;
 
@@ -56,7 +58,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     }
 
     /** A thread in the debugged process. */
-    public sealed class CorThread : WrapperBase
+    public sealed unsafe class CorThread : WrapperBase
     {
         internal CorThread (ICorDebugThread thread)
             :base(thread)
@@ -243,23 +245,30 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
 
-        public CorActiveFunction[] GetActiveFunctions()
+      public CorActiveFunction[] GetActiveFunctions ()
+      {
+        var m_th2 = (ICorDebugThread2)m_th;
+        uint cFunctions;
+        m_th2.GetActiveFunctions (0, &cFunctions, null);
+        COR_ACTIVE_FUNCTION* afunctions = stackalloc COR_ACTIVE_FUNCTION[(int)cFunctions];
+        m_th2.GetActiveFunctions (cFunctions, &cFunctions, afunctions);
+        var caf = new CorActiveFunction[cFunctions];
+        for(int i = 0; i < cFunctions; ++i) 
         {
-            ICorDebugThread2 m_th2 = (ICorDebugThread2) m_th;
-            UInt32 pcFunctions;
-            m_th2.GetActiveFunctions(0,out pcFunctions,null);
-            COR_ACTIVE_FUNCTION[] afunctions = new COR_ACTIVE_FUNCTION[pcFunctions];
-            m_th2.GetActiveFunctions(pcFunctions,out pcFunctions,afunctions);
-            CorActiveFunction[] caf = new CorActiveFunction[pcFunctions];
-            for(int i=0;i<pcFunctions;++i)
-            {
-                caf[i] = new CorActiveFunction((int) afunctions[i].ilOffset,
-                                               new CorFunction((ICorDebugFunction)afunctions[i].pFunction),
-                                               afunctions[i].pModule==null?null:new CorModule(afunctions[i].pModule)
-                                               );
-            }
-            return caf;
+          var corDebugFunction = (ICorDebugFunction)Marshal.GetObjectForIUnknown ((IntPtr)afunctions[i].pFunction);
+          Marshal.Release ((IntPtr)afunctions[i].pFunction);
+          ICorDebugModule managedModule = null;
+          if(afunctions[i].pModule!=null) 
+          {
+            managedModule = (ICorDebugModule)Marshal.GetObjectForIUnknown ((IntPtr)afunctions[i].pModule);
+            Marshal.Release ((IntPtr)afunctions[i].pModule);
+          }
+          if(afunctions[i].pAppDomain != null)
+            Marshal.Release ((IntPtr)afunctions[i].pAppDomain);
+          caf[i] = new CorActiveFunction ((int)afunctions[i].ilOffset, new CorFunction (corDebugFunction), managedModule == null ? null : new CorModule (managedModule));
         }
+        return caf;
+      }
         private ICorDebugThread m_th;
 
     } /* class Thread */

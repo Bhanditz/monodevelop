@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("AD1B3588-0EF0-4744-A496-AA09A9F80371")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugProcess2
+    public unsafe interface ICorDebugProcess2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetThreadForTaskID ([In] ulong taskid,

@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("250E5EEA-DB5C-4C76-B6F3-8C46F12E3203")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugManagedCallback2
+    public unsafe interface ICorDebugManagedCallback2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void FunctionRemapOpportunity ([MarshalAs (UnmanagedType.Interface), In] ICorDebugAppDomain pAppDomain,

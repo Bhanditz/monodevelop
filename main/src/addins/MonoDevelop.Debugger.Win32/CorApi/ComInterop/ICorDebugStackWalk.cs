@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("A0647DE9-55DE-4816-929C-385271C64CF7")]
     [ComImport]
-    public interface ICorDebugStackWalk
+    public unsafe interface ICorDebugStackWalk
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetContext ([In] uint contextFlags, [In] uint contextBufSize, out uint contextSize, out byte contextBuf);

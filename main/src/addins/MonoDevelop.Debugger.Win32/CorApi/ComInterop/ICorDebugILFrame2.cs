@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("5D88A994-6C30-479B-890F-BCEF88B129A5")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugILFrame2
+    public unsafe interface ICorDebugILFrame2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void RemapFunction ([In] uint newILOffset);

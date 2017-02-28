@@ -29,7 +29,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, Guid("9613A0E7-5A68-11D3-8F84-00A0C9B4D50C"), CoClass(typeof(CorpubPublishClass))]
-      public interface CorpubPublish : ICorPublish
+      public unsafe interface CorpubPublish : ICorPublish
       {
       }
 
@@ -46,7 +46,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, Guid("9613A0E7-5A68-11D3-8F84-00A0C9B4D50C"), InterfaceType(1)]
-      public interface ICorPublish
+      public unsafe interface ICorPublish
       {
             
             void EnumProcesses([In, ComAliasName("CorpubProcessLib.COR_PUB_ENUMPROCESS")] COR_PUB_ENUMPROCESS Type, [Out, MarshalAs(UnmanagedType.Interface)] out ICorPublishProcessEnum ppIEnum);
@@ -55,7 +55,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, Guid("D6315C8F-5A6A-11D3-8F84-00A0C9B4D50C"), InterfaceType(1)]
-      public interface ICorPublishAppDomain
+      public unsafe interface ICorPublishAppDomain
       {
             
             void GetID([Out] out uint puId);
@@ -64,7 +64,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, InterfaceType(1), Guid("9F0C98F5-5A6A-11D3-8F84-00A0C9B4D50C")]
-      public interface ICorPublishAppDomainEnum : ICorPublishEnum
+      public unsafe interface ICorPublishAppDomainEnum : ICorPublishEnum
       {
             
             new void Skip([In] uint celt);
@@ -79,7 +79,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, InterfaceType(1), Guid("C0B22967-5A69-11D3-8F84-00A0C9B4D50C")]
-      public interface ICorPublishEnum
+      public unsafe interface ICorPublishEnum
       {
             
             void Skip([In] uint celt);
@@ -92,7 +92,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, InterfaceType(1), Guid("18D87AF1-5A6A-11D3-8F84-00A0C9B4D50C")]
-      public interface ICorPublishProcess
+      public unsafe interface ICorPublishProcess
       {
             
             void IsManaged([Out] out int pbManaged);
@@ -105,7 +105,7 @@ namespace Microsoft.Samples.Debugging.CorPublish.NativeApi
       }
 
       [ComImport, InterfaceType(1), Guid("A37FBD41-5A69-11D3-8F84-00A0C9B4D50C")]
-      public interface ICorPublishProcessEnum : ICorPublishEnum
+      public unsafe interface ICorPublishProcessEnum : ICorPublishEnum
       {
             
             new void Skip([In] uint celt);

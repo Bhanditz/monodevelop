@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [Guid ("FB0D9CE7-BE66-4683-9D32-A42A04E2FD91")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
-    public interface ICorDebugEval2
+    public unsafe interface ICorDebugEval2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void CallParameterizedFunction ([MarshalAs (UnmanagedType.Interface), In] ICorDebugFunction pFunction,

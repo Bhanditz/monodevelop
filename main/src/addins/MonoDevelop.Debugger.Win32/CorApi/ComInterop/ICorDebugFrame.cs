@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("CC7BCAEF-8A68-11D2-983C-0000F808342D")]
     [ComImport]
-    public interface ICorDebugFrame
+    public unsafe interface ICorDebugFrame
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);

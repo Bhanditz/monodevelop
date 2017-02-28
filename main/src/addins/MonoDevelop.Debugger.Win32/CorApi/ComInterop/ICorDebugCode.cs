@@ -6,7 +6,7 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("CC7BCAF4-8A68-11D2-983C-0000F808342D")]
     [ComImport]
-    public interface ICorDebugCode
+    public unsafe interface ICorDebugCode
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void IsIL (out int pbIL);
