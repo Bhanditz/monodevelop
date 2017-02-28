@@ -5,14 +5,15 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using System.Diagnostics.CodeAnalysis;
+using CorApi.ComInterop;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {
     /**
      * Represents a scope at which program execution can be controlled.
      */
+    [SuppressMessage ("ReSharper", "InconsistentNaming")]
     public class CorController : WrapperBase
     {
         internal CorController (ICorDebugController controller)
@@ -46,9 +47,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
          */
         public bool IsRunning ()
         {
-            int running = 0;
+            int running;
             m_controller.IsRunning (out running);
-            return !(running == 0);
+            return running != 0;
         }
 
         /**
@@ -56,11 +57,11 @@ namespace Microsoft.Samples.Debugging.CorDebug
          */
         public bool HasQueuedCallbacks (CorThread managedThread)
         {
-            int queued = 0;
+            int queued;
             m_controller.HasQueuedCallbacks( (managedThread==null)?null:managedThread.GetInterface(),
                                              out queued
                                              );
-            return !(queued == 0);
+            return queued != 0;
         }
 
         /** Enumerate over all threads in active in the process. */
@@ -68,7 +69,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             get 
             {
-                ICorDebugThreadEnum ethreads = null;
+                ICorDebugThreadEnum ethreads;
                 m_controller.EnumerateThreads (out ethreads);
                 return new CorThreadEnumerator (ethreads);
             }
@@ -124,6 +125,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return m_controller;
         }
         
-        private ICorDebugController m_controller;
+        private readonly ICorDebugController m_controller;
     }
 }

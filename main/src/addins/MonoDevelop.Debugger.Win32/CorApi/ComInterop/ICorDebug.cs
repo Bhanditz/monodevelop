@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -23,17 +24,23 @@ namespace CorApi.ComInterop
     /// specific implementation (as specified by szDebuggeeVersion) of ICorDebug, which
     /// also emulates a specific version of the debugging API (as specified by iDebuggerVersion).
     /// </summary>
+    /// <example><code>[
+    ///     object,
+    ///     local,
+    ///     uuid(3d6f5f61-7538-11d3-8d5b-00104b35e7ef),
+    ///     pointer_default(unique)
+    /// ]</code></example>
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("3D6F5F61-7538-11D3-8D5B-00104B35E7EF")]
     [ComImport]
+    [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
     public unsafe interface ICorDebug
     {
         /// <summary>
         /// The debugger calls this method at creation time to initialize the debugging
         /// services, and  must be called at creation time before any other method on ICorDebug is called.
         /// </summary>
-        //
-        // HRESULT Initialize();
+        /// <example><code>HRESULT Initialize();</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void Initialize ();
 
@@ -43,8 +50,7 @@ namespace CorApi.ComInterop
         /// NOTE: Terminate should not be called until an ExitProcess callback has
         /// been received for all processes being debugged.
         /// </summary>
-        //
-        // HRESULT Terminate();
+        /// <example><code>HRESULT Terminate();</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void Terminate ();
 
@@ -59,8 +65,7 @@ namespace CorApi.ComInterop
         ///     Eg, if debugging a V2.0 app, pCallback must implement ICorDebugManagedCallback2.
         /// </summary>
         /// <param name="pCallback"></param>
-        //
-        // HRESULT SetManagedHandler([in] ICorDebugManagedCallback *pCallback);
+        /// <example><code>HRESULT SetManagedHandler([in] ICorDebugManagedCallback *pCallback);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void SetManagedHandler ([MarshalAs (UnmanagedType.Interface), In] ICorDebugManagedCallback pCallback);
 
@@ -82,8 +87,7 @@ namespace CorApi.ComInterop
         ///    failure on any failure.
         /// </summary>
         /// <param name="pCallback"></param>
-        //
-        // HRESULT SetUnmanagedHandler([in] ICorDebugUnmanagedCallback *pCallback);
+        /// <example><code>HRESULT SetUnmanagedHandler([in] ICorDebugUnmanagedCallback *pCallback);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void SetUnmanagedHandler ([MarshalAs (UnmanagedType.Interface), In] ICorDebugUnmanagedCallback pCallback);
 
@@ -114,29 +118,28 @@ namespace CorApi.ComInterop
         /// <param name="lpProcessInformation"></param>
         /// <param name="debuggingFlags"></param>
         /// <param name="ppProcess"></param>
-        //
-        // HRESULT CreateProcess([in] LPCWSTR lpApplicationName,
-        //                       [in] LPWSTR lpCommandLine,
-        //                       [in] LPSECURITY_ATTRIBUTES lpProcessAttributes,
-        //                       [in] LPSECURITY_ATTRIBUTES lpThreadAttributes,
-        //                       [in] BOOL bInheritHandles,
-        //                       [in] DWORD dwCreationFlags,
-        //                       [in] PVOID lpEnvironment,
-        //                       [in] LPCWSTR lpCurrentDirectory,
-        //                       [in] LPSTARTUPINFOW lpStartupInfo,
-        //                       [in] LPPROCESS_INFORMATION lpProcessInformation,
-        //                       [in] CorDebugCreateProcessFlags debuggingFlags,
-        //                       [out] ICorDebugProcess **ppProcess);
+        /// <example><code>HRESULT CreateProcess([in] LPCWSTR lpApplicationName,
+        ///                                      [in] LPWSTR lpCommandLine,
+        ///                                      [in] LPSECURITY_ATTRIBUTES lpProcessAttributes,
+        ///                                      [in] LPSECURITY_ATTRIBUTES lpThreadAttributes,
+        ///                                      [in] BOOL bInheritHandles,
+        ///                                      [in] DWORD dwCreationFlags,
+        ///                                      [in] PVOID lpEnvironment,
+        ///                                      [in] LPCWSTR lpCurrentDirectory,
+        ///                                      [in] LPSTARTUPINFOW lpStartupInfo,
+        ///                                      [in] LPPROCESS_INFORMATION lpProcessInformation,
+        ///                                      [in] CorDebugCreateProcessFlags debuggingFlags,
+        ///                                      [out] ICorDebugProcess **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void CreateProcess (
-            ushort* lpApplicationName,
-            ushort* lpCommandLine,
+            UInt16* lpApplicationName,
+            UInt16* lpCommandLine,
             [In] SECURITY_ATTRIBUTES* lpProcessAttributes,
             [In] SECURITY_ATTRIBUTES* lpThreadAttributes,
-            [In] int bInheritHandles,
-            [In] uint dwCreationFlags,
+            [In] Int32 bInheritHandles,
+            [In] UInt32 dwCreationFlags,
             [In] IntPtr lpEnvironment,
-            ushort* lpCurrentDirectory,
+            UInt16* lpCurrentDirectory,
             [In] STARTUPINFOW* lpStartupInfo,
             [In] PROCESS_INFORMATION* lpProcessInformation,
             [In] CorDebugCreateProcessFlags debuggingFlags,
@@ -152,18 +155,19 @@ namespace CorApi.ComInterop
         /// <param name="id"></param>
         /// <param name="win32Attach"></param>
         /// <param name="ppProcess"></param>
-        //
-        // HRESULT DebugActiveProcess([in] DWORD id, [in] BOOL win32Attach, [out] ICorDebugProcess **ppProcess);
+        /// <example>
+        /// <code>HRESULT DebugActiveProcess([in] DWORD id,
+        ///                                  [in] BOOL win32Attach,
+        ///                                  [out] ICorDebugProcess **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void DebugActiveProcess ([In] uint id, [In] int win32Attach,
+        void DebugActiveProcess ([In] UInt32 id, [In] Int32 win32Attach,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
         /// <summary>
         /// EnumerateProcesses returns an enum of processes being debugged.
         /// </summary>
         /// <param name="ppProcess"></param>
-        //
-        // HRESULT EnumerateProcesses([out] ICorDebugProcessEnum **ppProcess);
+        /// <example><code>HRESULT EnumerateProcesses([out] ICorDebugProcessEnum **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void EnumerateProcesses ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
 
@@ -172,10 +176,11 @@ namespace CorApi.ComInterop
         /// </summary>
         /// <param name="dwProcessId"></param>
         /// <param name="ppProcess"></param>
-        //
-        // HRESULT GetProcess([in] DWORD dwProcessId, [out] ICorDebugProcess **ppProcess);
+        /// <example>
+        /// <code>HRESULT GetProcess([in] DWORD dwProcessId, [out] ICorDebugProcess **ppProcess);</code>
+        /// </example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetProcess ([In] uint dwProcessId, [MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        void GetProcess ([In] UInt32 dwProcessId, [MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
         /// <summary>
         /// CanLaunchOrAttach returns S_OK if the debugging services believe that
@@ -194,9 +199,10 @@ namespace CorApi.ComInterop
         /// </summary>
         /// <param name="dwProcessId"></param>
         /// <param name="win32DebuggingEnabled"></param>
-        //
-        // HRESULT CanLaunchOrAttach([in] DWORD dwProcessId, [in] BOOL win32DebuggingEnabled);
+        /// <example>
+        /// <code>HRESULT CanLaunchOrAttach([in] DWORD dwProcessId, [in] BOOL win32DebuggingEnabled);</code>
+        /// </example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CanLaunchOrAttach ([In] uint dwProcessId, [In] int win32DebuggingEnabled);
+        void CanLaunchOrAttach ([In] UInt32 dwProcessId, [In] Int32 win32DebuggingEnabled);
     }
 }

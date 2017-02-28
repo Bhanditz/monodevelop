@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Text;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.CorPublish.Metahost;
 
 namespace Microsoft.Samples.Debugging.CorDebug

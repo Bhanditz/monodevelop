@@ -62,6 +62,7 @@
     <Compile Include="ComInterop\CorDebugCreateProcessFlags.cs" />
     <Compile Include="ComInterop\CorDebugExceptionCallbackType.cs" />
     <Compile Include="ComInterop\CorDebugExceptionUnwindCallbackType.cs" />
+    <Compile Include="ComInterop\CorDebugGuidToTypeMapping.cs" />
     <Compile Include="ComInterop\CorDebugHandleType.cs" />
     <Compile Include="ComInterop\CorDebugIntercept.cs" />
     <Compile Include="ComInterop\CorDebugInternalFrameType.cs" />
@@ -154,13 +155,15 @@
     <Compile Include="ComInterop\ISequentialStream.cs" />
     <Compile Include="ComInterop\IStream.cs" />
     <Compile Include="ComInterop\PROCESS_INFORMATION.cs" />
-    <Compile Include="ComInterop\tagSTATSTG.cs" />
+    <Compile Include="ComInterop\STGTY.cs" />
+    <Compile Include="ComInterop\STATSTG.cs" />
     <Compile Include="ComInterop\COR_IL_MAP.cs" />
     <Compile Include="ComInterop\COR_VERSION.cs" />
     <Compile Include="ComInterop\FILETIME.cs" />
     <Compile Include="ComInterop\LARGE_INTEGER.cs" />
     <Compile Include="ComInterop\SECURITY_ATTRIBUTES.cs" />
     <Compile Include="ComInterop\STARTUPINFOW.cs" />
+    <Compile Include="ComInterop\STREAM_SEEK.cs" />
     <Compile Include="ComInterop\ULARGE_INTEGER.cs" />
     <Compile Include="ICorDebugWrappers.cs" />
     <Compile Include="IMetadataImport.cs" />

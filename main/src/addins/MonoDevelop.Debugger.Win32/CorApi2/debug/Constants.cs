@@ -6,8 +6,7 @@
 using System;
 using System.Diagnostics;
 using System.Globalization;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {

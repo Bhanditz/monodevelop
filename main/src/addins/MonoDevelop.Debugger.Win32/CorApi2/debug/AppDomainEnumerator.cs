@@ -5,7 +5,7 @@
 //---------------------------------------------------------------------
 using System;
 using System.Collections;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 
 namespace Microsoft.Samples.Debugging.CorDebug

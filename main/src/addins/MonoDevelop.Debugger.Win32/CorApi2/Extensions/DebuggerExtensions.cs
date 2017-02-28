@@ -27,13 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.Samples.Debugging.CorDebug;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Samples.Debugging.Extensions
 {
 	[CLSCompliant (false)]
-	public static class DebuggerExtensions
+	public static unsafe class DebuggerExtensions
 	{
 		// [Xamarin] Output redirection.
 		public const int CREATE_REDIRECT_STD = 0x40000000;
@@ -63,7 +63,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 		[
 			DllImport (Kernel32LibraryName)
 		]
-		public static extern SafeFileHandle GetStdHandle (uint nStdHandle);
+		public static extern void* GetStdHandle (uint nStdHandle);
 
 		const uint STD_INPUT_HANDLE = unchecked ((uint)-10);
 		const uint STD_OUTPUT_HANDLE = unchecked ((uint)-11);
@@ -85,11 +85,11 @@ namespace Microsoft.Samples.Debugging.Extensions
 		]
 		public static extern IntPtr GetCurrentProcess ();
 
-		static void CreateHandles (STARTUPINFO si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
+		static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
 		{
 			si.dwFlags |= 0x00000100; /*			STARTF_USESTDHANDLES*/
 			var sa = new SECURITY_ATTRIBUTES ();
-			sa.bInheritHandle = true;
+			sa.bInheritHandle = 1;
 			IntPtr curProc = GetCurrentProcess ();
 
 			SafeFileHandle outWritePipe, outReadPipeTmp;
@@ -118,11 +118,11 @@ namespace Microsoft.Samples.Debugging.Extensions
 			errorReadPipeTmp.Close ();
 
 			si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
-			si.hStdOutput = outWritePipe;
-			si.hStdError = errorWritePipe;
+			si.hStdOutput = (void*) outWritePipe.DangerousGetHandle ();
+			si.hStdError = (void*) errorWritePipe.DangerousGetHandle ();
 		}
 
-		internal static void SetupOutputRedirection (STARTUPINFO si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
+		internal static void SetupOutputRedirection (STARTUPINFOW si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
 		{
 			if ((flags & CREATE_REDIRECT_STD) != 0) {
 				CreateHandles (si, out outReadPipe, out errorReadPipe);
@@ -131,23 +131,25 @@ namespace Microsoft.Samples.Debugging.Extensions
 			else {
 				outReadPipe = null;
 				errorReadPipe = null;
-				si.hStdInput = new SafeFileHandle (IntPtr.Zero, false);
-				si.hStdOutput = new SafeFileHandle (IntPtr.Zero, false);
-				si.hStdError = new SafeFileHandle (IntPtr.Zero, false);
+				si.hStdInput = null;
+				si.hStdOutput = null;
+				si.hStdError = null;
 			}
 		}
 
-		internal static void TearDownOutputRedirection (SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe, STARTUPINFO si, CorProcess ret)
+		internal static void TearDownOutputRedirection (SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe, STARTUPINFOW si, CorProcess ret)
 		{
 			if (outReadPipe != null) {
 				// Close pipe handles (do not continue to modify the parent).
 				// You need to make sure that no handles to the write end of the
 				// output pipe are maintained in this process or else the pipe will
 				// not close when the child process exits and the ReadFile will hang.
-
-				si.hStdInput.Close ();
-				si.hStdOutput.Close ();
-				si.hStdError.Close ();
+			    if (si.hStdInput != null)
+			        NativeMethods.CloseHandle ((IntPtr) si.hStdInput);
+			    if (si.hStdOutput != null)
+			        NativeMethods.CloseHandle ((IntPtr) si.hStdOutput);
+			    if (si.hStdError != null)
+			        NativeMethods.CloseHandle ((IntPtr) si.hStdError);
 
 				ret.TrackStdOutput (outReadPipe, errorReadPipe);
 			}

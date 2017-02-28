@@ -44,6 +44,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
      * obejct.
      */
 
+    [CLSCompliant(false)]
     public abstract class WrapperBase : MarshalByRefObject
     {
         protected WrapperBase(Object value)

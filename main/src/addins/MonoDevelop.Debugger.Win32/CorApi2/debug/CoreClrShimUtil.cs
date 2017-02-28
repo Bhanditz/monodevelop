@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using PinvokeKit;
 

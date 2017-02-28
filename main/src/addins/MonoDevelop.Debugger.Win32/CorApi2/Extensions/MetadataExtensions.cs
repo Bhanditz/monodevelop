@@ -31,7 +31,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
 

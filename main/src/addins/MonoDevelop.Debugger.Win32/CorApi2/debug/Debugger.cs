@@ -14,11 +14,12 @@ using System.Security.Permissions;
 using System.Globalization;
 
 
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Collections.Generic;
 using Microsoft.Samples.Debugging.CorPublish.Metahost;
 using Microsoft.Win32.SafeHandles;
+using IStream = CorApi.ComInterop.IStream;
 
 
 namespace Microsoft.Samples.Debugging.CorDebug
@@ -28,7 +29,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
      * Note that we don't derive the class from WrapperBase, becuase this
      * class will never be returned in any callback.
      */
-    public sealed  class CorDebugger : MarshalByRefObject
+    public sealed unsafe class CorDebugger : MarshalByRefObject
     {
         private const int MaxVersionStringLength = 256; // == MAX_PATH
         
@@ -236,8 +237,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             PROCESS_INFORMATION pi = new PROCESS_INFORMATION ();
 
-            STARTUPINFO si = new STARTUPINFO ();
-            si.cb = Marshal.SizeOf(si);
+            STARTUPINFOW si = new STARTUPINFOW ();
+            si.cb = (uint) Marshal.SizeOf(si);
 
             // initialize safe handles 
 			// [Xamarin] ASP.NET Debugging and output redirection.
@@ -257,8 +258,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 ret = CreateProcess (
                                      applicationName,
                                      commandLine, 
-                                     null,
-                                     null,
+                                     default(SECURITY_ATTRIBUTES),
+                                     default(SECURITY_ATTRIBUTES),
                                      true,   // inherit handles
                                      flags,  // creation flags
 									 env,      // environment
@@ -266,8 +267,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                      si,     // startup info
                                      ref pi, // process information
                                      CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS);
-                NativeMethods.CloseHandle (pi.hProcess);
-                NativeMethods.CloseHandle (pi.hThread);
+                if (pi.hProcess != null)
+                    NativeMethods.CloseHandle ((IntPtr) pi.hProcess);
+                if (pi.hThread != null)
+                    NativeMethods.CloseHandle ((IntPtr) pi.hThread);
             }
 
 			DebuggerExtensions.TearDownEnvironment (env);
@@ -288,17 +291,16 @@ namespace Microsoft.Samples.Debugging.CorDebug
          *
          * after CreateProcess returns.
          */
-        [CLSCompliant(false)]
         public CorProcess CreateProcess (
-                                         String                      applicationName,
-                                         String                      commandLine,
+                                         string                      applicationName,
+                                         string                      commandLine,
                                          SECURITY_ATTRIBUTES         processAttributes,
                                          SECURITY_ATTRIBUTES         threadAttributes,
                                          bool                        inheritHandles,
                                          int                         creationFlags,
                                          IntPtr                      environment,  
-                                         String                      currentDirectory,
-                                         STARTUPINFO                 startupInfo,
+                                         string                      currentDirectory,
+                                         STARTUPINFOW                 startupInfo,
                                          ref PROCESS_INFORMATION     processInformation,
                                          CorDebugCreateProcessFlags  debuggingFlags)
         {
@@ -310,26 +312,29 @@ namespace Microsoft.Samples.Debugging.CorDebug
              */
             if(null == applicationName && !commandLine.StartsWith("\""))
             {
-                int firstSpace = commandLine.IndexOf(" ");
+                var firstSpace = commandLine.IndexOf(" ", StringComparison.Ordinal);
                 if(firstSpace != -1)
-                    commandLine = String.Format(CultureInfo.InvariantCulture, "\"{0}\" {1}", commandLine.Substring(0,firstSpace), commandLine.Substring(firstSpace, commandLine.Length-firstSpace));
+                    commandLine = string.Format(CultureInfo.InvariantCulture, "\"{0}\" {1}",
+                        commandLine.Substring(0,firstSpace), commandLine.Substring(firstSpace, commandLine.Length-firstSpace));
             }
 
             ICorDebugProcess proc = null;
-
-            m_debugger.CreateProcess (
-                                  applicationName, 
-                                  commandLine, 
-                                  processAttributes,
-                                  threadAttributes, 
-                                  inheritHandles ? 1 : 0, 
-                                  (uint) creationFlags, 
-                                  environment, 
-                                  currentDirectory, 
-                                  startupInfo, 
-                                  processInformation, 
-                                  debuggingFlags,
-                                  out proc);
+            fixed(char* pApplicationName = applicationName)
+                fixed (char* pCommandLine = commandLine)
+                    fixed (char* pCurrentDirectory = currentDirectory)
+                        m_debugger.CreateProcess (
+                                                  (ushort*)pApplicationName,
+                                                  (ushort*)pCommandLine,
+                                                  &processAttributes,
+                                                  &threadAttributes,
+                                                  inheritHandles ? 1 : 0,
+                                                  (uint) creationFlags,
+                                                  environment,
+                                                  (ushort*)pCurrentDirectory,
+                                                  &startupInfo,
+                                                  &processInformation,
+                                                  debuggingFlags,
+                                                  out proc);
 
             return CorProcess.GetCorProcess(proc);
         }
@@ -1730,7 +1735,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
     // Helper class to convert from COM-classic callback interface into managed args.
     // Derived classes can overide the HandleEvent method to define the handling.
-    abstract public class ManagedCallbackBase : ICorDebugManagedCallback, ICorDebugManagedCallback2
+    abstract unsafe public class ManagedCallbackBase : ICorDebugManagedCallback, ICorDebugManagedCallback2
     {
         // Derived class overrides this methdos 
         protected abstract void HandleEvent(ManagedCallbackType eventId, CorEventArgs args);
@@ -1899,13 +1904,15 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                 ICorDebugAppDomain appDomain,
                                 ICorDebugThread thread,
                                 int level,
-                                string logSwitchName,
-                                string message)
+                                UInt16* pLogSwitchName,
+                                UInt16* pMessage)
         {
             HandleEvent(ManagedCallbackType.OnLogMessage,
                                new CorLogMessageEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
                                                           thread == null ? null : new CorThread(thread),
-                                                          level, logSwitchName, message,
+                                                          level,
+                                                          pLogSwitchName == null ? null : new string((char*) pLogSwitchName),
+                                                          pMessage == null ? null : new string ((char*) pMessage),
                                                           ManagedCallbackType.OnLogMessage));
         }
 
@@ -1914,13 +1921,15 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                ICorDebugThread thread,
                                int level,
                                uint reason,
-                               string logSwitchName,
-                               string parentName)
+                               UInt16* pLogSwitchName,
+                               UInt16* pParentName)
         {
             HandleEvent(ManagedCallbackType.OnLogSwitch,
                               new CorLogSwitchEventArgs( appDomain == null ? null : new CorAppDomain(appDomain),
                                                          thread == null ? null : new CorThread(thread),
-                                                         level, (int)reason, logSwitchName, parentName,
+                                                         level, (int)reason,
+                                                         pLogSwitchName == null ? null : new string ((char*) pLogSwitchName),
+                                                         pParentName == null ? null : new string ((char*) pParentName),
                                                          ManagedCallbackType.OnLogSwitch));
         }
 

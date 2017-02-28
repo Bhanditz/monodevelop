@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Samples.Debugging.CorDebug;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 

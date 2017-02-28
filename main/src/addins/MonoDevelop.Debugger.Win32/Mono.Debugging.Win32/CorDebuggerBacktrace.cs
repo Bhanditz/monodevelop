@@ -2,7 +2,7 @@
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
 using Microsoft.Samples.Debugging.CorDebug;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.CorMetadata;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;

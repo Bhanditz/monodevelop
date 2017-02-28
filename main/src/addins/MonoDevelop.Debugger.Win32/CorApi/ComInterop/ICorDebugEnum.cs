@@ -1,23 +1,80 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
 {
-    [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid ("CC7BCB01-8A68-11D2-983C-0000F808342D")]
-    [ComImport]
-    public interface ICorDebugEnum
-    {
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Skip ([In] uint celt);
+  /// <summary>
+  ///  ICorDebugEnum is an abstract enumerator.
+  /// </summary>
+  /// <example><code>
+  ///  * ICorDebugEnum is an abstract enumerator.
+  ///  */
+  /// 
+  /// [
+  ///     object,
+  ///     local,
+  ///     uuid(CC7BCB01-8A68-11d2-983C-0000F808342D),
+  ///     pointer_default(unique)
+  /// ]
+  /// interface ICorDebugEnum : IUnknown
+  /// {
+  ///     /*
+  ///      * Moves the current position forward the given number of
+  ///      * elements.
+  ///      */
+  ///     HRESULT Skip([in] ULONG celt);
+  /// 
+  ///     /*
+  ///      * Sets the position of the enumerator to the beginning of the
+  ///      * enumeration.
+  ///      */
+  ///     HRESULT Reset();
+  /// 
+  ///     /*
+  ///      * Creates another enumerator with the same current position
+  ///      * as this one.
+  ///      */
+  ///     HRESULT Clone([out] ICorDebugEnum **ppEnum);
+  /// 
+  ///     /*
+  ///      * Gets the number of elements in the enumeration
+  ///      */
+  ///     HRESULT GetCount([out] ULONG *pcelt);
+  /// };
+  ///  </code></example>
+  [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+  [Guid ("CC7BCB01-8A68-11D2-983C-0000F808342D")]
+  [ComImport]
+  [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
+  public unsafe interface ICorDebugEnum
+  {
+    /// <summary>
+    /// Moves the current position forward the given number of elements.
+    /// </summary>
+    /// <param name="celt">the given number of elements</param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void Skip ([In] UInt32 celt);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Reset ();
+    /// <summary>
+    /// Sets the position of the enumerator to the beginning of the enumeration.
+    /// </summary>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void Reset ();
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Clone ([MarshalAs (UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+    /// <summary>
+    /// Creates another enumerator with the same current position as this one.
+    /// </summary>
+    /// <param name="ppEnum">another enumerator</param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void Clone ([MarshalAs (UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetCount (out uint pcelt);
-    }
+    /// <summary>
+    /// Gets the number of elements in the enumeration.
+    /// </summary>
+    /// <param name="pcelt">the number of elements in the enumeration</param>
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetCount ([Out] UInt32* pcelt);
+  }
 }

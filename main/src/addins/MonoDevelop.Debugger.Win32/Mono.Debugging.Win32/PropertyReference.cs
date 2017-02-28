@@ -29,7 +29,7 @@ using System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using Microsoft.Samples.Debugging.CorDebug;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 namespace Mono.Debugging.Win32
 {

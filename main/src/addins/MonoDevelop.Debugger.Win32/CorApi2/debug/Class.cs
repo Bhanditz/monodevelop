@@ -4,8 +4,7 @@
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
 using System;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {

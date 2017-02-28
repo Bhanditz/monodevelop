@@ -6,15 +6,14 @@
 using System;
 using System.Text;
 using System.Diagnostics;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {
 
 
     /** A value in the remote process. */
-    public class CorValue : WrapperBase
+    public unsafe class CorValue : WrapperBase
     {
         internal CorValue (ICorDebugValue value)
             :base(value)
@@ -247,7 +246,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             {
                 uint stringSize;
                 StringBuilder sb = new StringBuilder(Length+1); // we need one extra char for null
-                m_strVal.GetString((uint)sb.Capacity,out stringSize,sb);
+                m_strVal.GetString((uint)sb.Capacity,out stringSize, sb);
                 return sb.ToString();
             }
         }
@@ -674,7 +673,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         private ICorDebugBoxValue m_boxVal = null;
     }
 
-    public sealed class CorArrayValue : CorValue
+    public sealed unsafe class CorArrayValue : CorValue
     {
         internal CorArrayValue(ICorDebugArrayValue arrayValue): base(arrayValue)
         {
@@ -739,7 +738,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             Debug.Assert(Rank!=0);
             uint[] dims = new uint[Rank];
-            m_arrayVal.GetDimensions((uint)dims.Length,dims);
+            fixed(uint* pDims = dims)
+                m_arrayVal.GetDimensions((uint)dims.Length, pDims);
 
             int[] sdims = Array.ConvertAll<uint,int>( dims, delegate(uint u) { return (int)u; } );
             return sdims;
@@ -749,17 +749,19 @@ namespace Microsoft.Samples.Debugging.CorDebug
 		{
 			Debug.Assert(Rank!=0);
 			uint[] baseIndicies = new uint[Rank];
-			m_arrayVal.GetBaseIndicies((uint)baseIndicies.Length,baseIndicies);
+		    fixed (uint* pBaseIndicies = baseIndicies)
+			m_arrayVal.GetBaseIndicies((uint)baseIndicies.Length, pBaseIndicies);
 
 			int[] sdims = Array.ConvertAll<uint,int>( baseIndicies, delegate(uint u) { return (int)u; } );
 			return sdims;
 		}
 
-        public CorValue GetElement(int[] indices)
+        public CorValue GetElement(uint[] indices)
         {
             Debug.Assert(indices!=null);
             ICorDebugValue ppValue;
-            m_arrayVal.GetElement((uint)indices.Length,indices,out ppValue);
+            fixed (uint* pIndices = indices)
+                m_arrayVal.GetElement((uint)indices.Length,pIndices,out ppValue);
             return ppValue==null?null:new CorValue(ppValue);
         }
         

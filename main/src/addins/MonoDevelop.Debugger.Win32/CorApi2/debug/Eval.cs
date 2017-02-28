@@ -5,8 +5,7 @@
 //---------------------------------------------------------------------
 using System;
 using System.Diagnostics;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {
@@ -36,7 +35,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
             m_eval.CallFunction(managedFunction.m_function,
                                 (uint) (arguments==null?0:arguments.Length),
-                                values);
+                                 values);
         }
 
         public void CallParameterizedFunction (CorFunction managedFunction, CorType[] argumentTypes, CorValue[] arguments)

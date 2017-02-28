@@ -6,7 +6,7 @@ using System.Reflection;
 
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 
 namespace Microsoft.Samples.Debugging.CorMetadata

@@ -1,6 +1,6 @@
 //---------------------------------------------------------------------
 //  This file is part of the CLR Managed Debugger (mdbg) Sample.
-// 
+//
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
 using System;
@@ -8,19 +8,18 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {
     /** A process running some managed code. */
-    public sealed class CorProcess : CorController, IDisposable
+    public sealed unsafe class CorProcess : CorController, IDisposable
     {
         [CLSCompliant(false)]
         public static CorProcess GetCorProcess(ICorDebugProcess process)
         {
             Debug.Assert(process!=null);
-            lock(m_instances) 
+            lock(m_instances)
             {
                 if(!m_instances.Contains(process))
                 {
@@ -36,10 +35,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
         {
             // Release event handlers. The event handlers are strong references and may keep
             // other high-level objects (such as things in the MdbgEngine layer) alive.
-            m_callbacksArray = null;            
-            
+            m_callbacksArray = null;
+
             // Remove ourselves from instances hash.
-            lock(m_instances) 
+            lock(m_instances)
             {
                 m_instances.Remove(_p());
             }
@@ -100,7 +99,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** The OS ID of the process. */
         public int Id
         {
-            get 
+            get
             {
                 uint id = 0;
                 _p().GetID (out id);
@@ -109,21 +108,21 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         /** Returns a handle to the process. */
-        public IntPtr Handle
+        public void* Handle
         {
-            get 
+            get
             {
-                IntPtr h = IntPtr.Zero;
-                _p().GetHandle (out h);
+                void* h = null;
+                _p().GetHandle (&h);
                 return h;
             }
         }
 
         public Version Version
         {
-            get 
+            get
             {
-                _COR_VERSION cv;
+                COR_VERSION cv;
                 (_p() as ICorDebugProcess2).GetVersion(out cv);
                 return new Version((int)cv.dwMajor,(int)cv.dwMinor,(int)cv.dwBuild,(int)cv.dwSubBuild);
             }
@@ -132,7 +131,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** All managed objects in the process. */
         public IEnumerable Objects
         {
-            get 
+            get
             {
                 ICorDebugObjectEnum eobj = null;
                 _p().EnumerateObjects (out eobj);
@@ -156,7 +155,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return !(y==0);
         }
 
-        /** Gets managed thread for threadId. 
+        /** Gets managed thread for threadId.
          * Returns NULL if tid is not a managed thread. That's very common in interop-debugging cases.
          */
         public CorThread GetThread(int threadId)
@@ -174,34 +173,36 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         /* Get the context for the given thread. */
         // See WIN32_CONTEXT structure declared in context.il
-        public void GetThreadContext ( int threadId, IntPtr contextPtr, int context_size )
+        public void GetThreadContext ( int threadId, byte* contextPtr, int context_size )
         {
 
-            _p().GetThreadContext( (uint)threadId, (uint) context_size, contextPtr );
+            _p().GetThreadContext( (uint)threadId, (uint) context_size, contextPtr);
             return;
         }
 
         /* Set the context for a given thread. */
-        public void SetThreadContext (int threadId, IntPtr contextPtr, int context_size)
+        public void SetThreadContext (int threadId, byte* contextPtr, int context_size)
         {
             _p().SetThreadContext( (uint)threadId, (uint) context_size, contextPtr );
         }
 
         /** Read memory from the process. */
-        public long ReadMemory (long address, byte[] buffer)
+        public ulong ReadMemory (long address, byte[] buffer)
         {
             Debug.Assert(buffer!=null);
-            IntPtr read = IntPtr.Zero;
-            _p().ReadMemory ((ulong) address, (uint) buffer.Length, buffer, out read);
-            return read.ToInt64();
+            UIntPtr read = UIntPtr.Zero;
+            fixed(byte *pBuffer = buffer)
+                _p().ReadMemory ((ulong) address, (uint) buffer.Length, pBuffer, &read);
+            return (ulong)read;
         }
 
         /** Write memory in the process. */
-        public long WriteMemory (long address, byte[] buffer)
+        public ulong WriteMemory (long address, byte[] buffer)
         {
-            IntPtr written = IntPtr.Zero;
-            _p().WriteMemory ((ulong) address, (uint) buffer.Length, buffer, out written);
-            return written.ToInt64();
+            UIntPtr written = UIntPtr.Zero;
+            fixed(byte *pBuffer = buffer)
+                _p().WriteMemory ((ulong) address, (uint) buffer.Length, pBuffer, &written);
+            return (ulong)written;
         }
 
         /** Clear the current unmanaged exception on the given thread. */
@@ -217,9 +218,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         /** Modify the specified switches severity level */
-        public void ModifyLogSwitch (String name, int level)
+        public void ModifyLogSwitch (string name, int level)
         {
-            _p().ModifyLogSwitch (name,level);
+            fixed(char *pch = name)
+                _p().ModifyLogSwitch ((UInt16*) pch, level);
         }
 
         /** All appdomains in the process. */
@@ -315,13 +317,13 @@ namespace Microsoft.Samples.Debugging.CorDebug
             else
                 base.Continue(outOfBand);
         }
-        
+
         // when process is first created wait till callbacks are enabled.
         private ManualResetEvent m_callbackAttachedEvent = new ManualResetEvent(false);
 
         private Dictionary<ManagedCallbackType, DebugEventHandler<CorEventArgs>> m_callbacksArray;
-        
-        
+
+
         internal void DispatchEvent(ManagedCallbackType callback,CorEventArgs e)
         {
             try
@@ -335,7 +337,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             {
                 CorExceptionInCallbackEventArgs e2 = new CorExceptionInCallbackEventArgs(e.Controller,ex);
                 Debug.Assert(false,"Exception in callback: "+ex.ToString());
-                try 
+                try
                 {
                     // we need to dispatch the exceptin in callback error, but we cannot
                     // use DispatchEvent since throwing exception in ExceptionInCallback
@@ -343,7 +345,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                     Debug.Assert( m_callbackAttachedEvent==null);
                     var d = m_callbacksArray[ManagedCallbackType.OnExceptionInCallback];
                     d(this, e2);
-                } 
+                }
                 catch(Exception ex2)
                 {
                     Debug.Assert(false,"Exception in Exception notification callback: "+ex2.ToString());

@@ -6,8 +6,7 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
 
 namespace Microsoft.Samples.Debugging.CorDebug
@@ -21,12 +20,12 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_mda = mda;
         }
 
-        public CorDebugMDAFlags Flags
+        public unsafe CorDebugMDAFlags Flags
         {
             get
             {
                 CorDebugMDAFlags flags;
-                m_mda.GetFlags(out flags);
+                m_mda.GetFlags(&flags);
                 return flags;
             }
         }

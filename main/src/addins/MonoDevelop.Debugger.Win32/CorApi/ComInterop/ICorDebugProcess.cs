@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,42 +8,55 @@ namespace CorApi.ComInterop
     [Guid ("3D6F5F64-7538-11D3-8D5B-00104B35E7EF")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
+    [SuppressMessage ("ReSharper", "InconsistentNaming")]
     public unsafe interface ICorDebugProcess : ICorDebugController
     {
+        /// <inheritdoc cref="ICorDebugController.Stop"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void Stop ([In] uint dwTimeoutIgnored);
 
+        /// <inheritdoc cref="ICorDebugController.Continue"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void Continue ([In] int fIsOutOfBand);
 
+        /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void IsRunning (out int pbRunning);
 
+        /// <inheritdoc cref="ICorDebugController.HasQueuedCallbacks"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread,
             out int pbQueued);
 
+        /// <inheritdoc cref="ICorDebugController.EnumerateThreads"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void EnumerateThreads ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
 
+        /// <inheritdoc cref="ICorDebugController.SetAllThreadsDebugState"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void SetAllThreadsDebugState ([In] CorDebugThreadState state,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pExceptThisThread);
 
+        /// <inheritdoc cref="ICorDebugController.Detach"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void Detach ();
 
+        /// <inheritdoc cref="ICorDebugController.Terminate"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void Terminate ([In] uint exitCode);
 
+        /// <inheritdoc cref="ICorDebugController.CanCommitChanges"/>
+        [Obsolete]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void CanCommitChanges ([In] uint cSnapshots,
-            [MarshalAs (UnmanagedType.Interface), In] ref ICorDebugEditAndContinueSnapshot pSnapshots,
+            [MarshalAs (UnmanagedType.Interface), In] ICorDebugEditAndContinueSnapshot[] pSnapshots,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
 
+        /// <inheritdoc cref="ICorDebugController.CommitChanges"/>
+        [Obsolete]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         new void CommitChanges ([In] uint cSnapshots,
-            [MarshalAs (UnmanagedType.Interface), In] ref ICorDebugEditAndContinueSnapshot pSnapshots,
+            [MarshalAs (UnmanagedType.Interface), In] ICorDebugEditAndContinueSnapshot[] pSnapshots,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
 
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

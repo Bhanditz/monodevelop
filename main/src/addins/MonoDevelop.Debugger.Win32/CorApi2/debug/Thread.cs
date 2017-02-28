@@ -6,8 +6,7 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
-
-using Microsoft.Samples.Debugging.CorDebug.NativeApi;
+using CorApi.ComInterop;
 using System.Runtime.Serialization;
 
 namespace Microsoft.Samples.Debugging.CorDebug
@@ -859,14 +858,14 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         [CLSCompliant(false)]
-        public _CodeChunkInfo[] GetCodeChunks()
+        public CodeChunkInfo[] GetCodeChunks()
         {
             UInt32 pcnumChunks;
             (m_code as ICorDebugCode2).GetCodeChunks(0, out pcnumChunks, null);
             if (pcnumChunks == 0)
-                return new _CodeChunkInfo[0];
+                return new CodeChunkInfo[0];
 
-            _CodeChunkInfo[] chunks = new _CodeChunkInfo[pcnumChunks];
+            CodeChunkInfo[] chunks = new CodeChunkInfo[pcnumChunks];
             (m_code as ICorDebugCode2).GetCodeChunks((uint)chunks.Length, out pcnumChunks, chunks);
             return chunks;
         }
