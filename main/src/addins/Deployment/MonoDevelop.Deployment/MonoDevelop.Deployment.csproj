@@ -71,6 +71,9 @@
     <DocumentationFile>..\..\..\..\build\AddIns\MonoDevelop.Deployment\MonoDevelop.Deployment.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+      <HintPath>..\..\..\..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="Mono.Posix" />
     <Reference Include="System.Xml" />
@@ -89,7 +92,6 @@
     <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\core\MonoDevelop.Core\MonoDevelop.Core.csproj">
@@ -278,7 +280,6 @@
     <EmbeddedResource Include="MonoDevelop.Deployment.addin.xml">
       <LogicalName>MonoDevelop.Deployment.addin.xml</LogicalName>
     </EmbeddedResource>
-	
     <EmbeddedResource Include="templates\images\project-package-template.png">
       <LogicalName>project-package-template.png</LogicalName>
     </EmbeddedResource>
@@ -319,5 +320,8 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="templates\images\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="packages.config" />
   </ItemGroup>
 </Project>
