@@ -91,7 +91,6 @@
     <Compile Include="debug\ProcessEnumerator.cs" />
     <Compile Include="debug\ProcessSafeHandle.cs" />
     <Compile Include="debug\RegisterSet.cs" />
-    <Compile Include="debug\Stepper.cs" />
     <Compile Include="debug\StepperEnumerator.cs" />
     <Compile Include="debug\Thread.cs" />
     <Compile Include="debug\ThreadEnumerator.cs" />

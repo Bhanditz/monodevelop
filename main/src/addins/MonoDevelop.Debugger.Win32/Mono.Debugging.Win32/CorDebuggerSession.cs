@@ -17,6 +17,8 @@ using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
+
+using ICorDebugStepper = Microsoft.Samples.Debugging.CorDebug.ICorDebugStepper;
 using ISymbolReader = System.Diagnostics.SymbolStore.ISymbolReader;
 
 namespace Mono.Debugging.Win32
@@ -30,7 +32,7 @@ namespace Mono.Debugging.Win32
 		protected CorDebugger dbg;
 		protected CorProcess process;
 		CorThread activeThread;
-		CorStepper stepper;
+		ICorDebugStepper stepper;
 		bool terminated;
 		bool evaluating;
 		bool autoStepInto;

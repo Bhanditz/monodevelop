@@ -175,11 +175,11 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /** 
          * create a stepper object relative to the active frame in this thread.
          */
-        public CorStepper CreateStepper ()
+        public ICorDebugStepper CreateStepper ()
         {
-            ICorDebugStepper s = null;
+            CorApi.ComInterop.ICorDebugStepper s = null;
             m_th.CreateStepper (out s);
-            return new CorStepper (s);
+            return new ICorDebugStepper (s);
         }
 
         /** All stack chains in the thread. */
@@ -290,11 +290,11 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         
-        public CorStepper CreateStepper()
+        public ICorDebugStepper CreateStepper()
         {
-            ICorDebugStepper istepper;
+            CorApi.ComInterop.ICorDebugStepper istepper;
             m_frame.CreateStepper(out istepper);
-            return ( istepper==null ? null : new CorStepper(istepper) );
+            return ( istepper==null ? null : new ICorDebugStepper(istepper) );
         }
 
         public CorFrame Callee

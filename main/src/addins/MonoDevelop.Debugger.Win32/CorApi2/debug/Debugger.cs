@@ -788,12 +788,12 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorStepCompleteEventArgs : CorThreadEventArgs
     {
-        private CorStepper m_stepper;
+        private ICorDebugStepper m_stepper;
         private CorDebugStepReason m_stepReason;
 
         [CLSCompliant(false)]
         public CorStepCompleteEventArgs(CorAppDomain appDomain, CorThread thread,
-                                         CorStepper stepper, CorDebugStepReason stepReason)
+                                         ICorDebugStepper stepper, CorDebugStepReason stepReason)
             : base(appDomain, thread)
         {
             m_stepper = stepper;
@@ -802,7 +802,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         [CLSCompliant(false)]
         public CorStepCompleteEventArgs(CorAppDomain appDomain, CorThread thread,
-                                         CorStepper stepper, CorDebugStepReason stepReason,
+                                         ICorDebugStepper stepper, CorDebugStepReason stepReason,
                                          ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
@@ -810,7 +810,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_stepReason = stepReason;
         }
 
-        public CorStepper Stepper
+        public ICorDebugStepper Stepper
         {
             get
             {
@@ -1754,13 +1754,13 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         void ICorDebugManagedCallback.StepComplete(ICorDebugAppDomain appDomain,
                                    ICorDebugThread thread,
-                                   ICorDebugStepper stepper,
+                                   CorApi.ComInterop.ICorDebugStepper stepper,
                                    CorDebugStepReason stepReason)
         {
             HandleEvent(ManagedCallbackType.OnStepComplete,
                                new CorStepCompleteEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
                                                             thread == null ? null : new CorThread(thread),
-                                                            stepper == null ? null : new CorStepper(stepper),
+                                                            stepper == null ? null : new ICorDebugStepper(stepper),
                                                             stepReason,
                                                             ManagedCallbackType.OnStepComplete));
         }
