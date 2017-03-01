@@ -245,3 +245,6 @@ Thumbs.db
 #Visual Studio 2015
 main/.vs/
 main/build/util
+
+#Rider
+.idea/

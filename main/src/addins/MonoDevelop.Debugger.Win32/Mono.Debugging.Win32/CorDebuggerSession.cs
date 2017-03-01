@@ -1042,6 +1042,19 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
+		internal IEnumerable<string> GetAllDocumentPaths()
+		{
+			lock (appDomainsLock) {
+				var documentFileNames = new HashSet<string>();
+				foreach (var appDomainInfo in appDomains) {
+					foreach (var fileName in appDomainInfo.Value.Documents.Keys)
+					{
+						documentFileNames.Add(fileName);
+					}
+				}
+				return documentFileNames;
+			}
+		}
 
 		internal IEnumerable<CorAppDomain> GetAppDomains ()
 		{
