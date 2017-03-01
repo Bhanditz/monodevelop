@@ -1,15 +1,58 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
 {
-    [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid ("5F696509-452F-4436-A3FE-4D11FE7E2347")]
-    [ComImport]
-    public unsafe interface ICorDebugCode2
-    {
-        
-        void GetCodeChunks([In] uint cbufSize, [Out] out uint pcnumChunks, [Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex = 1)] CodeChunkInfo[] chunks);
-        
-        void GetCompilerFlags([Out] out uint pdwFlags);
-    }
+  /// <summary>
+  /// </summary>
+  /// <example><code>
+  ///  
+  /// [
+  ///     object,
+  ///     local,
+  ///     uuid(5F696509-452F-4436-A3FE-4D11FE7E2347),
+  ///     pointer_default(unique)
+  /// ]
+  /// interface ICorDebugCode2 : IUnknown
+  /// {
+  ///     typedef struct _CodeChunkInfo
+  ///     {
+  ///         CORDB_ADDRESS startAddr;
+  ///         ULONG32 length;
+  ///     } CodeChunkInfo;
+  /// 
+  ///     // The native code for a code object may be split up into multiple regions.
+  ///     //
+  ///     HRESULT GetCodeChunks(
+  ///         [in] ULONG32 cbufSize,
+  ///         [out] ULONG32 * pcnumChunks,
+  ///         [out, size_is(cbufSize), length_is(*pcnumChunks)] CodeChunkInfo chunks[]);
+  /// 
+  /// 
+  ///    // GetCompilerFlags returns the flags under which this piece of code was JITted or NGENed.
+  /// 
+  ///    HRESULT GetCompilerFlags( [out] DWORD *pdwFlags );
+  /// };
+  ///  </code></example>
+  [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+  [Guid ("5F696509-452F-4436-A3FE-4D11FE7E2347")]
+  [ComImport]
+  [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
+  public unsafe interface ICorDebugCode2
+  {
+    /// <summary>
+    /// The native code for a code object may be split up into multiple regions.
+    /// </summary>
+    /// <param name="cbufSize"></param>
+    /// <param name="pcnumChunks"></param>
+    /// <param name="chunks"></param>
+    void GetCodeChunks ([In] UInt32 cbufSize, [Out] UInt32* pcnumChunks, CodeChunkInfo* chunks);
+
+    /// <summary>
+    /// GetCompilerFlags returns the flags under which this piece of code was JITted or NGENed.
+    /// </summary>
+    /// <param name="pdwFlags"></param>
+    void GetCompilerFlags ([Out] UInt32* pdwFlags);
+  }
 }

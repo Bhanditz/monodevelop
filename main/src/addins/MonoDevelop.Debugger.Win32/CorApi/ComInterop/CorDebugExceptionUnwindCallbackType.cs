@@ -2,13 +2,17 @@
 
 namespace CorApi.ComInterop
 {
-    /*  from: <cordebug.idl>
-         typedef enum CorDebugExceptionUnwindCallbackType
-         {
-             DEBUG_EXCEPTION_UNWIND_BEGIN = 1, /* Fired at the beginning of the unwind * /
-             DEBUG_EXCEPTION_INTERCEPTED = 2   /* Fired after an exception has been intercepted * /
-         } CorDebugExceptionUnwindCallbackType;
-    */
+/// <summary>
+/// 
+/// </summary>
+/// <example><code>
+/// from: &lt;cordebug.idl&gt;
+///         typedef enum CorDebugExceptionUnwindCallbackType
+///         {
+///             DEBUG_EXCEPTION_UNWIND_BEGIN = 1, /* Fired at the beginning of the unwind * /
+///             DEBUG_EXCEPTION_INTERCEPTED = 2   /* Fired after an exception has been intercepted * /
+///         } CorDebugExceptionUnwindCallbackType;
+/// </code></example>
     [SuppressMessage ("ReSharper", "InconsistentNaming")]
     public enum CorDebugExceptionUnwindCallbackType
     {

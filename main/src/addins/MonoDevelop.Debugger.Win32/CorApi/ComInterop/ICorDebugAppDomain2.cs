@@ -1,4 +1,6 @@
-﻿using System.Runtime.CompilerServices;
+﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
@@ -16,6 +18,7 @@ namespace CorApi.ComInterop
     [Guid ("096E81D5-ECDA-4202-83F5-C65980A9EF75")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
+    [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
     public unsafe interface ICorDebugAppDomain2
     {
         /// <summary>
@@ -36,7 +39,7 @@ namespace CorApi.ComInterop
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetArrayOrPointerType (
             [In] CorElementType elementType,
-            [In] uint nRank,
+            [In] UInt32 nRank,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugType pTypeArg,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugType ppType);
 
@@ -53,7 +56,7 @@ namespace CorApi.ComInterop
         ///                                               [out] ICorDebugType **ppType);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetFunctionPointerType (
-            [In] uint nTypeArgs,
+            [In] UInt32 nTypeArgs,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugType[] ppTypeArgs,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugType ppType);
     }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -48,7 +49,8 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("CC7BCAE8-8A68-11D2-983C-0000F808342D")]
     [ComImport]
-    public unsafe interface ICorDebugBreakpoint
+    [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
+  public unsafe interface ICorDebugBreakpoint
     {
       /// <summary>
       /// Sets the active state of the breakpoint.

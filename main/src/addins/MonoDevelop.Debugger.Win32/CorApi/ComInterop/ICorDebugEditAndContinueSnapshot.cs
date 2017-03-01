@@ -1,33 +1,120 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace CorApi.ComInterop
 {
-    [Guid ("6DC3FA01-D7CB-11D2-8A95-0080C792E5D8")]
-    [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-    [ComImport]
-    public unsafe interface ICorDebugEditAndContinueSnapshot
-    {
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CopyMetaData ([MarshalAs (UnmanagedType.Interface), In] IStream pIStream, out Guid pMvid);
+  /// <summary>
+  ///  DEPRECATED
+  /// </summary>
+  /// <example><code>
+  ///  *
+  ///  * DEPRECATED
+  ///  *
+  ///  * ICorDebugEditAndContinueSnapshot
+  ///  */
+  /// 
+  /// [
+  ///     object,
+  ///     local,
+  ///     uuid(6DC3FA01-D7CB-11d2-8A95-0080C792E5D8),
+  ///     pointer_default(unique)
+  /// ]
+  /// interface ICorDebugEditAndContinueSnapshot : IUnknown
+  /// {
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT CopyMetaData([in] IStream *pIStream, [out] GUID *pMvid);
+  /// 
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT GetMvid([out] GUID *pMvid);
+  /// 
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT GetRoDataRVA([out] ULONG32 *pRoDataRVA);
+  /// 
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT GetRwDataRVA([out] ULONG32 *pRwDataRVA);
+  /// 
+  /// 
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT SetPEBytes([in] IStream *pIStream);
+  /// 
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT SetILMap([in] mdToken mdFunction, [in] ULONG cMapSize,
+  ///                      [in, size_is(cMapSize)] COR_IL_MAP map[]);
+  /// 
+  ///     /*
+  ///      * DEPRECATED
+  ///      */
+  ///     HRESULT SetPESymbolBytes([in] IStream *pIStream);
+  /// };
+  ///  </code></example>
+  [Obsolete ("DEPRECATED")]
+  [Guid ("6DC3FA01-D7CB-11D2-8A95-0080C792E5D8")]
+  [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+  [ComImport]
+  [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
+  public unsafe interface ICorDebugEditAndContinueSnapshot
+  {
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void CopyMetaData (void* pIStream, Guid* pMvid);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetMvid (out Guid pMvid);
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetMvid (Guid* pMvid);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetRoDataRVA (out uint pRoDataRVA);
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetRoDataRVA (UInt32* pRoDataRVA);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetRwDataRVA (out uint pRwDataRVA);
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void GetRwDataRVA (UInt32* pRwDataRVA);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetPEBytes ([MarshalAs (UnmanagedType.Interface), In] IStream pIStream);
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void SetPEBytes (void* pIStream);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetILMap ([In] uint mdFunction, [In] uint cMapSize, [In] ref COR_IL_MAP map);
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void SetILMap ([In] UInt32 mdFunction, [In] UInt32 cMapSize, [In] COR_IL_MAP* map);
 
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetPESymbolBytes ([MarshalAs (UnmanagedType.Interface), In] IStream pIStream);
-    }
+    /// <summary>
+    /// DEPRECATED
+    /// </summary>
+    [Obsolete ("DEPRECATED")]
+    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    void SetPESymbolBytes (void* pIStream);
+  }
 }

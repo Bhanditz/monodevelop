@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -16,6 +17,7 @@ namespace CorApi.ComInterop
     [Guid ("8CB96A16-B588-42E2-B71C-DD849FC2ECCC")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
+    [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
     public unsafe interface ICorDebugAppDomain3
     {
         /// <summary>
@@ -33,8 +35,8 @@ namespace CorApi.ComInterop
         ///      [out]                     ICorDebugTypeEnum ** ppTypesEnum);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
         void GetCachedWinRTTypesForIIDs (
-            [In] uint cReqTypes,
-            [In] ref Guid iidsToResolve,
+            [In] UInt32 cReqTypes,
+            [In] Guid *iidsToResolve,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppTypesEnum);
 
         /// <summary>

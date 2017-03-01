@@ -30,12 +30,11 @@ namespace CorApi.ComInterop
 
         /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void IsRunning (out Int32 pbRunning);
+        new void IsRunning (Int32 *pbRunning);
 
         /// <inheritdoc cref="ICorDebugController.HasQueuedCallbacks"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread,
-            out Int32 pbQueued);
+        new void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <inheritdoc cref="ICorDebugController.EnumerateThreads"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -55,18 +54,14 @@ namespace CorApi.ComInterop
         new void Terminate ([In] UInt32 exitCode);
 
         /// <inheritdoc cref="ICorDebugController.CanCommitChanges"/>
-        [Obsolete]
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CanCommitChanges ([In] UInt32 cSnapshots,
-            [MarshalAs (UnmanagedType.Interface), In] ICorDebugEditAndContinueSnapshot[] pSnapshots,
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+      [Obsolete ("DEPRECATED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        new void CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <inheritdoc cref="ICorDebugController.CommitChanges"/>
-        [Obsolete]
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CommitChanges ([In] UInt32 cSnapshots,
-            [MarshalAs (UnmanagedType.Interface), In] ICorDebugEditAndContinueSnapshot[] pSnapshots,
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+      [Obsolete ("DEPRECATED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        new void CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <summary>
         /// GetProcess returns the process containing the app domain
@@ -125,7 +120,7 @@ namespace CorApi.ComInterop
         /// <example><code>HRESULT IsAttached([out] BOOL *pbAttached);</code></example>
         [Obsolete("Always returns TRUE in V3 (attaching is process-wide).")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void IsAttached (out int pbAttached);
+        void IsAttached (Int32 *pbAttached);
 
         /// <summary>
         /// GetName returns the name of the app domain.
@@ -160,7 +155,7 @@ namespace CorApi.ComInterop
         ///     </code>
         /// </example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetName ([In] UInt32 cchName, out UInt32 pcchName, [Out] UInt16* szName);
+        void GetName ([In] UInt32 cchName, UInt32 *pcchName, [Out] UInt16* szName);
 
         /// <summary>
         /// GetObject returns a reference to the System.AppDomain object which represents this AppDomain
@@ -189,6 +184,6 @@ namespace CorApi.ComInterop
         /// <param name="pId"></param>
         /// <example><code>HRESULT GetID([out] ULONG32 *pId);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetID (out UInt32 pId);
+        void GetID (UInt32 *pId);
     }
 }

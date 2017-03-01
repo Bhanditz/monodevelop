@@ -57,6 +57,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComInterop\COR_DEBUG_IL_TO_NATIVE_MAP.cs" />
     <Compile Include="ComInterop\CodeChunkInfo.cs" />
     <Compile Include="ComInterop\CorDebugBlockingObject.cs" />
     <Compile Include="ComInterop\CorDebugBlockingReason.cs" />
@@ -158,6 +159,8 @@
     <Compile Include="ComInterop\ICorDebugValueEnum.cs" />
     <Compile Include="ComInterop\ISequentialStream.cs" />
     <Compile Include="ComInterop\IStream.cs" />
+    <Compile Include="ComInterop\LoggingLevelEnum.cs" />
+    <Compile Include="ComInterop\LogSwitchCallReason.cs" />
     <Compile Include="ComInterop\PROCESS_INFORMATION.cs" />
     <Compile Include="ComInterop\STGTY.cs" />
     <Compile Include="ComInterop\STATSTG.cs" />

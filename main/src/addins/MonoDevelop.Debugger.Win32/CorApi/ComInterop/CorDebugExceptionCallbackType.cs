@@ -2,15 +2,19 @@
 
 namespace CorApi.ComInterop
 {
-    /*  from: <cordebug.idl>
-        typedef enum CorDebugExceptionCallbackType
-        {
-            DEBUG_EXCEPTION_FIRST_CHANCE = 1,        /* Fired when exception thrown * /
-            DEBUG_EXCEPTION_USER_FIRST_CHANCE = 2,   /* Fired when search reaches first user code * /
-            DEBUG_EXCEPTION_CATCH_HANDLER_FOUND = 3, /* Fired if & when search finds a handler * /
-            DEBUG_EXCEPTION_UNHANDLED = 4            /* Fired if search doesnt find a handler * /
-        } CorDebugExceptionCallbackType;
-    */
+/// <summary>
+/// 
+/// </summary>
+/// <example><code>
+/// from: &lt;cordebug.idl&gt;
+///        typedef enum CorDebugExceptionCallbackType
+///        {
+///            DEBUG_EXCEPTION_FIRST_CHANCE = 1,        /* Fired when exception thrown * /
+///            DEBUG_EXCEPTION_USER_FIRST_CHANCE = 2,   /* Fired when search reaches first user code * /
+///            DEBUG_EXCEPTION_CATCH_HANDLER_FOUND = 3, /* Fired if &amp; when search finds a handler * /
+///            DEBUG_EXCEPTION_UNHANDLED = 4            /* Fired if search doesnt find a handler * /
+///        } CorDebugExceptionCallbackType;
+/// </code></example>
     [SuppressMessage ("ReSharper", "InconsistentNaming")]
     public enum CorDebugExceptionCallbackType
     {
