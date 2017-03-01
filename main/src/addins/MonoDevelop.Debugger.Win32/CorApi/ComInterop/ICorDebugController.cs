@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -17,6 +18,7 @@ namespace CorApi.ComInterop
     [Guid ("3D6F5F62-7538-11D3-8D5B-00104B35E7EF")]
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [ComImport]
+    [SuppressMessage ("ReSharper", "BuiltInTypeReferenceStyle")]
     public unsafe interface ICorDebugController
     {
         /// <summary>
@@ -41,7 +43,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT Stop([in] DWORD dwTimeoutIgnored);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Stop ([In] uint dwTimeoutIgnored);
+        void Stop ([In] UInt32 dwTimeoutIgnored);
 
         /// <summary>
         /// Continue continues the process after a call to Stop.
@@ -60,7 +62,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT Continue([in] BOOL fIsOutOfBand);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Continue ([In] int fIsOutOfBand);
+        void Continue ([In] Int32 fIsOutOfBand);
 
         /// <summary>
         /// IsRunning returns TRUE if the threads in the process are running freely.
@@ -69,7 +71,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT IsRunning([out] BOOL *pbRunning);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void IsRunning (out int pbRunning);
+        void IsRunning (Int32 *pbRunning);
 
         /// <summary>
         /// HasQueuedCallbacks returns TRUE if there are currently managed
@@ -96,7 +98,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT HasQueuedCallbacks([in] ICorDebugThread *pThread, [out] BOOL *pbQueued);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, out int pbQueued);
+        void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <summary>
         /// EnumerateThreads returns an enum of all managed threads active in the process.
@@ -161,38 +163,34 @@ namespace CorApi.ComInterop
         //
         // HRESULT Terminate([in] UINT exitCode);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Terminate ([In] uint exitCode);
+        void Terminate ([In] UInt32 exitCode);
 
-        /// <summary>
-        /// DEPRECATED
-        /// </summary>
-        /// <param name="cSnapshots"></param>
-        /// <param name="pSnapshots"></param>
-        /// <param name="pError"></param>
-        //
-        // HRESULT CanCommitChanges([in] ULONG cSnapshots,
-        //                          [in, size_is(cSnapshots)] ICorDebugEditAndContinueSnapshot *pSnapshots[],
-        //                          [out] ICorDebugErrorInfoEnum **pError);
-        [Obsolete]
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CanCommitChanges ([In] uint cSnapshots,
-            [MarshalAs (UnmanagedType.Interface), In] ICorDebugEditAndContinueSnapshot[] pSnapshots,
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+      /// <summary>
+      /// DEPRECATED
+      /// </summary>
+      /// <param name="cSnapshots"></param>
+      /// <param name="pSnapshots"></param>
+      /// <param name="pError"></param>
+      //
+      // HRESULT CanCommitChanges([in] ULONG cSnapshots,
+      //                          [in, size_is(cSnapshots)] ICorDebugEditAndContinueSnapshot *pSnapshots[],
+      //                          [out] ICorDebugErrorInfoEnum **pError);
+      [Obsolete ("DEPRECATED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
-        /// <summary>
-        /// DEPRECATED
-        /// </summary>
-        /// <param name="cSnapshots"></param>
-        /// <param name="pSnapshots"></param>
-        /// <param name="pError"></param>
-        //
-        // HRESULT CommitChanges([in] ULONG cSnapshots,
-        //                       [in, size_is(cSnapshots)] ICorDebugEditAndContinueSnapshot *pSnapshots[],
-        //                       [out] ICorDebugErrorInfoEnum **pError);
-        [Obsolete]
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CommitChanges ([In] uint cSnapshots,
-            [MarshalAs (UnmanagedType.Interface), In] ICorDebugEditAndContinueSnapshot[] pSnapshots,
-            [MarshalAs (UnmanagedType.Interface)] out ICorDebugErrorInfoEnum pError);
+      /// <summary>
+      /// DEPRECATED
+      /// </summary>
+      /// <param name="cSnapshots"></param>
+      /// <param name="pSnapshots"></param>
+      /// <param name="pError"></param>
+      //
+      // HRESULT CommitChanges([in] ULONG cSnapshots,
+      //                       [in, size_is(cSnapshots)] ICorDebugEditAndContinueSnapshot *pSnapshots[],
+      //                       [out] ICorDebugErrorInfoEnum **pError);
+      [Obsolete ("DEPRECATED")]
+      [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+      void CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
     }
 }
