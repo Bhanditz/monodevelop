@@ -7,20 +7,20 @@ using Xunit;
 
 namespace Mono.Debugging.Win32.Tests
 {
-    public class CorDebugSessionTests
+    public class CoreClrDebugSessionTests
     {
         [Fact]
         public void ShouldCorrectlyStopOnDebuggerBreak()
         {
-            CorDebuggerSession session = null;
+            CoreClrDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
             try
             {
-                session = new CorDebuggerSession(new char[] { });
+                session = new CoreClrDebuggerSession(new char[] { }, app.GetDbgShimPath());
                 var sessionStartGuard = new ManualResetEvent(false);
                 session.TargetInterrupted += (s1, a1) =>
                 {
-                    var corDebugSession = s1 as CorDebuggerSession;
+                    var corDebugSession = s1 as CoreClrDebuggerSession;
                     corDebugSession.ShouldNotBeNull();
                     corDebugSession.IsConnected.ShouldBeTrue();
                     corDebugSession.IsRunning.ShouldBeFalse();
@@ -44,15 +44,15 @@ namespace Mono.Debugging.Win32.Tests
         [Fact]
         public void ShouldCorrectlyStopOnCutomBreakPoint()
         {
-            CorDebuggerSession session = null;
+            CoreClrDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
             try
             {
-                session = new CorDebuggerSession(new char[] { });
+                session = new CoreClrDebuggerSession(new char[] { }, app.GetDbgShimPath());
                 var breakPointHittedGuard = new ManualResetEvent(false);
                 session.TargetInterrupted += (s1, a1) =>
                 {
-                    var corDebugSession = s1 as CorDebuggerSession;
+                    var corDebugSession = s1 as CoreClrDebuggerSession;
                     corDebugSession.ShouldNotBeNull();
 
                     var docFiles = corDebugSession.GetAllDocumentPaths();

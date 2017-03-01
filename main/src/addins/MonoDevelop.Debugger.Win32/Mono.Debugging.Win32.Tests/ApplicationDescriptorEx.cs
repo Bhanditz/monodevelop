@@ -18,5 +18,10 @@ namespace Mono.Debugging.Win32.Tests
                     .WorkingDirectory
             };
         }
+
+        public static string GetDbgShimPath(this ApplicationDescriptor app)
+        {
+            return @"C:\Program Files\dotnet\shared\Microsoft.NETCore.App\1.0.1\dbgshim.dll";
+        }
     }
 }
