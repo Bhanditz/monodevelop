@@ -26,7 +26,7 @@ namespace Mono.Debugging.Win32.Tests
         }
 
         public static void ToggleBreakpointAndWaitForBind (this CorDebuggerSession session, string filename, int line,
-            int timeoutSeconds = 10)
+            TimeSpan timeout)
         {
             var toggleBreakpointHelper = new ManualResetEvent (false);
             EventHandler<BreakEventArgs> sessionOnBreakpointStatusChanged = (sender, args) => {
@@ -47,7 +47,7 @@ namespace Mono.Debugging.Win32.Tests
             session.Breakpoints.BreakEventStatusChanged += sessionOnBreakpointStatusChanged;
             try {
                 session.Breakpoints.Add (filename, line);
-                toggleBreakpointHelper.WaitOne (TimeSpan.FromSeconds (timeoutSeconds)).ShouldBeTrue
+                toggleBreakpointHelper.WaitOne (timeout).ShouldBeTrue
                     (string.Format("Breakpoint {0}:{1} wasn't bound", filename, line));
             }
             finally {
