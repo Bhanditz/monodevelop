@@ -35,7 +35,6 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ApplicationDescriptorEx.cs" />
-    <Compile Include="ConstantsTests.cs" />
     <Compile Include="CorDebugSessionTests.cs" />
     <Compile Include="CorDebugSessionEx.cs" />
     <Compile Include="CoreClrDebugSessionTests.cs" />

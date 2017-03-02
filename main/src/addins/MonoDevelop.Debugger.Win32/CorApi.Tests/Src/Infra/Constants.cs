@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace CorApi.Tests.Infra
 {
@@ -16,6 +17,7 @@ namespace CorApi.Tests.Infra
                     : Net45ConsoleApp32Bit;
             }
         }
+
 
         public static ApplicationDescriptor Net45ConsoleApp32Bit
         {
@@ -41,6 +43,38 @@ namespace CorApi.Tests.Infra
                         "TestData", "Net45ConsoleApp64bit", "bin", "Debug", "Net45ConsoleApp64bit.exe")),
                     WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
                         "TestData", "Net45ConsoleApp64bit", "bin", "Debug"))
+                };
+            }
+        }
+
+        public static ApplicationDescriptor NetCoreApp10ConsoleAppPdb
+        {
+            get
+            {
+                if (!Environment.Is64BitProcess)
+                    throw new InvalidOperationException("Only 64-bit supported");
+                return new ApplicationDescriptor
+                {
+                    BinaryPath = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "NetCoreApp10ConsoleAppPdb", "bin", "Debug", "netcoreapp1.0", "NetCoreApp10ConsoleAppPdb.dll")),
+                    WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "NetCoreApp10ConsoleAppPdb", "bin", "Debug"))
+                };
+            }
+        }
+
+        public static ApplicationDescriptor NetCoreApp10ConsoleAppPpdb
+        {
+            get
+            {
+                if (!Environment.Is64BitProcess)
+                    throw new InvalidOperationException("Only 64-bit supported");
+                return new ApplicationDescriptor
+                {
+                    BinaryPath = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "NetCoreApp10ConsoleAppPpdb", "bin", "Debug", "netcoreapp1.0", "NetCoreApp10ConsoleAppPpdb.dll")),
+                    WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "NetCoreApp10ConsoleAppPpdb", "bin", "Debug"))
                 };
             }
         }
