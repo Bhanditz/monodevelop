@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -250,8 +252,9 @@ namespace CorApi.ComInterop
         new void Stop ([In] UInt32 dwTimeoutIgnored);
 
         /// <inheritdoc cref="ICorDebugController.Continue"/>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Continue ([In] Int32 fIsOutOfBand);
+        [MustUseReturnValue]
+        [PreserveSig]
+        new Int32 Continue ([In] Int32 fIsOutOfBand);
 
         /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

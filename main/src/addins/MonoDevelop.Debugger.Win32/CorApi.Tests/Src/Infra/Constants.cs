@@ -1,10 +1,9 @@
-﻿
 using System;
 using System.IO;
 
-namespace Mono.Debugging.Win32.Tests
+namespace CorApi.Tests.Infra
 {
-    internal static class Constants
+    public static class Constants
     {
         private static readonly string RootFolder = typeof(Constants).Assembly.Location;
 
@@ -24,10 +23,10 @@ namespace Mono.Debugging.Win32.Tests
             {
                 return new ApplicationDescriptor
                 {
-                    BinaryPath = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..",
-                        "data", "Net45ConsoleApp32bit", "bin", "Debug", "Net45ConsoleApp32bit.exe")),
-                    WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..",
-                        "data", "Net45ConsoleApp32bit", "bin", "Debug"))
+                    BinaryPath = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "Net45ConsoleApp32bit", "bin", "Debug", "Net45ConsoleApp32bit.exe")),
+                    WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "Net45ConsoleApp32bit", "bin", "Debug"))
                 };
             }
         }
@@ -38,10 +37,10 @@ namespace Mono.Debugging.Win32.Tests
             {
                 return new ApplicationDescriptor
                 {
-                    BinaryPath = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..",
-                        "data", "Net45ConsoleApp64bit", "bin", "Debug", "Net45ConsoleApp64bit.exe")),
-                    WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..",
-                        "data", "Net45ConsoleApp64bit", "bin", "Debug"))
+                    BinaryPath = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "Net45ConsoleApp64bit", "bin", "Debug", "Net45ConsoleApp64bit.exe")),
+                    WorkingDirectory = Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..",
+                        "TestData", "Net45ConsoleApp64bit", "bin", "Debug"))
                 };
             }
         }

@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
     /// <summary>
@@ -61,8 +63,8 @@ namespace CorApi.ComInterop
         /// <param name="fIsOutOfBand"></param>
         //
         // HRESULT Continue([in] BOOL fIsOutOfBand);
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Continue ([In] Int32 fIsOutOfBand);
+        [MustUseReturnValue]
+        Int32 Continue ([In] Int32 fIsOutOfBand);
 
         /// <summary>
         /// IsRunning returns TRUE if the threads in the process are running freely.

@@ -37,6 +37,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1692</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -178,11 +179,8 @@
     <Compile Include="ComInterop\STREAM_SEEK.cs" />
     <Compile Include="ComInterop\ULARGE_INTEGER.cs" />
     <Compile Include="ComInterop\COR_ACTIVE_FUNCTION.cs" />
-    <Compile Include="ICorDebugWrappers.cs" />
     <Compile Include="IMetadataImport.cs" />
-    <Compile Include="ICorPublishWrappers.cs" />
     <Compile Include="RawAssemblyAttributes.cs" />
-    <Compile Include="WindowsImports.cs" />
   </ItemGroup>
   <Import Project="..\..\..\..\external\debugger-libs\Mono.Debugging.settings" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

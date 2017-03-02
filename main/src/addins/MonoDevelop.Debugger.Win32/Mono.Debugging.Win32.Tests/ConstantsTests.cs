@@ -1,4 +1,7 @@
 ﻿using System.IO;
+
+using CorApi.Tests.Infra;
+
 using Should;
 using Xunit;
 

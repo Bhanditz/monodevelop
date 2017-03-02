@@ -350,7 +350,7 @@ namespace CorApi.ComInterop
       /// These chains represent the physical call stack for the thread.
       /// 
       /// Chain boundaries occur for several reasons:
-      ///   managed <-> unmanaged transitions
+      ///   managed &lt;-&gt; unmanaged transitions
       ///   context switches
       ///   debugger hijacking of user threads
       /// 

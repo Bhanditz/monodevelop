@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
+
+using CorApi.Tests.Infra;
+
 using Mono.Debugging.Client;
 using Should;
 using Xunit;

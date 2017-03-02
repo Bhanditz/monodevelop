@@ -1,4 +1,6 @@
-﻿using Mono.Debugging.Client;
+using CorApi.Tests.Infra;
+
+using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32.Tests
 {

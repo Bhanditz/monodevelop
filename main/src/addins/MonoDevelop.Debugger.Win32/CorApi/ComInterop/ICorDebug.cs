@@ -138,7 +138,7 @@ namespace CorApi.ComInterop
             [In] SECURITY_ATTRIBUTES* lpThreadAttributes,
             [In] Int32 bInheritHandles,
             [In] UInt32 dwCreationFlags,
-            [In] IntPtr lpEnvironment,
+            [In] void* lpEnvironment,
             UInt16* lpCurrentDirectory,
             [In] STARTUPINFOW* lpStartupInfo,
             [In] PROCESS_INFORMATION* lpProcessInformation,

@@ -329,7 +329,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                                   &threadAttributes,
                                                   inheritHandles ? 1 : 0,
                                                   (uint) creationFlags,
-                                                  environment,
+                                                  (void*)environment,
                                                   (ushort*)pCurrentDirectory,
                                                   &startupInfo,
                                                   &processInformation,
@@ -1760,7 +1760,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             HandleEvent(ManagedCallbackType.OnStepComplete,
                                new CorStepCompleteEventArgs(appDomain == null ? null : new CorAppDomain(appDomain),
                                                             thread == null ? null : new CorThread(thread),
-                                                            stepper == null ? null : new ICorDebugStepper(stepper),
+                                                            stepper,
                                                             stepReason,
                                                             ManagedCallbackType.OnStepComplete));
         }
@@ -2053,7 +2053,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                                       ManagedCallbackType.OnFunctionRemapComplete));
         }
 
-        void ICorDebugManagedCallback2.CreateConnection(ICorDebugProcess process, uint connectionId, ref ushort connectionName)
+        void ICorDebugManagedCallback2.CreateConnection(ICorDebugProcess process, uint connectionId, ushort* pConnName)
         {
             // Not Implemented
             Debug.Assert(false);

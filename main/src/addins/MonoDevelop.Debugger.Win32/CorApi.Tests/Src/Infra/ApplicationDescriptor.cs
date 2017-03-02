@@ -1,6 +1,6 @@
-namespace Mono.Debugging.Win32.Tests
+namespace CorApi.Tests.Infra
 {
-    internal struct ApplicationDescriptor
+    public struct ApplicationDescriptor
     {
         public string BinaryPath;
         public string WorkingDirectory;
