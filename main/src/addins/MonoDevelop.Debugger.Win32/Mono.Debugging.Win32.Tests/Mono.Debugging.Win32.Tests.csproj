@@ -41,6 +41,7 @@
     <Compile Include="ApplicationDescriptorEx.cs" />
     <Compile Include="CorDebugSessionEx.cs" />
     <Compile Include="CoreClrDebugSessionTests.cs" />
+    <Compile Include="EvaluationTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Should, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
