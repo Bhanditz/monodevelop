@@ -39,6 +39,7 @@
     <Compile Include="ConstantsTests.cs" />
     <Compile Include="CorDebugSessionTests.cs" />
     <Compile Include="ApplicationDescriptorEx.cs" />
+    <Compile Include="CorDebugSessionTestUtils.cs" />
     <Compile Include="CoreClrDebugSessionTests.cs" />
   </ItemGroup>
   <ItemGroup>
