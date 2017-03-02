@@ -5,23 +5,23 @@ using Should;
 
 namespace Mono.Debugging.Win32.Tests
 {
-    public static class CorDebugSessionTestUtils
+    public static class CorDebugSessionEx
     {
-        private static EventHandler<TargetEventArgs> sessionOnTargetStopped;
+        private static EventHandler<TargetEventArgs> _sessionOnTargetStopped;
 
-        public static void StopAndWait (this CorDebuggerSession session, int timeoutSeconds = 10)
+        public static void StopAndWait (this CorDebuggerSession session, TimeSpan timeout)
         {
             var stopHelper = new ManualResetEvent (false);
-            sessionOnTargetStopped = (sender, args) => {
+            _sessionOnTargetStopped = (sender, args) => {
                 stopHelper.Set ();
             };
-            session.TargetStopped += sessionOnTargetStopped;
+            session.TargetStopped += _sessionOnTargetStopped;
             try {
                 session.Stop ();
-                stopHelper.WaitOne (TimeSpan.FromSeconds (timeoutSeconds)).ShouldBeTrue ("Session wasn't stopped");
+                stopHelper.WaitOne (timeout).ShouldBeTrue ("Session wasn't stopped");
             }
             finally {
-                session.TargetStopped -= sessionOnTargetStopped;
+                session.TargetStopped -= _sessionOnTargetStopped;
             }
         }
 

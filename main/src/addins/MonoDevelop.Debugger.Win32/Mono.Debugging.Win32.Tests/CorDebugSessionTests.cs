@@ -20,26 +20,15 @@ namespace Mono.Debugging.Win32.Tests
             try
             {
                 session = new CorDebuggerSession(new char[] { });
-                var sessionStartGuard = new ManualResetEvent(false);
-                session.Run(app.GetStartInfoForSleep(TimeSpan.FromSeconds(20)), new DebuggerSessionOptions());
+                session.Run(app.GetStartInfoForSleep(TimeSpan.FromSeconds(5)), new DebuggerSessionOptions());
 
+                // Wait when until Thread.Sleep started
                 Thread.Sleep(5000);
 
-                List<CorAppDomain> appDomains = null;
-                List<CorModule> modules = null;
+                session.StopAndWait(TimeSpan.FromSeconds(5));
 
-                session.TargetStopped += (sender, args) =>
-                {
-                    var ss = sender as CorDebuggerSession;
-                    ss.ShouldNotBeNull();
-                    appDomains = ss.GetAppDomains().ToList();
-                    modules = ss.GetAllModules().ToList();
-                    sessionStartGuard.Set();
-                };
-
-                session.Stop();
-
-                sessionStartGuard.WaitOne(TimeSpan.FromSeconds(60)).ShouldBeTrue("Session wasn't start");
+                var appDomains = session.GetAppDomains().ToList();
+                var modules = session.GetAllModules().ToList();
                 appDomains.Count.ShouldEqual(1);
                 modules.Count.ShouldEqual(2);
             }
@@ -73,7 +62,7 @@ namespace Mono.Debugging.Win32.Tests
 
                 session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                 sessionStartGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Session wasn't start");
-                session.StopAndWait();
+                session.StopAndWait(TimeSpan.FromSeconds(10));
             }
             finally
             {
@@ -121,7 +110,7 @@ namespace Mono.Debugging.Win32.Tests
 
                 session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                 breakPointHittedGuard.WaitOne(TimeSpan.FromSeconds(20)).ShouldBeTrue("Breakpoint wasn't hit");
-                session.StopAndWait();
+                session.StopAndWait(TimeSpan.FromSeconds(10));
             }
             finally
             {
