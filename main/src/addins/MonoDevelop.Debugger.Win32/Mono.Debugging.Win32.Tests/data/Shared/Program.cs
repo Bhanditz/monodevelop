@@ -41,7 +41,7 @@ namespace DebuggerTests
                 Console.WriteLine("Break with debugger break");
                 Debugger.Break();
             }
-            if ((args.Length == 2 && args[0] == "SLEEP"))
+            if ((args.Length == 2 && args[0] == "SLEEP"))    //ShouldCorrectlyStopOnCustomBreakpoint: insert breakpoint here
             {
                 var millisecondsTimeout = int.Parse(args[1]);
                 Console.WriteLine("Waiting {0} seconds...", millisecondsTimeout / 1000);

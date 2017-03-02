@@ -86,7 +86,7 @@ namespace Mono.Debugging.Win32.Tests
         }
 
         [Fact]
-        public void ShouldCorrectlyStopOnCutomBreakpoint()
+        public void ShouldCorrectlyStopOnCustomBreakpoint()
         {
             CorDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
@@ -104,9 +104,18 @@ namespace Mono.Debugging.Win32.Tests
                     {
                         if (Path.GetFileName(docFile) != "Program.cs")
                             continue;
-                        // TODO: Change it if you change tester sources
-                        const int breakPointLine = 44;
-                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, breakPointLine);
+                        const string breakpointLineMessage = "//ShouldCorrectlyStopOnCustomBreakpoint: insert breakpoint here";
+                        var breakpointLine = -1;
+                        var currentLineNumber = 0;
+                        foreach (var line in File.ReadLines(docFile)) {
+                            currentLineNumber++;
+                            if (line.Contains (breakpointLineMessage)) {
+                                breakpointLine = currentLineNumber;
+                                break;
+                            }
+                        }
+                        breakpointLine.ShouldBeGreaterThan (0);
+                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, breakpointLine);
                         break;
                     }
                     corDebugSession.IsConnected.ShouldBeTrue();
