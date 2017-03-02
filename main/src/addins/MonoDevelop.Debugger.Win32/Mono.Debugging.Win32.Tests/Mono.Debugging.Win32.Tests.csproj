@@ -75,6 +75,10 @@
       <Project>{69136056-BFD3-4CEC-BB41-D9991C79593C}</Project>
       <Name>CorApi2</Name>
     </ProjectReference>
+    <ProjectReference Include="..\CorApi\CorApi.csproj">
+      <Project>{9FBCC262-10DC-4E84-A5C4-17230BBF8862}</Project>
+      <Name>CorApi</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Mono.Debugging.Win32\Mono.Debugging.Win32.csproj">
       <Project>{74704C00-5861-4F86-920C-865148A175C5}</Project>
       <Name>Mono.Debugging.Win32</Name>
