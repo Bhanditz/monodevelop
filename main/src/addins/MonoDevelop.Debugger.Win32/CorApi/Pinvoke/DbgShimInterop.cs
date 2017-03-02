@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 using PinvokeKit;
 
-namespace Microsoft.Samples.Debugging.CorDebug
+namespace CorApi.Pinvoke
 {
     [CLSCompliant(false)]
     public unsafe class DbgShimInterop
@@ -34,10 +34,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /// <param name="pResumeHandle">pResumeHandle</param>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public delegate Int32 CreateProcessForLaunchDelegate(
-            [In, MarshalAsAttribute(UnmanagedType.LPWStr)]string lpCommandLine,
+            [In, MarshalAs(UnmanagedType.LPWStr)]string lpCommandLine,
             [In]Int32 bSuspendProcess,
             [In]IntPtr lpEnvironment,
-            [In, MarshalAsAttribute(UnmanagedType.LPWStr)]string lpCurrentDirectory,
+            [In, MarshalAs(UnmanagedType.LPWStr)]string lpCurrentDirectory,
             [Out]UInt32* pProcessId,
             [Out]void** pResumeHandle);
         public readonly CreateProcessForLaunchDelegate CreateProcessForLaunch;

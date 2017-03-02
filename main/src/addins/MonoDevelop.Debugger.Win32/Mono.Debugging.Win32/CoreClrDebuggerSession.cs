@@ -1,4 +1,5 @@
 using System;
+using CorApi.Pinvoke;
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 

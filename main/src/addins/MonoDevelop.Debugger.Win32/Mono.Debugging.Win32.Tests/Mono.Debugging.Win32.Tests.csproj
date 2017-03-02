@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="ApplicationDescriptorEx.cs" />
+    <Compile Include="CorDebugApplicationDescriptorEx.cs" />
     <Compile Include="CorDebugSessionTests.cs" />
     <Compile Include="CorDebugSessionEx.cs" />
     <Compile Include="CoreClrDebugSessionTests.cs" />

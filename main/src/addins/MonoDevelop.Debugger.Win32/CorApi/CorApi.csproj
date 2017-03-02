@@ -180,6 +180,21 @@
     <Compile Include="ComInterop\ULARGE_INTEGER.cs" />
     <Compile Include="ComInterop\COR_ACTIVE_FUNCTION.cs" />
     <Compile Include="IMetadataImport.cs" />
+    <Compile Include="Pinvoke\CoreClrShimUtil.cs" />
+    <Compile Include="Pinvoke\DbgShimInterop.cs" />
+    <Compile Include="Pinvoke\HResults.cs" />
+    <Compile Include="Pinvoke\IClassFactory.cs" />
+    <Compile Include="Pinvoke\IDllLoader.cs" />
+    <Compile Include="Pinvoke\Kernel32Dll.cs" />
+    <Compile Include="Pinvoke\NativeDll.cs" />
+    <Compile Include="Pinvoke\NativeDllsLoader.cs" />
+    <Compile Include="Pinvoke\PlatformUtil.cs" />
+    <Compile Include="Pinvoke\ProcessorArchitecture.cs" />
+    <Compile Include="Pinvoke\ProcessorUtil.cs" />
+    <Compile Include="Pinvoke\StringUtils.cs" />
+    <Compile Include="Pinvoke\SYSTEM_INFO.cs" />
+    <Compile Include="Pinvoke\UnixDllLoader.cs" />
+    <Compile Include="Pinvoke\WindowsDllLoader.cs" />
     <Compile Include="RawAssemblyAttributes.cs" />
   </ItemGroup>
   <Import Project="..\..\..\..\external\debugger-libs\Mono.Debugging.settings" />

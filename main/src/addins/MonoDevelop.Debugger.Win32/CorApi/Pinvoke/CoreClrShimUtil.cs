@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.Extensions;
-using PinvokeKit;
+using HResults = PinvokeKit.HResults;
 
-namespace Microsoft.Samples.Debugging.CorDebug
+namespace CorApi.Pinvoke
 {
     public static class CoreClrShimUtil
     {
@@ -17,17 +16,17 @@ namespace Microsoft.Samples.Debugging.CorDebug
             unsafe {
                 IntPtr envPtr = IntPtr.Zero;
                 try {
-                    envPtr = DebuggerExtensions.SetupEnvironment (env);
+                    envPtr = SetupEnvironment (env);
                     void* resumeHandle;
                     uint processId;
                     var hret =  (HResults)dbgShimInterop.CreateProcessForLaunch (command, 1, envPtr, workingDir, &processId, &resumeHandle);
                     if (hret != HResults.S_OK)
-                        throw new COMException(string.Format ("Failed call RegisterForRuntimeStartup: {0}", hret), (int)hret);
+                        throw new COMException(string.Format ("Failed call CreateProcessForLaunch: {0}", hret), (int)hret);
                     procId = (int) processId;
                     return CreateICorDebugImpl (dbgShimInterop, processId, runtimeLoadTimeout, resumeHandle);
                 } finally {
                     if (envPtr != IntPtr.Zero )
-                        DebuggerExtensions.TearDownEnvironment (envPtr);
+                        TearDownEnvironment (envPtr);
                 }
             }
         }
@@ -77,5 +76,24 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return corDebug;
         }
 
+        internal static IntPtr SetupEnvironment (IDictionary<string, string> environment)
+        {
+            IntPtr env = IntPtr.Zero;
+            if (environment != null) {
+                string senv = null;
+                foreach (KeyValuePair<string, string> var in environment) {
+                    senv += var.Key + "=" + var.Value + "\0";
+                }
+                senv += "\0";
+                env = Marshal.StringToHGlobalAnsi (senv);
+            }
+            return env;
+        }
+
+        internal static void TearDownEnvironment (IntPtr env)
+        {
+            if (env != IntPtr.Zero)
+                Marshal.FreeHGlobal (env);
+        }
     }
 }
