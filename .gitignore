@@ -248,5 +248,3 @@ main/build/util
 
 #Rider
 .idea/
-main/src/addins/MonoDevelop.Debugger.Win32/CorApi.Tests/bin/
-main/src/addins/MonoDevelop.Debugger.Win32/packages/
