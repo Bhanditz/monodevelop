@@ -29,7 +29,7 @@ namespace Mono.Debugging.Win32.Tests
 
                 session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                 sessionStartGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Session wasn't start");
-                session.Stop();
+                session.StopAndWait();
             }
             finally
             {
@@ -42,7 +42,7 @@ namespace Mono.Debugging.Win32.Tests
         }
 
         [Fact]
-        public void ShouldCorrectlyStopOnCutomBreakPoint()
+        public void ShouldCorrectlyStopOnCutomBreakpoint()
         {
             CorDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
@@ -60,7 +60,7 @@ namespace Mono.Debugging.Win32.Tests
                     {
                         if (Path.GetFileName(docFile) != "Program.cs")
                             continue;
-                        corDebugSession.Breakpoints.Add(docFile, 14);
+                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, 14);
                         break;
                     }
                     corDebugSession.IsConnected.ShouldBeTrue();
@@ -75,7 +75,7 @@ namespace Mono.Debugging.Win32.Tests
 
                 session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                 breakPointHittedGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Breakpoint wasn't hit");
-                session.Stop();
+                session.StopAndWait();
             }
             finally
             {
