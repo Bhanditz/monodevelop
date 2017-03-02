@@ -104,7 +104,9 @@ namespace Mono.Debugging.Win32.Tests
                     {
                         if (Path.GetFileName(docFile) != "Program.cs")
                             continue;
-                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, 44);
+                        // TODO: Change it if you change tester sources
+                        const int breakPointLine = 44;
+                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, breakPointLine);
                         break;
                     }
                     corDebugSession.IsConnected.ShouldBeTrue();
