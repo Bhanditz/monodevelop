@@ -254,7 +254,8 @@ namespace CorApi.ComInterop
         /// <inheritdoc cref="ICorDebugController.Continue"/>
         [MustUseReturnValue]
         [PreserveSig]
-        new Int32 Continue ([In] Int32 fIsOutOfBand);
+        [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+        new Int32 Continue([In] Int32 fIsOutOfBand);
 
         /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]

@@ -44,12 +44,14 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="celt">the given number of elements</param>
       [MustUseReturnValue("HResult")]
+      [PreserveSig]
       new Int32 Skip([In] UInt32 celt);
 
       /// <summary>
       /// Sets the position of the enumerator to the beginning of the enumeration.
       /// </summary>
       [MustUseReturnValue("HResult")]
+      [PreserveSig]
       new Int32 Reset();
 
       /// <summary>
@@ -57,13 +59,15 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppEnum">another enumerator</param>
       [MustUseReturnValue("HResult")]
+      [PreserveSig]
       new Int32 Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
 
       /// <summary>
       /// Gets the number of elements in the enumeration.
       /// </summary>
-      /// <param name="pcelt">the number of elements in the enumeration</param>
       [MustUseReturnValue("HResult")]
+      [PreserveSig]
+      [MethodImpl(MethodImplOptions.InternalCall)]
       new Int32 GetCount([Out] UInt32* pcelt);
 
       /// <summary>
@@ -73,6 +77,7 @@ namespace CorApi.ComInterop
       /// <param name="values"></param>
       /// <param name="pceltFetched"></param>
       [MustUseReturnValue("HResult")]
+      [PreserveSig]
       Int32 Next([In] UInt32 celt, void** values, [Out] UInt32* pceltFetched);
     }
 }

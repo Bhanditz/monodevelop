@@ -64,6 +64,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT Continue([in] BOOL fIsOutOfBand);
         [MustUseReturnValue]
+        [PreserveSig]
         Int32 Continue ([In] Int32 fIsOutOfBand);
 
         /// <summary>
