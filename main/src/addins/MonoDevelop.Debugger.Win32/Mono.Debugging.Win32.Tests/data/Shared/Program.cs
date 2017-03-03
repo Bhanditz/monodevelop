@@ -48,7 +48,7 @@ namespace DebuggerTests
                 Thread.Sleep(millisecondsTimeout);
             }
 
-            Console.WriteLine(flt);
+            Console.WriteLine(flt);    //EvaluationTests: insert breakpoint here
             Console.WriteLine(strct);
             Console.WriteLine(intArray);
             Console.WriteLine(stringArray);
