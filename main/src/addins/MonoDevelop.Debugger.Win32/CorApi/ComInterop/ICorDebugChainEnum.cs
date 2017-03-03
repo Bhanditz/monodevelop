@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,32 +8,31 @@ using JetBrains.Annotations;
 namespace CorApi.ComInterop
 {
     /// <summary>
-    /// 
     /// </summary>
     /// <example><code>
-    ///[
-    ///    object,
-    ///    local,
-    ///    uuid(CC7BCB08-8A68-11d2-983C-0000F808342D),
-    ///    pointer_default(unique)
-    ///]
-    ///interface ICorDebugChainEnum : ICorDebugEnum
-    ///{
-    ///    /*
-    ///     * Gets the next "celt" number of chains in the enumeration.
-    ///     * The actual number of chains retrieved is returned in "pceltFetched".
-    ///     * Returns S_FALSE if the actual number of chains retrieved is smaller
-    ///     * than the number of chains requested.
-    ///     */
-    ///    HRESULT Next([in] ULONG celt,
-    ///                 [out, size_is(celt), length_is(*pceltFetched)]
-    ///                    ICorDebugChain *chains[],
-    ///                 [out] ULONG *pceltFetched);
-    ///}; </code></example>
-    [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-    [Guid ("CC7BCB08-8A68-11D2-983C-0000F808342D")]
+    /// [
+    ///     object,
+    ///     local,
+    ///     uuid(CC7BCB08-8A68-11d2-983C-0000F808342D),
+    ///     pointer_default(unique)
+    /// ]
+    /// interface ICorDebugChainEnum : ICorDebugEnum
+    /// {
+    ///     /*
+    ///      * Gets the next "celt" number of chains in the enumeration.
+    ///      * The actual number of chains retrieved is returned in "pceltFetched".
+    ///      * Returns S_FALSE if the actual number of chains retrieved is smaller
+    ///      * than the number of chains requested.
+    ///      */
+    ///     HRESULT Next([in] ULONG celt,
+    ///                  [out, size_is(celt), length_is(*pceltFetched)]
+    ///                     ICorDebugChain *chains[],
+    ///                  [out] ULONG *pceltFetched);
+    /// }; </code></example>
+    [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+    [Guid("CC7BCB08-8A68-11D2-983C-0000F808342D")]
     [ComImport]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
     public unsafe interface ICorDebugChainEnum : ICorDebugEnum
     {
         /// <summary>
@@ -69,14 +69,14 @@ namespace CorApi.ComInterop
         [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
         new Int32 GetCount([Out] UInt32* pcelt);
 
-      /// <summary>
-      /// Gets the next "celt" number of chains in the enumeration.
-      /// The actual number of chains retrieved is returned in "pceltFetched".
-      /// Returns S_FALSE if the actual number of chains retrieved is smaller than the number of chains requested.
-      /// </summary>
-      /// <param name="celt"></param>
-      /// <param name="chains"></param>
-      /// <param name="pceltFetched"></param>
+        /// <summary>
+        /// Gets the next "celt" number of chains in the enumeration.
+        /// The actual number of chains retrieved is returned in "pceltFetched".
+        /// Returns S_FALSE if the actual number of chains retrieved is smaller than the number of chains requested.
+        /// </summary>
+        /// <param name="celt"></param>
+        /// <param name="chains"></param>
+        /// <param name="pceltFetched"></param>
         [MustUseReturnValue("HResult")]
         [PreserveSig]
         [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]

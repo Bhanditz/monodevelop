@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 using JetBrains.Annotations;
 
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi.Infra;
-
 namespace CorApi.ComInterop
 {
     public static unsafe class ICorDebugEnumEx
@@ -43,21 +41,30 @@ namespace CorApi.ComInterop
             if(FNext == null)
                 throw new ArgumentNullException(nameof(FNext));
 
-            Tracepoints.Say say = Tracepoints.None("ToList");
+            // ToList implementation options:
+            //  • Only call Next(1) one-by-one (either by Count or until it returns none). I think that's no much use calling it this way.
+            // >• Call Count, alloc buffer, call Next(count). Just one call for all. The current impl. Possible problems: race between getting Count and fetching items if not stopped. Possible problems: none because if it gets more items the impl would just return requested number, and if it gets fewer the impl would indicate this in celtFetched, ok.
+            //  • Call Next(N) with reasonable N (say 0x10) until returns less than 0x10. Better than marshalling one-by-one, does not depend ou Count (tho it's deemed to be not important).
 
+            // Assume we might be given a reused enumeration object in any state
+            // Make us our own copy without no racing for Next
+            // This is analogous to calling .NET's IEnumerable::GetEnumerator actually
             ICorDebugEnum comenum;
-            say();
             comenumShared.Clone(out comenum).AssertSucceeded("Can't clone the enum.");
-            say();
             comenum.Reset().AssertSucceeded("Can't reset the enum.");
-            say();
 
+            // Count & alloc
             uint celt = 0;
             comenum.GetCount(&celt).AssertSucceeded("Can't get the number of items in the enum.");
+            if(celt == 0)
+                return new TItem[] { };
             void** items = stackalloc void*[(int)celt];
+
+            // Fetch
             uint celtActual = 0;
             FNext(Com.QueryInteface<TCorDebugEnum>(comenum), celt, items, &celtActual).AssertSucceeded("Failed to fetch the next items from the enumeration.");
 
+            // Cast
             TItem[] retval;
             try
             {
@@ -70,7 +77,7 @@ namespace CorApi.ComInterop
                     if(items[a] != null)
                         retval[a] = Com.QueryInteface<TItem>(items[a]);
                     else
-                        throw new NullReferenceException("A NULL items has been returned from the enumeration.");
+                        throw new NullReferenceException("A NULL item has been returned from the enumeration.");
                 }
             }
             finally
