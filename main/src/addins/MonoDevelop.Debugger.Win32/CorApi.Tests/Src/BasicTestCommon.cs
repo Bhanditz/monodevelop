@@ -136,6 +136,8 @@ namespace CorApi.Tests
 
             if(process != null)
             {
+                // Commented out. The process cannot continue because it is not stopped here, and with debug builds of coreclr this triggers an ASSERT
+/*
                 int hrCont = process.Continue(0);
                 Console.Error.WriteLine(7.5);
                 try
@@ -147,6 +149,7 @@ namespace CorApi.Tests
                     Console.Error.WriteLine("Expected exception: {0}.", ex.Message);
                     //                        throw;
                 }
+*/
                 Console.Error.WriteLine(8);
 
                 {
