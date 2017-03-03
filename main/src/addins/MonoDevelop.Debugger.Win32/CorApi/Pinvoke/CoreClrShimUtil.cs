@@ -1,89 +1,109 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
 using System.Threading;
+
 using CorApi.ComInterop;
-using HResults = PinvokeKit.HResults;
+
+using JetBrains.Annotations;
 
 namespace CorApi.Pinvoke
 {
-    public static class CoreClrShimUtil
+    public unsafe static class CoreClrShimUtil
     {
-        [CLSCompliant (false)]
-        public static ICorDebug CreateICorDebugForCommand (DbgShimInterop dbgShimInterop, string command, string workingDir,
-            IDictionary<string, string> env, TimeSpan runtimeLoadTimeout, out uint procId)
+        [CLSCompliant(false)]
+        public static ICorDebug CreateICorDebugForCommand(DbgShimInterop dbgShimInterop, string command, string workingDir, IDictionary<string, string> env, TimeSpan runtimeLoadTimeout, out uint procId)
         {
-            unsafe {
-                 {
-                    var sEnv = GetEnvString (env);
-                    void* resumeHandle;
-                    uint processId;
-                    fixed(char* pchCommand = command)
-                    fixed(char* pchworkingDir = workingDir)
-                    fixed(char* pchEnv = sEnv??"")
-                        dbgShimInterop.CreateProcessForLaunch((ushort*)pchCommand, 1, (sEnv != null ? pchEnv : null), (ushort*)pchworkingDir, &processId, &resumeHandle).AssertSucceeded("Failed call CreateProcessForLaunch.");
-                    procId = processId;
-                    return CreateICorDebugImpl (dbgShimInterop, processId, runtimeLoadTimeout, resumeHandle);
-                } 
+            string sEnv = GetEnvString(env);
+            void* hResume;
+            uint processId;
+
+            fixed(char* pchCommand = command)
+            fixed(char* pchworkingDir = workingDir)
+            fixed(char* pchEnv = sEnv ?? "")
+                dbgShimInterop.CreateProcessForLaunch((ushort*)pchCommand, 1, (sEnv != null ? pchEnv : null), (ushort*)pchworkingDir, &processId, &hResume).AssertSucceeded("Failed call CreateProcessForLaunch.");
+
+            try
+            {
+                procId = processId;
+                return CreateICorDebugImpl(dbgShimInterop, processId, runtimeLoadTimeout, hResume);
+            }
+            finally
+            {
+                if(hResume!=null)
+                {
+                    int hrCloseHandle = dbgShimInterop.CloseResumeHandle(hResume); // Don't want to throw on HRESULT here because if another exception is in progress we'd suppress it with our less important one
+                }
             }
         }
 
         [CLSCompliant(false)]
-        public static ICorDebug CreateICorDebugForProcess (DbgShimInterop dbgShimInterop, int processId, TimeSpan runtimeLoadTimeout)
+        public static ICorDebug CreateICorDebugForProcess (DbgShimInterop dbgShimInterop, uint processId, TimeSpan runtimeLoadTimeout)
         {
-            unsafe {
-                return CreateICorDebugImpl (dbgShimInterop, (uint) processId, runtimeLoadTimeout, null);
-            }
+            return CreateICorDebugImpl (dbgShimInterop, processId, runtimeLoadTimeout, null);
         }
 
-        private static unsafe ICorDebug CreateICorDebugImpl (DbgShimInterop dbgShimInterop, uint processId, TimeSpan runtimeLoadTimeout, void* resumeHandle)
+        private static ICorDebug CreateICorDebugImpl(DbgShimInterop dbgShimInterop, uint processId, TimeSpan runtimeLoadTimeout, void* resumeHandle)
         {
-            var waiter = new ManualResetEvent (false);
+            var waiter = new ManualResetEvent(false);
             ICorDebug corDebug = null;
             Exception callbackException = null;
             void* token;
-            DbgShimInterop.PSTARTUP_CALLBACK callback = delegate (void* pCordb, void* parameter, int hr) {
-                try {
-                    if (hr < 0) {
-                        Marshal.ThrowExceptionForHR (hr);
-                    }
-                    var unknown = Marshal.GetObjectForIUnknown ((IntPtr) pCordb);
-                    corDebug = (ICorDebug) unknown;
-                } catch (Exception e) {
-                    callbackException = e;
-                }
-                waiter.Set ();
-            };
-            var callbackPtr = Marshal.GetFunctionPointerForDelegate (callback);
+            DbgShimInterop.PSTARTUP_CALLBACK callback = (pCordb, parameter, hrLoad) => CreateICorDebugImpl_Callback/*extracted func to catch natives*/(hrLoad, pCordb, waiter, ref corDebug, ref callbackException);
+            IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(callback);
 
-            var hret =  (HResults)dbgShimInterop.RegisterForRuntimeStartup (processId, callbackPtr, null, &token);
+            dbgShimInterop.RegisterForRuntimeStartup(processId, callbackPtr, null, &token).AssertSucceeded("RegisterForRuntimeStartup.");
 
-            if (hret != HResults.S_OK)
-                throw new COMException(string.Format ("Failed call RegisterForRuntimeStartup: {0}", hret), (int)hret);
+            try
+            {
+                if(resumeHandle != null)
+                    dbgShimInterop.ResumeProcess(resumeHandle).AssertSucceeded("RegisterForRuntimeStartup has given us a resume handle, but we failed to use it with the ResumeProcess call.");
 
-            if (resumeHandle != null)
-                dbgShimInterop.ResumeProcess (resumeHandle);
-
-            if (!waiter.WaitOne (runtimeLoadTimeout)) {
-                throw new TimeoutException (string.Format (".NET core load awaiting timed out for {0}", runtimeLoadTimeout));
+                if(!waiter.WaitOne(runtimeLoadTimeout))
+                    throw new TimeoutException(string.Format(".NET core load awaiting timed out for {0}", runtimeLoadTimeout));
             }
-            GC.KeepAlive (callback);
-            if (callbackException != null)
-                throw callbackException;
-            return corDebug;
+            finally
+            {
+                // Release the callback
+                int hrUnregister = dbgShimInterop.UnregisterForRuntimeStartup(token);
+                // NOTE: do not want to check the HRESULT here because if an exception is in progress we do not want to overwrite it with another exception which is less important
+                // This keeps valid the callbackPtr pointer up until the native side keeps it, ie until we call unregister, which might happen at any moment if we abandon waiting by timeout
+                // If the callback is in progress, this would wait for the callback to complete, note in case we're aborting by timeout (however, we do not expect the callback to get stuck)
+                GC.KeepAlive(callback);
+            }
+            if(Volatile.Read(ref callbackException) != null)
+                throw Volatile.Read(ref callbackException);
+            return Volatile.Read(ref corDebug);
         }
 
-        internal static string GetEnvString (IDictionary<string, string> environment)
+        [HandleProcessCorruptedStateExceptions]
+        private static void CreateICorDebugImpl_Callback(int hr, void* pCordb, [NotNull] ManualResetEvent waiter, [CanBeNull] ref ICorDebug corDebug, [CanBeNull] ref Exception callbackException)
         {
-            if (environment != null) {
-                string senv = null;
-                foreach (KeyValuePair<string, string> var in environment) {
-                    senv += var.Key + "=" + var.Value + "\0";
-                }
-                senv += "\0";
-                return senv;
+            try
+            {
+                hr.AssertSucceeded("RegisterForRuntimeStartup async result.");
+                Volatile.Write(ref corDebug, Com.QueryInteface<ICorDebug>(pCordb));
             }
-            return null;
+            catch(Exception e)
+            {
+                Volatile.Write(ref callbackException, e);
+            }
+            finally
+            {
+                waiter.Set();
+            }
+        }
+
+        internal static string GetEnvString(IDictionary<string, string> environment)
+        {
+            if(environment == null)
+                return null;
+            string senv = null;
+            foreach(KeyValuePair<string, string> var in environment)
+                senv += var.Key + "=" + var.Value + "\0";
+            senv += "\0";
+            return senv;
         }
     }
 }

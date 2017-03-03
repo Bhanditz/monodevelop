@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
+
+using JetBrains.Annotations;
+
 using PinvokeKit;
 
 namespace CorApi.Pinvoke
@@ -13,6 +16,7 @@ namespace CorApi.Pinvoke
             var dll = NativeDllsLoader.LoadDll(dbgShimPath);
             CreateProcessForLaunch = dll.ImportMethod<CreateProcessForLaunchDelegate> ("CreateProcessForLaunch");
             RegisterForRuntimeStartup = dll.ImportMethod<RegisterForRuntimeStartupDelegate>("RegisterForRuntimeStartup");
+            UnregisterForRuntimeStartup = dll.ImportMethod<UnregisterForRuntimeStartupDelegate>("UnregisterForRuntimeStartup");
             ResumeProcess = dll.ImportMethod<ResumeProcessDelegate>("ResumeProcess");
             CloseResumeHandle = dll.ImportMethod<CloseResumeHandleDelegate>("CloseResumeHandle");
         }
@@ -72,6 +76,26 @@ namespace CorApi.Pinvoke
             [In]void* parameter,
             [In]void** ppUnregisterToken);
         public readonly RegisterForRuntimeStartupDelegate RegisterForRuntimeStartup;
+
+        /// <summary>
+        ///  UnregisterForRuntimeStartup -- stops/cancels runtime startup notification. Needs
+        ///       to be called during the debugger's shutdown to cleanup the internal data.
+        ///     This API can be called in the startup callback. Otherwise, it will block until
+        ///     the callback thread finishes and no more callbacks will be initiated after this
+        ///     API returns.
+        /// </summary>
+        /// <param name="pUnregisterToken">unregister token from RegisterForRuntimeStartup or NULL</param>
+        /// <returns></returns>
+        /// <example><code>
+        /// HRESULT
+        /// UnregisterForRuntimeStartup(
+        ///     __in PVOID pUnregisterToken)
+        /// 
+        ///  </code></example>
+        [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
+        public delegate int UnregisterForRuntimeStartupDelegate(void* pUnregisterToken);
+
+        public readonly UnregisterForRuntimeStartupDelegate UnregisterForRuntimeStartup;
 
         /// <summary>
         /// HRESULT
