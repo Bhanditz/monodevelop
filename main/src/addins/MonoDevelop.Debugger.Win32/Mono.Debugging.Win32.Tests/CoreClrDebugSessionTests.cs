@@ -10,26 +10,24 @@ namespace Mono.Debugging.Win32.Tests
     public class CoreClrDebugSessionTests
     {
         [Fact]
-        public void ShouldCorrectlyStopOnDebuggerBreak()
+        public void ShouldCorrectlyEnemrateAppDoimains()
         {
-            CoreClrDebuggerSession session = null;
-            var app = Constants.Net45ConsoleApp;
+            /*CorDebuggerSession session = null;
+            var app = Constants.;
             try
             {
                 session = new CoreClrDebuggerSession(new char[] { }, app.GetDbgShimPath());
-                var sessionStartGuard = new ManualResetEvent(false);
-                session.TargetInterrupted += (s1, a1) =>
-                {
-                    var corDebugSession = s1 as CoreClrDebuggerSession;
-                    corDebugSession.ShouldNotBeNull();
-                    corDebugSession.IsConnected.ShouldBeTrue();
-                    corDebugSession.IsRunning.ShouldBeFalse();
-                    sessionStartGuard.Set();
-                };
+                session.Run(app.GetStartInfoForSleep(TimeSpan.FromSeconds(5)), new DebuggerSessionOptions());
 
-                session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
-                sessionStartGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Session wasn't start");
-                session.Stop();
+                // Wait when until Thread.Sleep started
+                Thread.Sleep(5000);
+
+                session.StopAndWait(TimeSpan.FromSeconds(5));
+
+                var appDomains = session.GetAppDomains().ToList();
+                var modules = session.GetAllModules().ToList();
+                appDomains.Count.ShouldEqual(1);
+                modules.Count.ShouldEqual(2);
             }
             finally
             {
@@ -38,52 +36,7 @@ namespace Mono.Debugging.Win32.Tests
                     session.Dispose();
                     session = null;
                 }
-            }
-        }
-
-        [Fact]
-        public void ShouldCorrectlyStopOnCutomBreakPoint()
-        {
-            CoreClrDebuggerSession session = null;
-            var app = Constants.Net45ConsoleApp;
-            try
-            {
-                session = new CoreClrDebuggerSession(new char[] { }, app.GetDbgShimPath());
-                var breakPointHittedGuard = new ManualResetEvent(false);
-                session.TargetInterrupted += (s1, a1) =>
-                {
-                    var corDebugSession = s1 as CoreClrDebuggerSession;
-                    corDebugSession.ShouldNotBeNull();
-
-                    var docFiles = corDebugSession.GetAllDocumentPaths();
-                    foreach (var docFile in docFiles)
-                    {
-                        if (Path.GetFileName(docFile) != "Program.cs")
-                            continue;
-                        corDebugSession.Breakpoints.Add(docFile, 14);
-                        break;
-                    }
-                    corDebugSession.IsConnected.ShouldBeTrue();
-                    corDebugSession.IsRunning.ShouldBeFalse();
-
-                    corDebugSession.TargetHitBreakpoint += (s2, a2) =>
-                    {
-                        breakPointHittedGuard.Set();
-                    };
-                    corDebugSession.Continue();
-                };
-
-                session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
-                breakPointHittedGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Breakpoint wasn't hit");
-                session.Stop();
-            }
-            finally
-            {
-                if (session != null)
-                {
-                    session.Dispose();
-                }
-            }
+            }*/
         }
     }
 }

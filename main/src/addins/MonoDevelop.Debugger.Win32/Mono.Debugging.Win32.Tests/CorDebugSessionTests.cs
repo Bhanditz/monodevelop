@@ -104,7 +104,7 @@ namespace Mono.Debugging.Win32.Tests
                             }
                         }
                         breakpointLine.ShouldBeGreaterThan (0);
-                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, breakpointLine);
+                        corDebugSession.ToggleBreakpointAndWaitForBind(docFile, breakpointLine, TimeSpan.FromSeconds(10));
                         break;
                     }
                     corDebugSession.IsConnected.ShouldBeTrue();
