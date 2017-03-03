@@ -2,14 +2,15 @@
 
 using CorApi.Tests.Infra;
 
-using Should;
-using Xunit;
+using NUnit.Framework;
 
-namespace Mono.Debugging.Win32.Tests
+using Should;
+
+namespace CorApi.Tests
 {
     public class ConstantsTests
     {
-        [Fact]
+        [Test]
         public void Net45ConsoleApp32BitShouldExistsInDataFolder()
         {
             File.Exists(Constants.Net45ConsoleApp32Bit.BinaryPath).ShouldBeTrue(
@@ -18,7 +19,7 @@ namespace Mono.Debugging.Win32.Tests
                 string.Format("Directory {0} not exists", Constants.Net45ConsoleApp32Bit.WorkingDirectory));
         }
 
-        [Fact]
+        [Test]
         public void Net45ConsoleApp64BitShouldExistsInDataFolder()
         {
             File.Exists(Constants.Net45ConsoleApp64Bit.BinaryPath).ShouldBeTrue(
@@ -27,7 +28,8 @@ namespace Mono.Debugging.Win32.Tests
                 string.Format("Directory {0} not exists", Constants.Net45ConsoleApp64Bit.WorkingDirectory));
         }
 
-        [Fact]
+        [Test]
+        [NUnit.Framework.Category("Core")]
         public void NetCoreApp10ConsoleAppPdbBitShouldExistsInDataFolder()
         {
             File.Exists(Constants.NetCoreApp10ConsoleAppPdb.BinaryPath).ShouldBeTrue(
@@ -36,7 +38,8 @@ namespace Mono.Debugging.Win32.Tests
                 string.Format("Directory {0} not exists", Constants.NetCoreApp10ConsoleAppPdb.WorkingDirectory));
         }
 
-        [Fact]
+        [Test]
+        [NUnit.Framework.Category("Core")]
         public void NetCoreApp10ConsoleAppPpdbBitShouldExistsInDataFolder()
         {
             File.Exists(Constants.NetCoreApp10ConsoleAppPpdb.BinaryPath).ShouldBeTrue(

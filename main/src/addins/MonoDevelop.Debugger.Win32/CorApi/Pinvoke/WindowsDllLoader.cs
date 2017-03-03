@@ -9,7 +9,7 @@ namespace PinvokeKit
         public IntPtr LoadLibrary(string absoluteDllPath)
         {
             if (!File.Exists(absoluteDllPath))
-                throw new ArgumentException("Path is not exists", "absoluteDllPath");
+                throw new ArgumentOutOfRangeException("absoluteDllPath", absoluteDllPath, "Path is not exists");
 
             Kernel32Dll.SetDllDirectoryW(absoluteDllPath);
 
@@ -63,7 +63,7 @@ namespace PinvokeKit
 
         public bool IsLoaded(string absoluteDllPath)
         {
-            if (File.Exists(absoluteDllPath) )
+            if (!File.Exists(absoluteDllPath) )
                 throw new ArgumentException("Path is not exists", "absoluteDllPath");
 
             return Kernel32Dll.GetModuleHandleW(absoluteDllPath) != null;

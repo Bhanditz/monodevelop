@@ -106,110 +106,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 return (int) id;
             }
         }
-
-        /** Returns a handle to the process. */
-        public void* Handle
-        {
-            get
-            {
-                void* h = null;
-                _p().GetHandle (&h);
-                return h;
-            }
-        }
-
-        public Version Version
-        {
-            get
-            {
-                COR_VERSION cv;
-                (_p() as ICorDebugProcess2).GetVersion(out cv);
-                return new Version((int)cv.dwMajor,(int)cv.dwMinor,(int)cv.dwBuild,(int)cv.dwSubBuild);
-            }
-        }
-
-        /** All managed objects in the process. */
-        public IEnumerable Objects
-        {
-            get
-            {
-                ICorDebugObjectEnum eobj = null;
-                _p().EnumerateObjects (out eobj);
-                return new CorObjectEnumerator (eobj);
-            }
-        }
-
-        /** Is the address inside a transition stub? */
-        public bool IsTransitionStub (long address)
-        {
-            int y = 0;
-            _p().IsTransitionStub ((ulong)address, out y);
-            return !(y==0);
-        }
-
-        /** Has the thread been suspended? */
-        public bool IsOSSuspended (int tid)
-        {
-            int y = 0;
-            _p().IsOSSuspended ((uint) tid, out y);
-            return !(y==0);
-        }
-
-        /** Gets managed thread for threadId.
-         * Returns NULL if tid is not a managed thread. That's very common in interop-debugging cases.
-         */
-        public CorThread GetThread(int threadId)
-        {
-            ICorDebugThread thread = null;
-            try
-            {
-                _p().GetThread((uint)threadId, out thread);
-            }
-            catch (ArgumentException)
-            {
-            }
-            return (thread == null) ? null : (new CorThread(thread));
-        }
-
-        /* Get the context for the given thread. */
-        // See WIN32_CONTEXT structure declared in context.il
-        public void GetThreadContext ( int threadId, byte* contextPtr, int context_size )
-        {
-
-            _p().GetThreadContext( (uint)threadId, (uint) context_size, contextPtr);
-            return;
-        }
-
-        /* Set the context for a given thread. */
-        public void SetThreadContext (int threadId, byte* contextPtr, int context_size)
-        {
-            _p().SetThreadContext( (uint)threadId, (uint) context_size, contextPtr );
-        }
-
-        /** Read memory from the process. */
-        public ulong ReadMemory (long address, byte[] buffer)
-        {
-            Debug.Assert(buffer!=null);
-            UIntPtr read = UIntPtr.Zero;
-            fixed(byte *pBuffer = buffer)
-                _p().ReadMemory ((ulong) address, (uint) buffer.Length, pBuffer, &read);
-            return (ulong)read;
-        }
-
-        /** Write memory in the process. */
-        public ulong WriteMemory (long address, byte[] buffer)
-        {
-            UIntPtr written = UIntPtr.Zero;
-            fixed(byte *pBuffer = buffer)
-                _p().WriteMemory ((ulong) address, (uint) buffer.Length, pBuffer, &written);
-            return (ulong)written;
-        }
-
-        /** Clear the current unmanaged exception on the given thread. */
-        public void ClearCurrentException (int threadId)
-        {
-            _p().ClearCurrentException ((uint) threadId);
-        }
+        
 
         /** enable/disable sending of log messages to the debugger for logging. */
         public void EnableLogMessages (bool value)
@@ -217,34 +114,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             _p().EnableLogMessages (value ? 1 : 0);
         }
 
-        /** Modify the specified switches severity level */
-        public void ModifyLogSwitch (string name, int level)
-        {
-            fixed(char *pch = name)
-                _p().ModifyLogSwitch ((UInt16*) pch, level);
-        }
-
-        /** All appdomains in the process. */
-        public IEnumerable AppDomains
-        {
-            get
-            {
-                ICorDebugAppDomainEnum ead = null;
-                _p().EnumerateAppDomains (out ead);
-                return new CorAppDomainEnumerator (ead);
-            }
-        }
-
-        /** Get the runtime proces object. */
-        public CorValue ProcessVariable
-        {
-            get
-            {
-                ICorDebugValue v = null;
-                _p().GetObject (out v);
-                return new CorValue (v);
-            }
-        }
 
         /** These flags set things like TrackJitInfo, PreventOptimization, IgnorePDBs, and EnableEnC */
         /**  Any combination of bits in this DWORD flag enum is ok, but if its not a valid set, you may get an error */

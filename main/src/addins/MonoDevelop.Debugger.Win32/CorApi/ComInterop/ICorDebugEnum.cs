@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-using JetBrains.Annotations;
-
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -58,6 +56,7 @@ namespace CorApi.ComInterop
     /// <param name="celt">the given number of elements</param>
     [MustUseReturnValue("HResult")]
     [PreserveSig]
+    [MethodImpl(MethodImplOptions.InternalCall|MethodImplOptions.PreserveSig,MethodCodeType = MethodCodeType.Runtime)]
     Int32 Skip([In] UInt32 celt);
 
     /// <summary>
@@ -65,6 +64,7 @@ namespace CorApi.ComInterop
     /// </summary>
     [MustUseReturnValue("HResult")]
     [PreserveSig]
+    [MethodImpl(MethodImplOptions.InternalCall|MethodImplOptions.PreserveSig,MethodCodeType = MethodCodeType.Runtime)]
     Int32 Reset();
 
     /// <summary>
@@ -73,6 +73,7 @@ namespace CorApi.ComInterop
     /// <param name="ppEnum">another enumerator</param>
     [MustUseReturnValue("HResult")]
     [PreserveSig]
+    [MethodImpl(MethodImplOptions.InternalCall|MethodImplOptions.PreserveSig,MethodCodeType = MethodCodeType.Runtime)]
     Int32 Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
 
     /// <summary>
@@ -80,7 +81,7 @@ namespace CorApi.ComInterop
     /// </summary>
     [MustUseReturnValue("HResult")]
     [PreserveSig]
-    [MethodImpl(MethodImplOptions.InternalCall)]
+    [MethodImpl(MethodImplOptions.InternalCall|MethodImplOptions.PreserveSig,MethodCodeType = MethodCodeType.Runtime)]
     Int32 GetCount([Out] UInt32* pcelt);
   }
 }

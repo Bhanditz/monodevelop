@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics.CodeAnalysis;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
+using System.Windows.Forms;
 
 using CorApi.ComInterop;
-using CorApi.Tests.Infra;
+
+using Microsoft.Samples.Debugging.CorMetadata.NativeApi.Infra;
 
 using NUnit.Framework;
 
@@ -13,109 +16,116 @@ using Should;
 
 namespace CorApi.Tests
 {
-    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
-    public unsafe class BasicTest
+    public unsafe class BasicTestCommon
     {
-        private const string ShimLibraryName = "mscoree.dll";
-
-        [DllImport(ShimLibraryName, CharSet = CharSet.Unicode, PreserveSig = true)]
-        public static extern Int32 CreateDebuggingInterfaceFromVersion(Int32 iDebuggerVersion, UInt16* szDebuggeeVersion, void**ppCordb);
-
-        [Test]
-        public void Run()
+        public static void DoChecksOnProcess(ICorDebugProcess process)
         {
-            Console.Error.WriteLine(0.0);
-            //            MessageBox.Show("Stop!");
-            ApplicationDescriptor app = Constants.Net45ConsoleApp;
-            try
+            var say = Tracepoints.New("DoChecksOnProcess");
+
+            say();
+            ICorDebugAppDomainEnum @enum;
+            process.EnumerateAppDomains(out @enum).AssertSucceeded("Cannot enumerate appdomains.");
+            say();
+
             {
-                Console.Error.WriteLine(1.0);
-                void* pCorDb;
-                ICorDebug cordbg;
-                using(Com.UsingReference(&pCorDb))
+                say(1000);
+                List<ICorDebugAppDomain> listAppdomains1 = @enum.AsEnumerable().ToList();
+                say();
+                List<ICorDebugAppDomain> listAppdomains2 = @enum.AsEnumerable().ToList();
+                say();
+
+                listAppdomains1.Count.ShouldEqual(1);
+                listAppdomains2.Count.ShouldEqual(1);
+                ReferenceEquals(listAppdomains1.Single(), listAppdomains2.Single()).ShouldBeTrue("Different RCWs.");
+                say();
+            }
+
+            {
+                say(2000);
+                IList<ICorDebugAppDomain> listAppdomains1 = @enum.ToList();
+                say();
+                IList<ICorDebugAppDomain> listAppdomains2 = @enum.ToList();
+                say();
+
+                listAppdomains1.Count.ShouldEqual(1);
+                listAppdomains2.Count.ShouldEqual(1);
+                ReferenceEquals(listAppdomains1.Single(), listAppdomains2.Single()).ShouldBeTrue("Different RCWs.");
+                say();
+                
+            }
+
+            say(10000);
+            Console.Error.WriteLine("EAD -1");
+        }
+
+        public static void CheckBaseCorDbg(ICorDebug cordbg, Func<ICorDebug, ICorDebugProcess> onCreateProcess)
+        {
+            Console.Error.WriteLine(2);
+            cordbg.Initialize();
+            Console.Error.WriteLine(3);
+            var callback = new CorDbgCallback();
+            Console.Error.WriteLine(4);
+            cordbg.SetManagedHandler(callback);
+            //cordbg.SetUnmanagedHandler(callback);
+            Console.Error.WriteLine(5);
+
+            bool isDone = false;
+            callback.OnProcess += ppc =>
+            {
+                try
                 {
-                    Console.Error.WriteLine(1.1);
-                    fixed(char* pchVer = "v4.0.30319")
-                        CreateDebuggingInterfaceFromVersion(4, (ushort*)pchVer, &pCorDb).AssertSucceeded("Could not CreateDebuggingInterfaceFromVersion.");
-                    Console.Error.WriteLine(1.2);
-                    cordbg = Com.QueryInteface<ICorDebug>(pCorDb);
-                    Console.Error.WriteLine(1.3);
+                    DoChecksOnProcess(ppc);
+
+//                    MessageBox.Show("RUnning.");
+                    Console.Error.WriteLine("CB 0");
+                    // Not running yet
+                    int run;
+                    ppc.IsRunning(&run);
+                    run.ShouldEqual(0);
+                    Console.Error.WriteLine("CB 1");
+
+                    ICorDebugAppDomainEnum ads;
+                    ppc.EnumerateAppDomains(out ads);
+                    Console.Error.WriteLine("CB 2");
+                    uint num = 0;
+                    ads.GetCount(&num).AssertSucceeded("Can't get count.");
+                    Console.Error.WriteLine("CB 3");
+
+                    // Resume
+                    Console.Error.WriteLine("CB 4");
+                    ppc.Continue(0);
+
+                    Console.Error.WriteLine("CB 5");
+                    // Should be running
+                    //                        ppc.IsRunning(&run);
+                    //                        run.ShouldNotEqual(0);
                 }
-                Console.Error.WriteLine(2);
-                cordbg.Initialize();
-                Console.Error.WriteLine(3);
-                var callback = new CorDbgCallback();
-                Console.Error.WriteLine(4);
-                cordbg.SetManagedHandler(callback);
-                //cordbg.SetUnmanagedHandler(callback);
-                Console.Error.WriteLine(5);
-                ICorDebugProcess process;
-
-                var si = new STARTUPINFOW();
-                si.cb = (uint)Marshal.SizeOf(si);
-
-                var pi = new PROCESS_INFORMATION();
-
-                bool isDone = false;
-                callback.OnProcess += ppc =>
+                finally
                 {
-                    try
-                    {
-                        Console.Error.WriteLine("CB 0");
-                        // Not running yet
-                        int run;
-                        ppc.IsRunning(&run);
-                        run.ShouldEqual(0);
-                        Console.Error.WriteLine("CB 1");
+                    Console.Error.WriteLine("CB 6");
+                    Volatile.Write(ref isDone, true);
+                    Console.Error.WriteLine("CB 7");
+                }
+            };
 
-                        ICorDebugAppDomainEnum ads;
-                        ppc.EnumerateAppDomains(out ads);
-                        Console.Error.WriteLine("CB 2");
-                        uint num = 0;
-                        ads.GetCount(&num).AssertSucceeded("Can't get count.");
-                        Console.Error.WriteLine("CB 3");
+            Console.Error.WriteLine(6);
+            ICorDebugProcess process = onCreateProcess(cordbg);
 
+            Console.Error.WriteLine(7);
 
-                        // Resume
-                        Console.Error.WriteLine("CB 4");
-                        ppc.Continue(0);
-
-                        Console.Error.WriteLine("CB 5");
-                        // Should be running
-                        //                        ppc.IsRunning(&run);
-                        //                        run.ShouldNotEqual(0);
-                    }
-                    finally
-                    {
-                        Console.Error.WriteLine("CB 6");
-                        Volatile.Write(ref isDone, true);
-                        Console.Error.WriteLine("CB 7");
-                    }
-                };
-
-                Console.Error.WriteLine(6);
-                fixed(char* pchPath = app.BinaryPath)
-                fixed(char* pchCmdl = $"\"{app.BinaryPath}\" NO_BREAK")
-                fixed(char* pchWorkdir = app.WorkingDirectory)
-                    cordbg.CreateProcess((ushort*)pchPath, (ushort*)pchCmdl, null, null, 0, 0, null, (ushort*)pchWorkdir, &si, &pi, CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS, out process);
-
-                Console.Error.WriteLine(7);
-
+            if(process != null)
+            {
                 int hrCont = process.Continue(0);
                 Console.Error.WriteLine(7.5);
-                Assert.Throws<InvalidOperationException>(() =>
+                try
                 {
-                    try
-                    {
-                        hrCont.AssertSucceeded("Continue.");
-
-                    }
-                    catch(Exception ex)
-                    {
-                        Console.Error.WriteLine("Expected exception: {0}.", ex.Message);
-                        throw;
-                    }
-                });
+                    hrCont.AssertSucceeded("Continue.");
+                }
+                catch(Exception ex)
+                {
+                    Console.Error.WriteLine("Expected exception: {0}.", ex.Message);
+                    //                        throw;
+                }
                 Console.Error.WriteLine(8);
 
                 {
@@ -130,9 +140,11 @@ namespace CorApi.Tests
                 while(!Volatile.Read(ref isDone))
                 {
                     Console.Error.WriteLine("Waiting…");
-                    Thread.Sleep(0x10);
+                    Thread.Sleep(0x100);
                 }
                 Console.Error.WriteLine("Done waiting.");
+
+                DoChecksOnProcess(process);
 
                 process.Stop(0);
                 process.Terminate(42);
@@ -148,30 +160,14 @@ namespace CorApi.Tests
                             corDebugSession.IsRunning.ShouldBeFalse();
                             sessionStartGuard.Set();
                           };
-                
+
                           session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                           sessionStartGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Session wasn't start");
                           session.Stop();
                 */
-
-                if(!callback.Exceptions.IsEmpty)
-                    throw new AggregateException(callback.Exceptions);
             }
-            catch(Exception ex)
-            {
-                Console.WriteLine(ex.ToString());
-                throw;
-            }
-            finally
-            {
-                /*
-                          if (session != null)
-                          {
-                            session.Dispose();
-                            session = null;
-                          }
-                */
-            }
+            if(!callback.Exceptions.IsEmpty)
+                throw new AggregateException(callback.Exceptions);
         }
 
         [ComVisible(true)]
@@ -223,7 +219,7 @@ namespace CorApi.Tests
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.CreateProcess(ICorDebugProcess pProcess)
+            int ICorDebugManagedCallback.CreateProcess(ICorDebugProcess pProcess)
             {
                 try
                 {
@@ -234,6 +230,7 @@ namespace CorApi.Tests
                 {
                     Exceptions.Add(ex);
                 }
+                return (int)HResults.S_OK;
             }
 
             /// <inheritdoc />

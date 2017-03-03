@@ -51,9 +51,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BasicTest.cs" />
+    <Compile Include="Src\NetClrBasicTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Src\ApplicationDescriptorEx.cs" />
+    <Compile Include="Src\BasicTestCommon.cs" />
+    <Compile Include="Src\Infra\CorClrApplicationDescriptorEx.cs" />
     <Compile Include="Src\ConstantsTests.cs" />
     <Compile Include="Src\CoreClrBasicTest.cs" />
     <Compile Include="Src\Infra\ApplicationDescriptor.cs" />

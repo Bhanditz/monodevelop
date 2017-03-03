@@ -11,23 +11,20 @@ namespace CorApi.Pinvoke
     {
         [CLSCompliant (false)]
         public static ICorDebug CreateICorDebugForCommand (DbgShimInterop dbgShimInterop, string command, string workingDir,
-            IDictionary<string, string> env, TimeSpan runtimeLoadTimeout, out int procId)
+            IDictionary<string, string> env, TimeSpan runtimeLoadTimeout, out uint procId)
         {
             unsafe {
-                IntPtr envPtr = IntPtr.Zero;
-                try {
-                    envPtr = SetupEnvironment (env);
+                 {
+                    var sEnv = GetEnvString (env);
                     void* resumeHandle;
                     uint processId;
-                    var hret =  (HResults)dbgShimInterop.CreateProcessForLaunch (command, 1, envPtr, workingDir, &processId, &resumeHandle);
-                    if (hret != HResults.S_OK)
-                        throw new COMException(string.Format ("Failed call CreateProcessForLaunch: {0}", hret), (int)hret);
-                    procId = (int) processId;
+                    fixed(char* pchCommand = command)
+                    fixed(char* pchworkingDir = workingDir)
+                    fixed(char* pchEnv = sEnv??"")
+                        dbgShimInterop.CreateProcessForLaunch((ushort*)pchCommand, 1, (sEnv != null ? pchEnv : null), (ushort*)pchworkingDir, &processId, &resumeHandle).AssertSucceeded("Failed call CreateProcessForLaunch.");
+                    procId = processId;
                     return CreateICorDebugImpl (dbgShimInterop, processId, runtimeLoadTimeout, resumeHandle);
-                } finally {
-                    if (envPtr != IntPtr.Zero )
-                        TearDownEnvironment (envPtr);
-                }
+                } 
             }
         }
 
@@ -76,24 +73,17 @@ namespace CorApi.Pinvoke
             return corDebug;
         }
 
-        internal static IntPtr SetupEnvironment (IDictionary<string, string> environment)
+        internal static string GetEnvString (IDictionary<string, string> environment)
         {
-            IntPtr env = IntPtr.Zero;
             if (environment != null) {
                 string senv = null;
                 foreach (KeyValuePair<string, string> var in environment) {
                     senv += var.Key + "=" + var.Value + "\0";
                 }
                 senv += "\0";
-                env = Marshal.StringToHGlobalAnsi (senv);
+                return senv;
             }
-            return env;
-        }
-
-        internal static void TearDownEnvironment (IntPtr env)
-        {
-            if (env != IntPtr.Zero)
-                Marshal.FreeHGlobal (env);
+            return null;
         }
     }
 }

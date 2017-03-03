@@ -8,6 +8,8 @@ namespace CorApi.Tests.Infra
     {
         private static readonly string RootFolder = typeof(Constants).Assembly.Location;
 
+        public static string TestDataFolder => Path.GetFullPath(Path.Combine(RootFolder, "..", "..", "..", "..", "TestData"));
+
         public static ApplicationDescriptor Net45ConsoleApp
         {
             get

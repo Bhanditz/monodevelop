@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+
 #pragma warning disable CheckNamespace
 
-namespace JetBrains.Annotations
+namespace CorApi.ComInterop
 {
   /// <summary>
   /// Indicates that the value of the marked element could never be <c>null</c>.

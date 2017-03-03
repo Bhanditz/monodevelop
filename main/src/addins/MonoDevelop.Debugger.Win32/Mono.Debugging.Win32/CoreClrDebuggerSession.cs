@@ -22,11 +22,11 @@ namespace Mono.Debugging.Win32
 				var workingDir = PrepareWorkingDirectory (startInfo);
 				var env = PrepareEnvironment (startInfo);
 				var cmd = PrepareCommandLine (startInfo);
-				int procId;
+				uint procId;
 				var iCorDebug = CoreClrShimUtil.CreateICorDebugForCommand (
 					dbgShimInterop, cmd, workingDir, env, RuntimeLoadTimeout, out procId);
 				dbg = new CorDebugger (iCorDebug);
-				process = dbg.DebugActiveProcess (procId, false);
+				process = dbg.DebugActiveProcess ((int)procId, false);
 				processId = process.Id;
 				SetupProcess (process);
 				process.Continue (false);

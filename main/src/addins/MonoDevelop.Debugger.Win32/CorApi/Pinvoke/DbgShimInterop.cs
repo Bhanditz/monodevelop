@@ -34,10 +34,10 @@ namespace CorApi.Pinvoke
         /// <param name="pResumeHandle">pResumeHandle</param>
         [UnmanagedFunctionPointer(CallingConvention.Cdecl, CharSet = CharSet.Unicode)]
         public delegate Int32 CreateProcessForLaunchDelegate(
-            [In, MarshalAs(UnmanagedType.LPWStr)]string lpCommandLine,
+            [In] UInt16* lpCommandLine,
             [In]Int32 bSuspendProcess,
-            [In]IntPtr lpEnvironment,
-            [In, MarshalAs(UnmanagedType.LPWStr)]string lpCurrentDirectory,
+            [In]void* lpEnvironment,
+            [In] UInt16* lpCurrentDirectory,
             [Out]UInt32* pProcessId,
             [Out]void** pResumeHandle);
         public readonly CreateProcessForLaunchDelegate CreateProcessForLaunch;

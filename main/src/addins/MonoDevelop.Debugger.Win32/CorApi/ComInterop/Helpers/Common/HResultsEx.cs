@@ -1,7 +1,5 @@
 using System;
 
-using JetBrains.Annotations;
-
 namespace CorApi.ComInterop
 {
   public static class HResultsEx

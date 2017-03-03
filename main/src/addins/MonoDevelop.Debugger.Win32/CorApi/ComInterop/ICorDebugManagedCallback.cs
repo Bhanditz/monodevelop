@@ -475,8 +475,8 @@ namespace CorApi.ComInterop
       /// to the CreateProcess callback.
       /// </summary>
       /// <param name="pProcess"></param>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateProcess ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess);
+        [MethodImpl (MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)][PreserveSig]
+        Int32 CreateProcess ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess);
 
       /// <summary>
       /// ExitProcess is called when a process exits.

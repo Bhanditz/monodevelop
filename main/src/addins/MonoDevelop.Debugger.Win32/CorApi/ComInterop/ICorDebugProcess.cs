@@ -3,8 +3,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-using JetBrains.Annotations;
-
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -481,8 +479,8 @@ namespace CorApi.ComInterop
       /// This can be used before the CreateProcess callback.
       /// </summary>
       /// <param name="ppAppDomains"></param>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateAppDomains ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAppDomainEnum ppAppDomains);
+        [MethodImpl (MethodImplOptions.InternalCall| MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig][MustUseReturnValue]Int32 EnumerateAppDomains ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAppDomainEnum ppAppDomains);
 
       /// <summary>
       /// NOT YET IMPLEMENTED
