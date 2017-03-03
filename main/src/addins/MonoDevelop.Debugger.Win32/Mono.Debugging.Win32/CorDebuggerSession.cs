@@ -1040,7 +1040,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal IEnumerable<string> GetAllDocumentPaths()
+		public IEnumerable<string> GetAllDocumentPaths()
 		{
 			lock (appDomainsLock) {
 				var documentFileNames = new HashSet<string>();
@@ -1054,7 +1054,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal IEnumerable<CorAppDomain> GetAppDomains ()
+		public IEnumerable<CorAppDomain> GetAppDomains ()
 		{
 			lock (appDomainsLock) {
 				var corAppDomains = new List<CorAppDomain> (appDomains.Count);
@@ -1079,7 +1079,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal IEnumerable<CorModule> GetAllModules ()
+		public IEnumerable<CorModule> GetAllModules ()
 		{
 			lock (appDomainsLock) {
 				var corModules = new List<CorModule> ();
