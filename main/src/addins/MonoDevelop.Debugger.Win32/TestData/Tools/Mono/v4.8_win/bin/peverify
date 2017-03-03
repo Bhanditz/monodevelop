@@ -1,0 +1,2 @@
+#!/bin/sh
+exec /cygdrive/d/j/workspace/y/tmp/mono/bin/pedump $MONO_OPTIONS --verify metadata,code "$@"

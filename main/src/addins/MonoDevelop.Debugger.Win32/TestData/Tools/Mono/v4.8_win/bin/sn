@@ -1,0 +1,3 @@
+#!/bin/sh
+umask 077
+exec /cygdrive/d/j/workspace/y/tmp/mono/bin/mono $MONO_OPTIONS D:/j/workspace/y/tmp/mono/lib/mono/4.5/sn.exe "$@"
