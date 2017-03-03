@@ -2,6 +2,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
     /// <summary>
@@ -37,38 +39,42 @@ namespace CorApi.ComInterop
         /// Moves the current position forward the given number of elements.
         /// </summary>
         /// <param name="celt">the given number of elements</param>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Skip ([In] UInt32 celt);
+        [MustUseReturnValue("HResult")]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        new Int32 Skip([In] UInt32 celt);
 
         /// <summary>
         /// Sets the position of the enumerator to the beginning of the enumeration.
         /// </summary>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Reset ();
+        [MustUseReturnValue("HResult")]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        new Int32 Reset();
 
         /// <summary>
         /// Creates another enumerator with the same current position as this one.
         /// </summary>
         /// <param name="ppEnum">another enumerator</param>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Clone ([MarshalAs (UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
+        [MustUseReturnValue("HResult")]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        new Int32 Clone([MarshalAs(UnmanagedType.Interface)] out ICorDebugEnum ppEnum);
 
         /// <summary>
         /// Gets the number of elements in the enumeration.
         /// </summary>
-        /// <param name="pcelt">the number of elements in the enumeration</param>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void GetCount (UInt32* pcelt);
+        [MustUseReturnValue("HResult")]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        new Int32 GetCount([Out] UInt32* pcelt);
 
-      /// <summary>
-      /// Gets the next "celt" number of threads in the enumeration.
-      /// The actual number of threads retrieved is returned in "pceltFetched".
-      /// Returns S_FALSE if the actual number of threads retrieved is smaller than the number of threads requested.
-      /// </summary>
-      /// <param name="celt"></param>
-      /// <param name="threads"></param>
-      /// <param name="pceltFetched"></param>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Next ([In] UInt32 celt, [MarshalAs (UnmanagedType.Interface), Out] ICorDebugThread[] threads, [Out] UInt32* pceltFetched);
+        /// <summary>
+        /// Gets the next "celt" app domains in the enumeration
+        /// </summary>
+        [MustUseReturnValue("HResult")]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        Int32 Next([In] UInt32 celt, void** threads, [Out] UInt32* pceltFetched);
     }
 }

@@ -18,17 +18,17 @@ namespace CorApi.Tests
 {
     public unsafe class BasicTestCommon
     {
-        public static void DoChecksOnProcess(ICorDebugProcess process)
+        public static void TestProcess(ICorDebugProcess process)
         {
             var say = Tracepoints.New("DoChecksOnProcess");
 
             say();
-            ICorDebugAppDomainEnum @enum;
-            process.EnumerateAppDomains(out @enum).AssertSucceeded("Cannot enumerate appdomains.");
-            say();
 
             {
                 say(1000);
+                ICorDebugAppDomainEnum @enum;
+                process.EnumerateAppDomains(out @enum).AssertSucceeded("Cannot enumerate appdomains.");
+                say();
                 List<ICorDebugAppDomain> listAppdomains1 = @enum.AsEnumerable().ToList();
                 say();
                 List<ICorDebugAppDomain> listAppdomains2 = @enum.AsEnumerable().ToList();
@@ -42,20 +42,41 @@ namespace CorApi.Tests
 
             {
                 say(2000);
-                IList<ICorDebugAppDomain> listAppdomains1 = @enum.ToList();
+                IList<ICorDebugAppDomain> listAppdomains1 = process.GetAppDomains();
                 say();
-                IList<ICorDebugAppDomain> listAppdomains2 = @enum.ToList();
+                IList<ICorDebugAppDomain> listAppdomains2 = process.GetAppDomains();
                 say();
 
                 listAppdomains1.Count.ShouldEqual(1);
                 listAppdomains2.Count.ShouldEqual(1);
                 ReferenceEquals(listAppdomains1.Single(), listAppdomains2.Single()).ShouldBeTrue("Different RCWs.");
                 say();
+                TestAppdomain(listAppdomains1.Single());
+                say();
                 
+            }
+
+            IList<ICorDebugThread> threads = process.GetThreads();
+            threads.Count.ShouldBeGreaterThan(0);
+            foreach(ICorDebugThread thread in threads)
+            {
+                TestThread(thread);
             }
 
             say(10000);
             Console.Error.WriteLine("EAD -1");
+        }
+
+        private static void TestThread(ICorDebugThread thread)
+        {
+            uint tid;
+            thread.GetID(&tid);
+            Console.Error.WriteLine("Got thread {0:N0}.", tid);
+        }
+
+        private static void TestAppdomain(ICorDebugAppDomain appdomain)
+        {
+            Console.Error.WriteLine($"Got appdomain {appdomain.GetName()} with {appdomain.GetThreads().Count:N0} threads and {appdomain.GetAssemblies().Count:N0} assemblies.");
         }
 
         public static void CheckBaseCorDbg(ICorDebug cordbg, Func<ICorDebug, ICorDebugProcess> onCreateProcess)
@@ -74,7 +95,7 @@ namespace CorApi.Tests
             {
                 try
                 {
-                    DoChecksOnProcess(ppc);
+                    TestProcess(ppc);
 
 //                    MessageBox.Show("RUnning.");
                     Console.Error.WriteLine("CB 0");
@@ -144,7 +165,7 @@ namespace CorApi.Tests
                 }
                 Console.Error.WriteLine("Done waiting.");
 
-                DoChecksOnProcess(process);
+                TestProcess(process);
 
                 process.Stop(0);
                 process.Terminate(42);

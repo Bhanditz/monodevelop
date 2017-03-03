@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -72,9 +74,6 @@ namespace CorApi.ComInterop
     /// <summary>
     /// Gets the next "celt" app domains in the enumeration
     /// </summary>
-    /// <param name="celt"></param>
-    /// <param name="values"></param>
-    /// <param name="pceltFetched"></param>
     [MustUseReturnValue("HResult")]
     [PreserveSig]
     [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]

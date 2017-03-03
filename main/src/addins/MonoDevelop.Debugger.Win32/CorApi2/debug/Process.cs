@@ -130,41 +130,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 ((ICorDebugProcess2)_p()).SetDesiredNGENCompilerFlags((uint)value);
             }
         }
-
-        public CorReferenceValue GetReferenceValueFromGCHandle(IntPtr gchandle)
-        {
-		ICorDebugProcess2 p2 = (ICorDebugProcess2)_p();
-		ICorDebugReferenceValue retval;
-		p2.GetReferenceValueFromGCHandle(gchandle, out retval);
-		return new CorReferenceValue(retval);
-        }
-
-        /** get the thread for a cookie. */
-        public CorThread ThreadForFiberCookie (int cookie)
-        {
-            ICorDebugThread thread = null;
-            _p().ThreadForFiberCookie ((uint) cookie, out thread);
-            return (thread==null)?null:(new CorThread (thread));
-        }
-
-        /** set a BP in native code */
-        public byte[] SetUnmanagedBreakpoint( long address )
-        {
-            UInt32 outLen;
-            byte[] ret = new Byte[1];
-            ICorDebugProcess2 p2 = (ICorDebugProcess2)_p();
-            p2.SetUnmanagedBreakpoint( (UInt64)address, 1, ret, out outLen );
-            Debug.Assert( outLen == 1 );
-            return ret;
-        }
-
-        /** clear a previously set BP in native code */
-        public void ClearUnmanagedBreakpoint( long address )
-        {
-            ICorDebugProcess2 p2 = (ICorDebugProcess2)_p();
-            p2.ClearUnmanagedBreakpoint( (UInt64)address );
-        }
-
+        
         public override void Stop (int timeout)
         {
             _p().Stop ((uint)timeout);

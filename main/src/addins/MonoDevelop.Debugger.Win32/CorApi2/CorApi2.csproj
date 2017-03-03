@@ -63,12 +63,9 @@
   <ItemGroup>
     <Compile Include="CorPublish.cs" />
     <Compile Include="debug\AppDomain.cs" />
-    <Compile Include="debug\AppDomainEnumerator.cs" />
     <Compile Include="debug\Assembly.cs" />
-    <Compile Include="debug\AssemblyEnumerator.cs" />
     <Compile Include="debug\Breakpoint.cs" />
     <Compile Include="debug\BreakpointEnumerator.cs" />
-    <Compile Include="debug\ChainEnumerator.cs" />
     <Compile Include="debug\Class.cs" />
     <Compile Include="debug\Constants.cs" />
     <Compile Include="debug\Controller.cs" />
@@ -91,7 +88,6 @@
     <Compile Include="debug\RegisterSet.cs" />
     <Compile Include="debug\StepperEnumerator.cs" />
     <Compile Include="debug\Thread.cs" />
-    <Compile Include="debug\ThreadEnumerator.cs" />
     <Compile Include="debug\Type.cs" />
     <Compile Include="debug\TypeEnumerator.cs" />
     <Compile Include="debug\Value.cs" />

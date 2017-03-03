@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
     /// <summary>
@@ -37,8 +39,10 @@ namespace CorApi.ComInterop
         new void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <inheritdoc cref="ICorDebugController.EnumerateThreads"/>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void EnumerateThreads ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
+        [MustUseReturnValue]
+        new Int32 EnumerateThreads ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
 
         /// <inheritdoc cref="ICorDebugController.SetAllThreadsDebugState"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
@@ -76,8 +80,10 @@ namespace CorApi.ComInterop
         /// </summary>
         /// <param name="ppAssemblies"></param>
         /// <example><code>HRESULT EnumerateAssemblies([out] ICorDebugAssemblyEnum **ppAssemblies);</code></example>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateAssemblies ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAssemblyEnum ppAssemblies);
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
+        [MustUseReturnValue]
+        new Int32 EnumerateAssemblies ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAssemblyEnum ppAssemblies);
 
         /// <summary>
         /// GetModuleFromMetaDataInterface returns the ICorDebugModule with
@@ -154,8 +160,10 @@ namespace CorApi.ComInterop
         ///                [out, size_is(cchName), length_is(*pcchName)] WCHAR szName[]);
         ///     </code>
         /// </example>
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetName ([In] UInt32 cchName, UInt32 *pcchName, [Out] UInt16* szName);
+        [MustUseReturnValue("HResult")]
+        [PreserveSig]
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        Int32 GetName ([In] UInt32 cchName, UInt32 *pcchName, [Out] UInt16* szName);
 
         /// <summary>
         /// GetObject returns a reference to the System.AppDomain object which represents this AppDomain

@@ -9,8 +9,6 @@ namespace CorApi.Tests
 {
     internal static class CorClrApplicationDescriptorEx
     {
-//        private static readonly string DotNetCoreRootPath = @"C:/Program Files/dotnet/";
-//        private static readonly string DotNetCoreRootPath = @"W:\Dum\NetCore\v1.0.3-patched\";
         private static readonly string DotNetCoreRootPath = PlatformUtil.IsRunningUnderWindows ? Path.Combine(Constants.TestDataFolder, "Tools", "NetCore", "v1.0.3_win")+"\\": @"/usr/share/dotnet/";
         private static readonly string PlatformVersion = "1.0.3";
 

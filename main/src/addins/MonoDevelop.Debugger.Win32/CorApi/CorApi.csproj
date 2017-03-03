@@ -53,6 +53,10 @@
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JetBrains.Annotations, Version=10.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325, processorArchitecture=MSIL">
+      <HintPath>..\packages\JetBrains.Annotations.10.3.0\lib\net\JetBrains.Annotations.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -80,11 +84,12 @@
     <Compile Include="ComInterop\CorDebugUserState.cs" />
     <Compile Include="ComInterop\CorElementType.cs" />
     <Compile Include="ComInterop\COR_DEBUG_STEP_RANGE.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugAppDomainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugEnumEx.cs" />
-    <Compile Include="ComInterop\Helpers\Common\NotNullAttribute.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResultHelpers.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResults.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResultsEx.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugProcessEx.cs" />
     <Compile Include="ComInterop\ICorDebug.cs" />
     <Compile Include="ComInterop\ICorDebugAppDomain.cs" />
     <Compile Include="ComInterop\ICorDebugAppDomain2.cs" />
@@ -197,6 +202,9 @@
     <Compile Include="Pinvoke\UnixDllLoader.cs" />
     <Compile Include="Pinvoke\WindowsDllLoader.cs" />
     <Compile Include="RawAssemblyAttributes.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="..\..\..\..\external\debugger-libs\Mono.Debugging.settings" />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

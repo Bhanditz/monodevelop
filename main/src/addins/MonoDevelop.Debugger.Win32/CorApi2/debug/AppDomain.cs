@@ -36,48 +36,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
             }
         }
 
-        /** Get all Assemblies in the CorAppDomain. */
-        public IEnumerable Assemblies
-        {
-            get
-            {
-                ICorDebugAssemblyEnum eas = null;
-                _ad().EnumerateAssemblies (out eas);
-                return new CorAssemblyEnumerator (eas);
-            }
-        }
-
-
-        /** All active breakpoints in the CorAppDomain */
-        public IEnumerable Breakpoints
-        {
-            get
-            {
-                ICorDebugBreakpointEnum bpoint = null;
-                _ad().EnumerateBreakpoints (out bpoint);
-                return new CorBreakpointEnumerator (bpoint);
-            }
-        }
-
-        /** All active steppers in the CorAppDomain */
-        public IEnumerable Steppers
-        {
-            get
-            {
-                ICorDebugStepperEnum step = null;
-                _ad().EnumerateSteppers (out step);
-                return new CorStepperEnumerator (step);
-            }
-        }
-
-        /** Is the debugger attached to the CorAppDomain? */
-        public bool IsAttached ()
-        {
-            int attach = 0;
-            _ad().IsAttached (out attach);
-            return !(attach==0);
-        }
-
         /** The name of the CorAppDomain */
         public String Name
         {
@@ -88,17 +46,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 StringBuilder szName = new StringBuilder((int)size);
                 _ad().GetName ((uint)szName.Capacity, out size,  szName);
                 return szName.ToString();
-            }
-        }
-
-        /** Get the runtime App domain object */
-        public CorValue AppDomainVariable
-        {
-            get
-            {
-                ICorDebugValue val = null;
-                _ad().GetObject (out val);
-                return new CorValue (val);
             }
         }
 
@@ -121,31 +68,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 return (int) id;
             }
         }
-
-        /** Returns CorType object for an array of or pointer to the given type */
-        public CorType GetArrayOrPointerType(CorElementType elementType, int rank, CorType parameterTypes)
-        {
-            ICorDebugType ct = null;
-            uint urank = (uint) rank;
-            (_ad() as ICorDebugAppDomain2).GetArrayOrPointerType(elementType, urank, parameterTypes.m_type, out ct);
-            return ct==null?null:new CorType (ct);
-        }
         
-        /** Returns CorType object for a pointer to a function */
-        public CorType GetFunctionPointerType(CorType[] parameterTypes)
-        {
-            ICorDebugType[] types = null;
-            if (parameterTypes != null)
-            {
-                types = new ICorDebugType[parameterTypes.Length];
-                for (int i = 0; i < parameterTypes.Length; i++)
-                    types[i] = parameterTypes[i].m_type;
-            }
-
-            ICorDebugType ct = null;
-            (_ad() as ICorDebugAppDomain2).GetFunctionPointerType((uint)types.Length, types, out ct);
-            return ct==null?null:new CorType (ct);
-        }
-
     }
 }

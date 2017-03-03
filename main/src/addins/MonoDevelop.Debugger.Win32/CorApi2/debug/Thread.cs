@@ -189,7 +189,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             {
                 ICorDebugChainEnum ec = null;
                 m_th.EnumerateChains (out ec);
-                return (ec==null)?null:new CorChainEnumerator (ec);
+                return ec.ToList();
             }
         }
         

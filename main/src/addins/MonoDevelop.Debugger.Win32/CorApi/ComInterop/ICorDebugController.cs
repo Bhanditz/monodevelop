@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
     /// <summary>
@@ -113,8 +115,10 @@ namespace CorApi.ComInterop
         /// <param name="ppThreads"></param>
         //
         // HRESULT EnumerateThreads([out] ICorDebugThreadEnum **ppThreads);
-        [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateThreads ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
+        [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
+        [PreserveSig]
+        [MustUseReturnValue]
+         Int32 EnumerateThreads ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThreadEnum ppThreads);
 
         /// <summary>
         /// SetAllThreadsDebugState sets the current debug state of each thread.
