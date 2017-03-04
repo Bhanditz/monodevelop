@@ -114,7 +114,7 @@ namespace CorApi.Tests
 
                     // Resume
                     Console.Error.WriteLine("CB 4");
-                    ppc.Continue(0);
+                    ppc.Continue(0).AssertSucceeded("Could not continue.");
 
                     Console.Error.WriteLine("CB 5");
                     // Should be running
