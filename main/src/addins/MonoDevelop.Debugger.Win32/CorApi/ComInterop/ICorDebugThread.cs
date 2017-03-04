@@ -2,6 +2,8 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -365,7 +367,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppChains"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateChains ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChainEnum ppChains);
+      [PreserveSig][MustUseReturnValue]Int32 EnumerateChains ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChainEnum ppChains);
 
       /// <summary>
       /// GetActiveChain is a convenience routine to return the

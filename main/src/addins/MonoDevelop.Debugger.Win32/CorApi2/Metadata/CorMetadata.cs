@@ -17,11 +17,13 @@ using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Collections.Generic;
 
+using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
+
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class CorMetadataImport
     {
-        public CorMetadataImport(CorModule managedModule)
+        public CorMetadataImport(ICorDebugModule managedModule)
         {
             m_importer = managedModule.GetMetaDataInterface <IMetadataImport>();
             Debug.Assert(m_importer != null);

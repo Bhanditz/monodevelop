@@ -1,19 +1,23 @@
 ﻿using System;
+
+using CorApi.ComInterop;
+
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 using DC = Mono.Debugging.Client;
+using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
 
 namespace Mono.Debugging.Win32
 {
 	public class CorEvaluationContext: EvaluationContext
 	{
 		CorEval corEval;
-		CorFrame frame;
-		CorChain activeChain;
+		ICorDebugFrame frame;
+		ICorDebugChain activeChain;
 		int frameIndex;
 		int evalTimestamp;
 		readonly CorBacktrace backtrace;
-		CorThread thread;
+		ICorDebugThread thread;
 		int threadId;
 
 		public CorDebuggerSession Session { get; set; }
@@ -42,7 +46,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorThread Thread {
+		public ICorDebugThread Thread {
 			get {
 				CheckTimestamp ();
 				if (thread == null)
@@ -55,7 +59,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorChain ActiveChain {
+		public ICorDebugChain ActiveChain {
 			get {
 				CheckTimestamp ();
 				if (activeChain == null) {
@@ -65,7 +69,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorFrame Frame {
+		public ICorDebugFrame Frame {
 			get {
 				CheckTimestamp ();
 				if (frame == null) {
@@ -104,7 +108,7 @@ namespace Mono.Debugging.Win32
 			Session.Frontend.NotifyDebuggerOutput (false, string.Format (message, values));
 		}
 
-		public CorValue RuntimeInvoke (CorFunction function, CorType[] typeArgs, CorValue thisObj, CorValue[] arguments)
+		public ICorDebugValue RuntimeInvoke (ICorDebugFunction function, ICorDebugType[] typeArgs, ICorDebugValue thisObj, ICorDebugValue[] arguments)
 		{
 			return Session.RuntimeInvoke (this, function, typeArgs, thisObj, arguments);
 		}

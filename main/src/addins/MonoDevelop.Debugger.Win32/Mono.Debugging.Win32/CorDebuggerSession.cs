@@ -18,7 +18,20 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 
+using ICorDebugAppDomain = Microsoft.Samples.Debugging.CorDebug.ICorDebugAppDomain;
+using ICorDebugBreakpoint = Microsoft.Samples.Debugging.CorDebug.ICorDebugBreakpoint;
+using ICorDebugFrame = Microsoft.Samples.Debugging.CorDebug.ICorDebugFrame;
+using ICorDebugFunction = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunction;
+using ICorDebugFunctionBreakpoint = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunctionBreakpoint;
+using ICorDebugGenericValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugGenericValue;
+using ICorDebugHeapValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugHeapValue;
+using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
+using ICorDebugObjectValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugObjectValue;
+using ICorDebugReferenceValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugReferenceValue;
 using ICorDebugStepper = Microsoft.Samples.Debugging.CorDebug.ICorDebugStepper;
+using ICorDebugThread = Microsoft.Samples.Debugging.CorDebug.ICorDebugThread;
+using ICorDebugType = Microsoft.Samples.Debugging.CorDebug.ICorDebugType;
+using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
 using ISymbolReader = System.Diagnostics.SymbolStore.ISymbolReader;
 
 namespace Mono.Debugging.Win32
@@ -31,7 +44,7 @@ namespace Mono.Debugging.Win32
 
 		protected CorDebugger dbg;
 		protected CorProcess process;
-		CorThread activeThread;
+		ICorDebugThread activeThread;
 		ICorDebugStepper stepper;
 		bool terminated;
 		bool evaluating;
@@ -48,7 +61,7 @@ namespace Mono.Debugging.Win32
 		Dictionary<int, AppDomainInfo> appDomains = new Dictionary<int, AppDomainInfo> ();
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
-		readonly Dictionary<CorBreakpoint, BreakEventInfo> breakpoints = new Dictionary<CorBreakpoint, BreakEventInfo> ();
+		readonly Dictionary<ICorDebugBreakpoint, BreakEventInfo> breakpoints = new Dictionary<ICorDebugBreakpoint, BreakEventInfo> ();
 		readonly Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
 
 		readonly BlockingCollection<Action> helperOperationsQueue = new BlockingCollection<Action>(new ConcurrentQueue<Action>());
@@ -58,7 +71,7 @@ namespace Mono.Debugging.Win32
 
 		class AppDomainInfo
 		{
-			public CorAppDomain AppDomain;
+			public ICorDebugAppDomain AppDomain;
 			public Dictionary<string, DocInfo> Documents;
 			public Dictionary<string, ModuleInfo> Modules;
 		}
@@ -72,7 +85,7 @@ namespace Mono.Debugging.Win32
 		class ModuleInfo
 		{
 			public ISymbolReader Reader;
-			public CorModule Module;
+			public ICorDebugModule Module;
 			public CorMetadataImport Importer;
 		}
 
@@ -522,7 +535,7 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		bool ShouldContinueOnBreakpoint (CorThread thread, BreakEventInfo binfo)
+		bool ShouldContinueOnBreakpoint (ICorDebugThread thread, BreakEventInfo binfo)
 		{
 			var bp = (Breakpoint) binfo.BreakEvent;
 			binfo.IncrementHitCount();
@@ -870,9 +883,9 @@ namespace Mono.Debugging.Win32
 		private bool IsCatchpoint (CorException2EventArgs e)
 		{
 			// Build up the exception type hierachy
-			CorValue v = e.Thread.CurrentException;
+			ICorDebugValue v = e.Thread.CurrentException;
 			List<string> exceptions = new List<string>();
-			CorType t = v.ExactType;
+			ICorDebugType t = v.ExactType;
 			while (t != null) {
 				exceptions.Add(t.GetTypeInfo(this).FullName);
 				t = t.Base;
@@ -952,7 +965,7 @@ namespace Mono.Debugging.Win32
 		{
 			MtaThread.Run (delegate
 			{
-				var bpList = binfo.Handle as List<CorFunctionBreakpoint>;
+				var bpList = binfo.Handle as List<ICorDebugFunctionBreakpoint>;
 				if (bpList != null) {
 					foreach (var bp in bpList) {
 						try {
@@ -996,7 +1009,7 @@ namespace Mono.Debugging.Win32
 		{
 			return MtaThread.Run (delegate
 			{
-				foreach (CorThread t in process.Threads) {
+				foreach (ICorDebugThread t in process.Threads) {
 					if (t.Id == threadId) {
 						return new Backtrace (new CorBacktrace (t, this));
 					}
@@ -1010,13 +1023,13 @@ namespace Mono.Debugging.Win32
 			return MtaThread.Run (delegate
 			{
 				List<ThreadInfo> list = new List<ThreadInfo> ();
-				foreach (CorThread t in process.Threads)
+				foreach (ICorDebugThread t in process.Threads)
 					list.Add (GetThread (t));
 				return list.ToArray ();
 			});
 		}
 
-		internal ISymbolReader GetReaderForModule (CorModule module)
+		internal ISymbolReader GetReaderForModule (ICorDebugModule module)
 		{
 			lock (appDomainsLock) {
 				AppDomainInfo appDomainInfo;
@@ -1029,7 +1042,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal CorMetadataImport GetMetadataForModule (CorModule module)
+		internal CorMetadataImport GetMetadataForModule (ICorDebugModule module)
 		{
 			lock (appDomainsLock) {
 				AppDomainInfo appDomainInfo;
@@ -1056,10 +1069,10 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal IEnumerable<CorAppDomain> GetAppDomains ()
+		internal IEnumerable<ICorDebugAppDomain> GetAppDomains ()
 		{
 			lock (appDomainsLock) {
-				var corAppDomains = new List<CorAppDomain> (appDomains.Count);
+				var corAppDomains = new List<ICorDebugAppDomain> (appDomains.Count);
 				foreach (var appDomainInfo in appDomains) {
 					corAppDomains.Add (appDomainInfo.Value.AppDomain);
 				}
@@ -1067,10 +1080,10 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal IEnumerable<CorModule> GetModules (CorAppDomain appDomain)
+		internal IEnumerable<ICorDebugModule> GetModules (ICorDebugAppDomain appDomain)
 		{
 			lock (appDomainsLock) {
-				List<CorModule> mods = new List<CorModule> ();
+				List<ICorDebugModule> mods = new List<ICorDebugModule> ();
 				AppDomainInfo appDomainInfo;
 				if (appDomains.TryGetValue (appDomain.Id, out appDomainInfo)) {
 					foreach (ModuleInfo mod in appDomainInfo.Modules.Values) {
@@ -1081,10 +1094,10 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal IEnumerable<CorModule> GetAllModules ()
+		internal IEnumerable<ICorDebugModule> GetAllModules ()
 		{
 			lock (appDomainsLock) {
-				var corModules = new List<CorModule> ();
+				var corModules = new List<ICorDebugModule> ();
 				foreach (var appDomainInfo in appDomains) {
 					corModules.AddRange (GetModules (appDomainInfo.Value.AppDomain));
 				}
@@ -1092,16 +1105,16 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal CorHandleValue GetHandle (CorValue val)
+		internal CorHandleValue GetHandle (ICorDebugValue val)
 		{
 			CorHandleValue handleVal = null;
 			if (!handles.TryGetValue (val.Address, out handleVal)) {
-				handleVal = val.CastToHandleValue ();
+				handleVal = (CorHandleValue)(val as ICorDebugHandleValue);
 				if (handleVal == null)
 				{
 					// Create a handle
-					CorReferenceValue refVal = val.CastToReferenceValue ();
-					CorHeapValue heapVal = refVal.Dereference ().CastToHeapValue ();
+					ICorDebugReferenceValue refVal = val as CorApi.ComInterop.ICorDebugReferenceValue;
+					ICorDebugHeapValue heapVal = refVal.Dereference ().CastToHeapValue ();
 					handleVal = heapVal.CreateHandle (CorDebugHandleType.HANDLE_STRONG);
 				}
 				handles.Add (val.Address, handleVal);	
@@ -1230,15 +1243,15 @@ namespace Mono.Debugging.Win32
 						}
 
 						foreach (var docInfo in docInfos) {
-							CorFunction func = docInfo.ModuleInfo.Module.GetFunctionFromToken (bestMethod.Token.GetToken ());
+							ICorDebugFunction func = docInfo.ModuleInfo.Module.GetFunctionFromToken (bestMethod.Token.GetToken ());
 
 							try {
-								CorFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
+								ICorDebugFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
 								breakpoints[corBp] = binfo;
 
 								if (binfo.Handle == null)
-									binfo.Handle = new List<CorFunctionBreakpoint> ();
-								(binfo.Handle as List<CorFunctionBreakpoint>).Add (corBp);
+									binfo.Handle = new List<ICorDebugFunctionBreakpoint> ();
+								(binfo.Handle as List<ICorDebugFunctionBreakpoint>).Add (corBp);
 								corBp.Activate (bp.Enabled);
 								binfo.SetStatus (BreakEventStatus.Bound, null);
 							}
@@ -1327,7 +1340,7 @@ namespace Mono.Debugging.Win32
 			try {
 				ObjectAdapter.CancelAsyncOperations ();
 				if (stepper != null) {
-					CorFrame frame = activeThread.ActiveFrame;
+					ICorDebugFrame frame = activeThread.ActiveFrame;
 					ISymbolReader reader = GetReaderForModule (frame.Function.Module);
 					if (reader == null) {
 						RawContinue (into);
@@ -1393,7 +1406,7 @@ namespace Mono.Debugging.Win32
 
 			MtaThread.Run (delegate
 			{
-				var corBpList = (List<CorFunctionBreakpoint>)bi.Handle;
+				var corBpList = (List<ICorDebugFunctionBreakpoint>)bi.Handle;
 				foreach (var corBp in corBpList) {
 					try {
 						corBp.Activate (false);
@@ -1414,7 +1427,7 @@ namespace Mono.Debugging.Win32
 				if (stepper != null && stepper.IsActive ())
 					stepper.Deactivate ();
 				stepper = null;
-				foreach (CorThread t in process.Threads) {
+				foreach (ICorDebugThread t in process.Threads) {
 					if (t.Id == threadId) {
 						SetActiveThread (t);
 						break;
@@ -1423,7 +1436,7 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		void SetActiveThread (CorThread t)
+		void SetActiveThread (ICorDebugThread t)
 		{
 			activeThread = t;
 			if (stepper != null && stepper.IsActive ()) {
@@ -1457,8 +1470,8 @@ namespace Mono.Debugging.Win32
 			{
 				process.Stop (0);
 				OnStopped ();
-				CorThread currentThread = null;
-				foreach (CorThread t in process.Threads) {
+				ICorDebugThread currentThread = null;
+				foreach (ICorDebugThread t in process.Threads) {
 					currentThread = t;
 					break;
 				}
@@ -1473,13 +1486,13 @@ namespace Mono.Debugging.Win32
 		{
 		}
 
-		public CorValue RuntimeInvoke (CorEvaluationContext ctx, CorFunction function, CorType[] typeArgs, CorValue thisObj, CorValue[] arguments)
+		public ICorDebugValue RuntimeInvoke (CorEvaluationContext ctx, ICorDebugFunction function, ICorDebugType[] typeArgs, ICorDebugValue thisObj, ICorDebugValue[] arguments)
 		{
-			CorValue[] args;
+			ICorDebugValue[] args;
 			if (thisObj == null)
 				args = arguments;
 			else {
-				args = new CorValue[arguments.Length + 1];
+				args = new ICorDebugValue[arguments.Length + 1];
 				args[0] = thisObj;
 				arguments.CopyTo (args, 1);
 			}
@@ -1520,10 +1533,10 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		CorValue NewSpecialObject (CorEvaluationContext ctx, Action<CorEval> createCall)
+		ICorDebugValue NewSpecialObject (CorEvaluationContext ctx, Action<CorEval> createCall)
 		{
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
-			CorValue result = null;
+			ICorDebugValue result = null;
 			var eval = ctx.Eval;
 			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
 				if (eargs.Eval != eval)
@@ -1573,12 +1586,12 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorValue NewString (CorEvaluationContext ctx, string value)
+		public ICorDebugValue NewString (CorEvaluationContext ctx, string value)
 		{
 			return NewSpecialObject (ctx, eval => eval.NewString (value));
 		}
 
-		public CorValue NewArray (CorEvaluationContext ctx, CorType elemType, int size)
+		public ICorDebugValue NewArray (CorEvaluationContext ctx, ICorDebugType elemType, int size)
 		{
 			return NewSpecialObject (ctx, eval => eval.NewParameterizedArray (elemType, 1, 1, 0));
 		}
@@ -1648,7 +1661,7 @@ namespace Mono.Debugging.Win32
 			return info;
 		}
 
-		ThreadInfo GetThread (CorThread thread)
+		ThreadInfo GetThread (ICorDebugThread thread)
 		{
 			ThreadInfo info;
 			lock (threads) {
@@ -1674,11 +1687,11 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorThread GetThread (int id)
+		public ICorDebugThread GetThread (int id)
 		{
 			try {
 				WaitUntilStopped ();
-				foreach (CorThread t in process.Threads)
+				foreach (ICorDebugThread t in process.Threads)
 					if (t.Id == id)
 						return t;
 				throw new InvalidOperationException ("Invalid thread id " + id);
@@ -1688,16 +1701,16 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		string GetThreadName (CorThread thread)
+		string GetThreadName (ICorDebugThread thread)
 		{
 			// From http://social.msdn.microsoft.com/Forums/en/netfxtoolsdev/thread/461326fe-88bd-4a6b-82a9-1a66b8e65116
 		    try 
 		    { 
-		        CorReferenceValue refVal = thread.ThreadVariable.CastToReferenceValue(); 
+		        ICorDebugReferenceValue refVal = thread.ThreadVariable.CastToReferenceValue(); 
 		        if (refVal.IsNull) 
 		            return string.Empty; 
 		        
-		        CorObjectValue val = refVal.Dereference().CastToObjectValue(); 
+		        ICorDebugObjectValue val = refVal.Dereference().CastToObjectValue(); 
 		        if (val != null) 
 		        { 
 					Type classType = val.ExactType.GetTypeInfo (this);
@@ -1706,7 +1719,7 @@ namespace Mono.Debugging.Win32
 		            { 
 		                if (fi.Name == "m_Name")
 						{
-		                        CorReferenceValue fieldValue = val.GetFieldValue(val.Class, fi.MetadataToken).CastToReferenceValue(); 
+		                        ICorDebugReferenceValue fieldValue = val.GetFieldValue(val.Class, fi.MetadataToken).CastToReferenceValue(); 
 							
 								if (fieldValue.IsNull)
 									return string.Empty;
@@ -1722,7 +1735,7 @@ namespace Mono.Debugging.Win32
 			return string.Empty;
 		}
 		
-		string EvaluateTrace (CorThread thread, string exp)
+		string EvaluateTrace (ICorDebugThread thread, string exp)
 		{
 			StringBuilder sb = new StringBuilder ();
 			int last = 0;
@@ -1754,7 +1767,7 @@ namespace Mono.Debugging.Win32
 			return sb.ToString ();
 		}
 		
-		string EvaluateExpression (CorThread thread, string exp)
+		string EvaluateExpression (ICorDebugThread thread, string exp)
 		{
 			try {
 				if (thread.ActiveFrame == null)
@@ -1806,7 +1819,7 @@ namespace Mono.Debugging.Win32
 				if (thread == null)
 					throw new ArgumentException ("Unknown thread.");
 
-				CorFrame frame = thread.ActiveFrame;
+				ICorDebugFrame frame = thread.ActiveFrame;
 				if (frame == null)
 					throw new NotSupportedException ();
 
@@ -1891,7 +1904,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public static Type GetTypeInfo (this CorType type, CorDebuggerSession session)
+		public static Type GetTypeInfo (this ICorDebugType type, CorDebuggerSession session)
 		{
 			Type t;
 			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type, out t))
@@ -1916,10 +1929,10 @@ namespace Mono.Debugging.Win32
 			CorMetadataImport mi = session.GetMetadataForModule (type.Class.Module);
 			if (mi != null) {
 				t = mi.GetType (type.Class.Token);
-				CorType[] targs = type.TypeParameters;
+				ICorDebugType[] targs = type.TypeParameters;
 				if (targs.Length > 0) {
 					List<Type> types = new List<Type> ();
-					foreach (CorType ct in targs)
+					foreach (ICorDebugType ct in targs)
 						types.Add (ct.GetTypeInfo (session));
 					return MetadataExtensions.MakeGeneric (t, types);
 				}
@@ -1930,7 +1943,7 @@ namespace Mono.Debugging.Win32
 				return null;
 		}
 
-		public static ISymbolMethod GetSymbolMethod (this CorFunction func, CorDebuggerSession session)
+		public static ISymbolMethod GetSymbolMethod (this ICorDebugFunction func, CorDebuggerSession session)
 		{
 			ISymbolReader reader = session.GetReaderForModule (func.Module);
 			if (reader == null)
@@ -1938,7 +1951,7 @@ namespace Mono.Debugging.Win32
 			return reader.GetMethod (new SymbolToken (func.Token));
 		}
 
-		public static MethodInfo GetMethodInfo (this CorFunction func, CorDebuggerSession session)
+		public static MethodInfo GetMethodInfo (this ICorDebugFunction func, CorDebuggerSession session)
 		{
 			CorMetadataImport mi = session.GetMetadataForModule (func.Module);
 			if (mi != null)
@@ -1959,15 +1972,15 @@ namespace Mono.Debugging.Win32
 				return;
 			}
 				
-			CorReferenceValue s = thisVal.Val.CastToReferenceValue ();
+			ICorDebugReferenceValue s = thisVal.Val as CorApi.ComInterop.ICorDebugReferenceValue;
 			if (s != null) {
-				CorReferenceValue v = val.Val.CastToReferenceValue ();
+				ICorDebugReferenceValue v = val.Val as CorApi.ComInterop.ICorDebugReferenceValue;
 				if (v != null) {
 					s.Value = v.Value;
 					return;
 				}
 			}
-			CorGenericValue gv = CorObjectAdaptor.GetRealObject (cctx, thisVal.Val) as CorGenericValue;
+			ICorDebugGenericValue gv = CorObjectAdaptor.GetRealObject (cctx, thisVal.Val) as ICorDebugGenericValue;
 			if (gv != null)
 				gv.SetValue (ctx.Adapter.TargetObjectToObject (ctx, val));
 		}

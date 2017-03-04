@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+
+using JetBrains.Annotations;
 
 namespace CorApi.ComInterop
 {
@@ -80,7 +83,8 @@ namespace CorApi.ComInterop
     [InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
     [Guid ("2BD956D9-7B07-4BEF-8A98-12AA862417C5")]
     [ComImport]
-    public unsafe interface ICorDebugThread2
+    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
+  public unsafe interface ICorDebugThread2
     {
       /// <summary>
       /// Retrieves the active functions for the given threads' frames. This
@@ -95,7 +99,7 @@ namespace CorApi.ComInterop
       /// <param name="pcFunctions"></param>
       /// <param name="pFunctions"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetActiveFunctions ([In] UInt32 cFunctions, UInt32* pcFunctions, COR_ACTIVE_FUNCTION* pFunctions);
+        [PreserveSig][MustUseReturnValue]Int32 GetActiveFunctions ([In] UInt32 cFunctions, UInt32* pcFunctions, COR_ACTIVE_FUNCTION* pFunctions);
 
       /// <summary>
       /// Returns 0 if not part of a connection

@@ -31,6 +31,11 @@ using Mono.Debugging.Evaluation;
 using Microsoft.Samples.Debugging.CorDebug;
 using CorApi.ComInterop;
 
+using ICorDebugFunction = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunction;
+using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
+using ICorDebugType = Microsoft.Samples.Debugging.CorDebug.ICorDebugType;
+using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
+
 namespace Mono.Debugging.Win32
 {
 	class PropertyReference: ValueReference
@@ -38,25 +43,25 @@ namespace Mono.Debugging.Win32
 		readonly PropertyInfo prop;
 		readonly CorValRef thisobj;
 		readonly CorValRef[] index;
-		readonly CorModule module;
-		readonly CorType declaringType;
+		readonly ICorDebugModule module;
+		readonly ICorDebugType declaringType;
 		readonly CorValRef.ValueLoader loader;
 		readonly ObjectValueFlags flags;
 		CorValRef cachedValue;
 
-		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType)
+		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, ICorDebugType declaringType)
 			: this (ctx, prop, thisobj, declaringType, null)
 		{
 		}
 
-		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, CorType declaringType, CorValRef[] index)
+		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, ICorDebugType declaringType, CorValRef[] index)
 			: base (ctx)
 		{
 			this.prop = prop;
 			this.declaringType = declaringType;
 			if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
 			    declaringType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-				this.module = ((CorType)((CorEvaluationContext)ctx).Adapter.GetType (ctx, "System.Object")).Class.Module;
+				this.module = ((ICorDebugType)((CorEvaluationContext)ctx).Adapter.GetType (ctx, "System.Object")).Class.Module;
 			} else {
 				this.module = declaringType.Class.Module;
 			}
@@ -92,22 +97,22 @@ namespace Mono.Debugging.Win32
 				if (!prop.CanRead)
 					return null;
 				CorEvaluationContext ctx = (CorEvaluationContext) Context;
-				CorValue[] args;
+				ICorDebugValue[] args;
 				if (index != null) {
-					args = new CorValue[index.Length];
+					args = new ICorDebugValue[index.Length];
 					ParameterInfo[] metArgs = prop.GetGetMethod (true).GetParameters ();
 					for (int n = 0; n < index.Length; n++)
 						args[n] = ctx.Adapter.GetBoxedArg (ctx, index[n], metArgs[n].ParameterType).Val;
 				}
 				else
-					args = new CorValue[0];
+					args = new ICorDebugValue[0];
 
 				MethodInfo mi = prop.GetGetMethod (true);
-				CorFunction func = module.GetFunctionFromToken (mi.MetadataToken);
-				CorValue val = null;
+				ICorDebugFunction func = module.GetFunctionFromToken (mi.MetadataToken);
+				ICorDebugValue val = null;
 				if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
 				    declaringType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-					val = ctx.RuntimeInvoke (func, new CorType[0], thisobj != null ? thisobj.Val : null, args);
+					val = ctx.RuntimeInvoke (func, new ICorDebugType[0], thisobj != null ? thisobj.Val : null, args);
 				} else {
 					val = ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
 				}
@@ -115,15 +120,15 @@ namespace Mono.Debugging.Win32
 			}
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext)Context;
-				CorFunction func = module.GetFunctionFromToken (prop.GetSetMethod (true).MetadataToken);
+				ICorDebugFunction func = module.GetFunctionFromToken (prop.GetSetMethod (true).MetadataToken);
 				CorValRef val = (CorValRef) value;
-				CorValue[] args;
+				ICorDebugValue[] args;
 				ParameterInfo[] metArgs = prop.GetSetMethod (true).GetParameters ();
 
 				if (index == null)
-					args = new CorValue[1];
+					args = new ICorDebugValue[1];
 				else {
-					args = new CorValue [index.Length + 1];
+					args = new ICorDebugValue [index.Length + 1];
 					for (int n = 0; n < index.Length; n++) {
 						args[n] = ctx.Adapter.GetBoxedArg (ctx, index[n], metArgs[n].ParameterType).Val;
 					}

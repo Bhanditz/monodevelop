@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -73,6 +75,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppTyParEnum"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumerateTypeParameters ([MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
+    [PreserveSig][MustUseReturnValue]Int32 EnumerateTypeParameters ([MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
   }
 }

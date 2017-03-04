@@ -35,14 +35,14 @@ namespace Mono.Debugging.Win32
 {
 	public class FieldReference: ValueReference
 	{
-		readonly CorType type;
+		readonly ICorDebugType type;
 		readonly FieldInfo field;
 		readonly CorValRef thisobj;
 		readonly CorValRef.ValueLoader loader;
 		readonly ObjectValueFlags flags;
 		readonly string vname;
 
-		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field, string vname, ObjectValueFlags vflags) : base (ctx)
+		public FieldReference (EvaluationContext ctx, CorValRef thisobj, ICorDebugType type, FieldInfo field, string vname, ObjectValueFlags vflags) : base (ctx)
 		{
 			this.thisobj = thisobj;
 			this.type = type;
@@ -58,7 +58,7 @@ namespace Mono.Debugging.Win32
 			};
 		}
 
-		public FieldReference (EvaluationContext ctx, CorValRef thisobj, CorType type, FieldInfo field)
+		public FieldReference (EvaluationContext ctx, CorValRef thisobj, ICorDebugType type, FieldInfo field)
 			: this (ctx, thisobj, type, field, null, ObjectValueFlags.Field)
 		{
 		}
@@ -86,17 +86,17 @@ namespace Mono.Debugging.Win32
 		public override object Value {
 			get {
 				var ctx = (CorEvaluationContext) Context;
-				CorValue val;
+				ICorDebugValue val;
 				if (thisobj != null && !field.IsStatic) {
-					CorObjectValue cval;
+					ICorDebugObjectValue cval;
 					val = CorObjectAdaptor.GetRealObject (ctx, thisobj);
-					if (val is CorObjectValue) {
-						cval = (CorObjectValue)val;
+					if (val is ICorDebugObjectValue) {
+						cval = (ICorDebugObjectValue)val;
 						val = cval.GetFieldValue (type.Class, field.MetadataToken);
 						return new CorValRef (val, loader);
 					}
-					if (val is CorReferenceValue) {
-						CorReferenceValue rval = (CorReferenceValue)val;
+					if (val is ICorDebugReferenceValue) {
+						ICorDebugReferenceValue rval = (ICorDebugReferenceValue)val;
 						return new CorValRef (rval, loader);
 					}
 				}
@@ -122,7 +122,7 @@ namespace Mono.Debugging.Win32
 			set {
 				((CorValRef)Value).SetValue (Context, (CorValRef) value);
 				if (thisobj != null) {
-					CorObjectValue cob = CorObjectAdaptor.GetRealObject (Context, thisobj) as CorObjectValue;
+					ICorDebugObjectValue cob = CorObjectAdaptor.GetRealObject (Context, thisobj) as ICorDebugObjectValue;
 					if (cob != null && cob.IsValueClass)
 						thisobj.Invalidate (); // Required to make sure that thisobj returns an up-to-date value object
 				}

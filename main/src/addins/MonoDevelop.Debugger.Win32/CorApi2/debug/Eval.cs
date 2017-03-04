@@ -24,12 +24,12 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
 
 
-        public void CallFunction (CorFunction managedFunction, CorValue[] arguments)
+        public void CallFunction (ICorDebugFunction managedFunction, ICorDebugValue[] arguments)
         {
-            ICorDebugValue[] values = null;
+            CorApi.ComInterop.ICorDebugValue[] values = null;
             if(arguments!=null)
             {
-                values = new ICorDebugValue[arguments.Length];
+                values = new CorApi.ComInterop.ICorDebugValue[arguments.Length];
                 for(int i=0;i<arguments.Length;i++)
                     values[i] = arguments[i].m_val;
             }
@@ -38,25 +38,25 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                  values);
         }
 
-        public void CallParameterizedFunction (CorFunction managedFunction, CorType[] argumentTypes, CorValue[] arguments)
+        public void CallParameterizedFunction (ICorDebugFunction managedFunction, ICorDebugType[] argumentTypes, ICorDebugValue[] arguments)
         {
-            ICorDebugType[] types = null;
+            CorApi.ComInterop.ICorDebugType[] types = null;
             int typesLength = 0;
-            ICorDebugValue[] values = null;
+            CorApi.ComInterop.ICorDebugValue[] values = null;
             int valuesLength = 0;
             
             ICorDebugEval2 eval2 = (ICorDebugEval2) m_eval;
 
             if (argumentTypes != null)
             {
-                types = new ICorDebugType[argumentTypes.Length];
+                types = new CorApi.ComInterop.ICorDebugType[argumentTypes.Length];
                 for (int i = 0; i < argumentTypes.Length; i++)
                     types[i] = argumentTypes[i].m_type;
                 typesLength = types.Length;
             }
             if (arguments != null)
             {
-                values = new ICorDebugValue[arguments.Length];
+                values = new CorApi.ComInterop.ICorDebugValue[arguments.Length];
                 for (int i = 0; i < arguments.Length; i++)
                     values[i] = arguments[i].m_val;
                 valuesLength = values.Length;
@@ -64,33 +64,33 @@ namespace Microsoft.Samples.Debugging.CorDebug
             eval2.CallParameterizedFunction(managedFunction.m_function, (uint)typesLength, types, (uint)valuesLength, values);
         }
 
-        public CorValue CreateValueForType(CorType type)
+        public ICorDebugValue CreateValueForType(ICorDebugType type)
         {
-            ICorDebugValue val = null;
+            CorApi.ComInterop.ICorDebugValue val = null;
             ICorDebugEval2 eval2 = (ICorDebugEval2) m_eval;
             eval2.CreateValueForType(type.m_type, out val);
-            return val==null?null:new CorValue (val);
+            return val==null?null:new ICorDebugValue (val);
         }
 
-        public void NewParameterizedObject(CorFunction managedFunction, CorType[] argumentTypes, CorValue[] arguments)
+        public void NewParameterizedObject(ICorDebugFunction managedFunction, ICorDebugType[] argumentTypes, ICorDebugValue[] arguments)
         {
     
-            ICorDebugType[] types = null;
+            CorApi.ComInterop.ICorDebugType[] types = null;
             int typesLength = 0;
-            ICorDebugValue[] values = null;
+            CorApi.ComInterop.ICorDebugValue[] values = null;
             int valuesLength = 0;
             ICorDebugEval2 eval2 = (ICorDebugEval2) m_eval;
 
             if (argumentTypes != null)
             {
-                types = new ICorDebugType[argumentTypes.Length];
+                types = new CorApi.ComInterop.ICorDebugType[argumentTypes.Length];
                 for (int i = 0; i < argumentTypes.Length; i++)
                     types[i] = argumentTypes[i].m_type;
                 typesLength = types.Length;
             }
             if (arguments != null)
             {
-                values = new ICorDebugValue[arguments.Length];
+                values = new CorApi.ComInterop.ICorDebugValue[arguments.Length];
                 for (int i = 0; i < arguments.Length; i++)
                     values[i] = arguments[i].m_val;
                 valuesLength = values.Length;
@@ -98,14 +98,14 @@ namespace Microsoft.Samples.Debugging.CorDebug
             eval2.NewParameterizedObject(managedFunction.m_function, (uint)typesLength, types, (uint)valuesLength, values);
         }
 
-        public void NewParameterizedObjectNoConstructor(CorClass managedClass, CorType[] argumentTypes)
+        public void NewParameterizedObjectNoConstructor(ICorDebugClass managedClass, ICorDebugType[] argumentTypes)
         {
-            ICorDebugType[] types = null;
+            CorApi.ComInterop.ICorDebugType[] types = null;
             int typesLength=0;
             ICorDebugEval2 eval2 = (ICorDebugEval2) m_eval;
             if (argumentTypes != null)
             {
-                types = new ICorDebugType[argumentTypes.Length];
+                types = new CorApi.ComInterop.ICorDebugType[argumentTypes.Length];
                 for (int i = 0; i < argumentTypes.Length; i++)
                     types[i] = argumentTypes[i].m_type;
                 typesLength = types.Length;
@@ -113,7 +113,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             eval2.NewParameterizedObjectNoConstructor(managedClass.m_class, (uint)typesLength, types);
         }
 
-        public void NewParameterizedArray(CorType type, int rank, int dims, int lowBounds)
+        public void NewParameterizedArray(ICorDebugType type, int rank, int dims, int lowBounds)
         {
             ICorDebugEval2 eval2 = (ICorDebugEval2) m_eval;
             uint udims = (uint)dims;
@@ -123,7 +123,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
 
         /** Create an object w/o invoking its constructor. */
-        public void NewObjectNoContstructor (CorClass c)
+        public void NewObjectNoContstructor (ICorDebugClass c)
         {
             m_eval.NewObjectNoConstructor (c.m_class);
         }
@@ -134,7 +134,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             m_eval.NewString (value);
         }
 
-        public void NewArray (CorElementType type, CorClass managedClass, int rank, 
+        public void NewArray (CorElementType type, ICorDebugClass managedClass, int rank, 
                               int dimensions, int lowBounds)
         {
             uint udims = (uint)dimensions;
@@ -164,33 +164,33 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         /** Result of the evaluation.  Valid only after the eval is complete. */
-        public CorValue Result
+        public ICorDebugValue Result
         {
             get
             {
-                ICorDebugValue v = null;
+                CorApi.ComInterop.ICorDebugValue v = null;
                 m_eval.GetResult (out v);
-                return (v==null)?null:new CorValue (v);
+                return (v==null)?null:new ICorDebugValue (v);
             }
         }
 
         /** The thread that this eval was created in. */
-        public CorThread Thread
+        public ICorDebugThread Thread
         {
             get
             {
-                ICorDebugThread t = null;
+                CorApi.ComInterop.ICorDebugThread t = null;
                 m_eval.GetThread (out t);
-                return (t==null)?null:new CorThread (t);
+                return (t==null)?null:new ICorDebugThread (t);
             }
         }
 
         /** Create a Value to use it in a Function Evaluation. */
-        public CorValue CreateValue (CorElementType type, CorClass managedClass)
+        public ICorDebugValue CreateValue (CorElementType type, ICorDebugClass managedClass)
         {
-            ICorDebugValue v = null;
+            CorApi.ComInterop.ICorDebugValue v = null;
             m_eval.CreateValue (type, managedClass==null?null:managedClass.m_class, out v);
-            return (v==null)?null:new CorValue (v);
+            return (v==null)?null:new ICorDebugValue (v);
         }
     } /* class Eval */
 } /* namespace */

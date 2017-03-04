@@ -32,10 +32,10 @@ namespace Mono.Debugging.Win32
 	public class StringAdaptor: IStringAdaptor
 	{
 		readonly CorEvaluationContext ctx;
-		readonly CorStringValue str;
+		readonly ICorDebugStringValue str;
 		readonly CorValRef obj;
 		
-		public StringAdaptor (EvaluationContext ctx, CorValRef obj, CorStringValue str)
+		public StringAdaptor (EvaluationContext ctx, CorValRef obj, ICorDebugStringValue str)
 		{
 			this.ctx = (CorEvaluationContext) ctx;
 			this.str = str;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
@@ -139,6 +140,17 @@ namespace PinvokeKit
                 szPath[nActualLengthWithoutZero] = (char)0; // Ensure zero-terminated, on XP this is not guaranteed if the path is long enough
 
                 return new string(szPath);
+            }
+
+            public static string GetEnvString(IDictionary<string, string> environment)
+            {
+                if(environment == null)
+                    return null;
+                string senv = null;
+                foreach(KeyValuePair<string, string> var in environment)
+                    senv += var.Key + "=" + var.Value + "\0";
+                senv += "\0";
+                return senv;
             }
         }
 

@@ -8,6 +8,8 @@ using CorApi.ComInterop;
 
 using JetBrains.Annotations;
 
+using PinvokeKit;
+
 namespace CorApi.Pinvoke
 {
     public unsafe static class CoreClrShimUtil
@@ -15,7 +17,7 @@ namespace CorApi.Pinvoke
         [CLSCompliant(false)]
         public static ICorDebug CreateICorDebugForCommand(DbgShimInterop dbgShimInterop, string command, string workingDir, IDictionary<string, string> env, TimeSpan runtimeLoadTimeout, out uint procId)
         {
-            string sEnv = GetEnvString(env);
+            string sEnv = Kernel32Dll.Helpers.GetEnvString(env);
             void* hResume;
             uint processId;
 
@@ -93,17 +95,6 @@ namespace CorApi.Pinvoke
             {
                 waiter.Set();
             }
-        }
-
-        internal static string GetEnvString(IDictionary<string, string> environment)
-        {
-            if(environment == null)
-                return null;
-            string senv = null;
-            foreach(KeyValuePair<string, string> var in environment)
-                senv += var.Key + "=" + var.Value + "\0";
-            senv += "\0";
-            return senv;
         }
     }
 }

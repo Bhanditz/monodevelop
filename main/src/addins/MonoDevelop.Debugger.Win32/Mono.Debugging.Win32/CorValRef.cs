@@ -4,13 +4,13 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32
 {
-	public class CorValRef : CorValRef<CorValue>
+	public class CorValRef : CorValRef<ICorDebugValue>
 	{
-		public CorValRef (CorValue val) : base (val)
+		public CorValRef (ICorDebugValue val) : base (val)
 		{
 		}
 
-		public CorValRef (CorValue val, ValueLoader loader) : base (val, loader)
+		public CorValRef (ICorDebugValue val, ValueLoader loader) : base (val, loader)
 		{
 		}
 
@@ -19,7 +19,7 @@ namespace Mono.Debugging.Win32
 		}
 	}
 
-	public class CorValRef<TValue> where TValue : CorValue
+	public class CorValRef<TValue> where TValue : ICorDebugValue
 	{
 		TValue val;
 		readonly ValueLoader loader;

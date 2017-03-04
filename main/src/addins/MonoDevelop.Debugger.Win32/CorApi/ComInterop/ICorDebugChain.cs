@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -243,7 +245,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFrames"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumerateFrames ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrameEnum ppFrames);
+    [PreserveSig][MustUseReturnValue]Int32 EnumerateFrames ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrameEnum ppFrames);
 
     /// <summary>
     /// GetActiveFrame is a convenience routine to return the

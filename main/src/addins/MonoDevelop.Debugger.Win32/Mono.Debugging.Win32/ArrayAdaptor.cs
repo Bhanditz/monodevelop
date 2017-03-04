@@ -35,9 +35,9 @@ namespace Mono.Debugging.Win32
 	class ArrayAdaptor: ICollectionAdaptor
 	{
 		readonly CorEvaluationContext ctx;
-		readonly CorValRef<CorArrayValue> valRef;
+		readonly CorValRef<ICorDebugArrayValue> valRef;
 
-		public ArrayAdaptor (EvaluationContext ctx, CorValRef<CorArrayValue> valRef)
+		public ArrayAdaptor (EvaluationContext ctx, CorValRef<ICorDebugArrayValue> valRef)
 		{
 			this.ctx = (CorEvaluationContext) ctx;
 			this.valRef = valRef;

@@ -85,8 +85,10 @@ namespace Microsoft.Samples.Debugging.Extensions
 		]
 		public static extern IntPtr GetCurrentProcess ();
 
-		static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
+		static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe, out Action closehandles)
 		{
+			closehandles = () => { };
+
 			si.dwFlags |= 0x00000100; /*			STARTF_USESTDHANDLES*/
 			var sa = new SECURITY_ATTRIBUTES ();
 			sa.bInheritHandle = 1;
@@ -119,13 +121,15 @@ namespace Microsoft.Samples.Debugging.Extensions
 
 			si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
 			si.hStdOutput = (void*) outWritePipe.DangerousGetHandle ();
+			closehandles += outWritePipe.Close;
 			si.hStdError = (void*) errorWritePipe.DangerousGetHandle ();
+			closehandles += errorWritePipe.Close;
 		}
 
-		internal static void SetupOutputRedirection (STARTUPINFOW si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe)
+		internal static void SetupOutputRedirection (STARTUPINFOW si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe, out Action closehandles)
 		{
 			if ((flags & CREATE_REDIRECT_STD) != 0) {
-				CreateHandles (si, out outReadPipe, out errorReadPipe);
+				CreateHandles (si, out outReadPipe, out errorReadPipe, out closehandles);
 				flags &= ~CREATE_REDIRECT_STD;
 			}
 			else {
@@ -134,46 +138,24 @@ namespace Microsoft.Samples.Debugging.Extensions
 				si.hStdInput = null;
 				si.hStdOutput = null;
 				si.hStdError = null;
+				closehandles = () => { };
 			}
 		}
 
-		internal static void TearDownOutputRedirection (SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe, STARTUPINFOW si, CorProcess ret)
+		internal static void TearDownOutputRedirection (SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe, CorProcess ret, Action closehandles)
 		{
 			if (outReadPipe != null) {
 				// Close pipe handles (do not continue to modify the parent).
 				// You need to make sure that no handles to the write end of the
 				// output pipe are maintained in this process or else the pipe will
 				// not close when the child process exits and the ReadFile will hang.
-			    if (si.hStdInput != null)
-			        NativeMethods.CloseHandle ((IntPtr) si.hStdInput);
-			    if (si.hStdOutput != null)
-			        NativeMethods.CloseHandle ((IntPtr) si.hStdOutput);
-			    if (si.hStdError != null)
-			        NativeMethods.CloseHandle ((IntPtr) si.hStdError);
+				closehandles();
 
 				ret.TrackStdOutput (outReadPipe, errorReadPipe);
 			}
 		}
 
-		internal static IntPtr SetupEnvironment (IDictionary<string, string> environment)
-		{
-			IntPtr env = IntPtr.Zero;
-			if (environment != null) {
-				string senv = null;
-				foreach (KeyValuePair<string, string> var in environment) {
-					senv += var.Key + "=" + var.Value + "\0";
-				}
-				senv += "\0";
-				env = Marshal.StringToHGlobalAnsi (senv);
-			}
-			return env;
-		}
 
-		internal static void TearDownEnvironment (IntPtr env)
-		{
-			if (env != IntPtr.Zero)
-				Marshal.FreeHGlobal (env);
-		}
 	}
 }
 

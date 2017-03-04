@@ -9,36 +9,40 @@ using Mono.Debugging.Evaluation;
 using System.Linq;
 using System.Runtime.InteropServices;
 
+using ICorDebugChain = Microsoft.Samples.Debugging.CorDebug.ICorDebugChain;
+using ICorDebugFrame = Microsoft.Samples.Debugging.CorDebug.ICorDebugFrame;
+using ICorDebugThread = Microsoft.Samples.Debugging.CorDebug.ICorDebugThread;
+
 namespace Mono.Debugging.Win32
 {
 	class CorBacktrace: BaseBacktrace
 	{
-		CorThread thread;
+		ICorDebugThread thread;
 		readonly int threadId;
 		readonly CorDebuggerSession session;
-		List<CorFrame> frames;
+		List<ICorDebugFrame> frames;
 		int evalTimestamp;
 
-		public CorBacktrace (CorThread thread, CorDebuggerSession session): base (session.ObjectAdapter)
+		public CorBacktrace (ICorDebugThread thread, CorDebuggerSession session): base (session.ObjectAdapter)
 		{
 			this.session = session;
 			this.thread = thread;
 			threadId = thread.Id;
-			frames = new List<CorFrame> (GetFrames (thread));
+			frames = new List<ICorDebugFrame> (GetFrames (thread));
 			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
 		}
 
-		internal static IEnumerable<CorFrame> GetFrames (CorThread thread)
+		internal static IEnumerable<ICorDebugFrame> GetFrames (ICorDebugThread thread)
 		{
-			var corFrames = new List<CorFrame> ();
+			var corFrames = new List<ICorDebugFrame> ();
 			try {
-				foreach (CorChain chain in thread.Chains) {
+				foreach (ICorDebugChain chain in thread.Chains) {
 					if (!chain.IsManaged)
 						continue;
 					try {
 						var chainFrames = chain.Frames;
 
-						foreach (CorFrame frame in chainFrames)
+						foreach (ICorDebugFrame frame in chainFrames)
 							corFrames.Add (frame);
 					}
 					catch (COMException e) {
@@ -53,11 +57,11 @@ namespace Mono.Debugging.Win32
 			return corFrames;
 		}
 
-		internal List<CorFrame> FrameList {
+		internal List<ICorDebugFrame> FrameList {
 			get {
 				if (evalTimestamp != CorDebuggerSession.EvaluationTimestamp) {
 					thread = session.GetThread (threadId);
-					frames = new List<CorFrame> (GetFrames (thread));
+					frames = new List<ICorDebugFrame> (GetFrames (thread));
 					evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
 				}
 				return frames;
@@ -95,7 +99,7 @@ namespace Mono.Debugging.Win32
 
 		private const int SpecialSequencePoint = 0xfeefee;
 
-		public static SequencePoint GetSequencePoint(CorDebuggerSession session, CorFrame frame)
+		public static SequencePoint GetSequencePoint(CorDebuggerSession session, ICorDebugFrame frame)
 		{
 			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module);
 			if (reader == null)
@@ -189,7 +193,7 @@ namespace Mono.Debugging.Win32
 			return null;
 		}
 
-		internal static StackFrame CreateFrame (CorDebuggerSession session, CorFrame frame)
+		internal static StackFrame CreateFrame (CorDebuggerSession session, ICorDebugFrame frame)
 		{
 			uint address = 0;
 			string addressSpace = "";

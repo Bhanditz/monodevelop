@@ -6,18 +6,22 @@ using CorApi.ComInterop;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
+using ICorDebugFunction = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunction;
+using ICorDebugType = Microsoft.Samples.Debugging.CorDebug.ICorDebugType;
+using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
+
 namespace Mono.Debugging.Win32
 {
-	class CorMethodCall: AsyncOperationBase<CorValue>
+	class CorMethodCall: AsyncOperationBase<ICorDebugValue>
 	{
 		readonly CorEvaluationContext context;
-		readonly CorFunction function;
-		readonly CorType[] typeArgs;
-		readonly CorValue[] args;
+		readonly ICorDebugFunction function;
+		readonly ICorDebugType[] typeArgs;
+		readonly ICorDebugValue[] args;
 
 		readonly CorEval eval;
 
-		public CorMethodCall (CorEvaluationContext context, CorFunction function, CorType[] typeArgs, CorValue[] args)
+		public CorMethodCall (CorEvaluationContext context, ICorDebugFunction function, ICorDebugType[] typeArgs, ICorDebugValue[] args)
 		{
 			this.context = context;
 			this.function = function;
@@ -48,7 +52,7 @@ namespace Mono.Debugging.Win32
 			}
 			else {
 				DebuggerLoggingService.LogMessage ("EvalFinished(). Setting the result");
-				tcs.TrySetResult(new OperationResult<CorValue> (evalArgs.Eval.Result, isException));
+				tcs.TrySetResult(new OperationResult<ICorDebugValue> (evalArgs.Eval.Result, isException));
 			}
 		}
 
@@ -77,9 +81,9 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		readonly TaskCompletionSource<OperationResult<CorValue>> tcs = new TaskCompletionSource<OperationResult<CorValue>> ();
+		readonly TaskCompletionSource<OperationResult<ICorDebugValue>> tcs = new TaskCompletionSource<OperationResult<ICorDebugValue>> ();
 
-		protected override Task<OperationResult<CorValue>> InvokeAsyncImpl ()
+		protected override Task<OperationResult<ICorDebugValue>> InvokeAsyncImpl ()
 		{
 			SubscribeOnEvals ();
 

@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -294,7 +296,7 @@ namespace CorApi.ComInterop
     /// <param name="dwIndex"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetLocalVariable ([In] UInt32 dwIndex, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [PreserveSig][MustUseReturnValue]Int32 GetLocalVariable ([In] UInt32 dwIndex, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// EnumerateArguments returns a list of the arguments available in the

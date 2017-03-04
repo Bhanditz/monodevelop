@@ -55,7 +55,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         /**
          * Are there managed callbacks queued up for the requested thread?
          */
-        public bool HasQueuedCallbacks (CorThread managedThread)
+        public bool HasQueuedCallbacks (ICorDebugThread managedThread)
         {
             int queued;
             m_controller.HasQueuedCallbacks( (managedThread==null)?null:managedThread.GetInterface(),
@@ -79,7 +79,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
          * Set the current debug state of each thread.
          */
         [CLSCompliant(false)]
-        public void SetAllThreadsDebugState (CorDebugThreadState state, CorThread exceptThis)
+        public void SetAllThreadsDebugState (CorDebugThreadState state, ICorDebugThread exceptThis)
         {
             m_controller.SetAllThreadsDebugState (state, exceptThis != null ? exceptThis.GetInterface() : null);
         }
