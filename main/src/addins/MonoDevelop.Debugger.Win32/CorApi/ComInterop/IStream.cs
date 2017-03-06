@@ -13,11 +13,11 @@ namespace CorApi.ComInterop
     {
         /// <inheritdoc cref="ISequentialStream.RemoteRead" />
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteRead (void *pv, [In] UInt32 cb, UInt32* pcbRead);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 RemoteRead (void *pv, [In] UInt32 cb, UInt32* pcbRead);
 
         /// <inheritdoc cref="ISequentialStream.RemoteWrite" />
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteWrite ([In] void *pv, [In] UInt32 cb, UInt32* pcbWritten);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 RemoteWrite ([In] void *pv, [In] UInt32 cb, UInt32* pcbWritten);
 
       /// <summary>
       /// 

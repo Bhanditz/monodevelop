@@ -36,14 +36,14 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="bActive"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Activate ([In] Int32 bActive);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 Activate ([In] Int32 bActive);
 
       /// <summary>
       /// Returns whether the breakpoint is active.
       /// </summary>
       /// <param name="pbActive"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsActive ([Out] Int32 *pbActive);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 IsActive ([Out] Int32 *pbActive);
 
       /// <summary>
       /// Returns the function on which this breakpoint is set.

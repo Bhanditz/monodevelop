@@ -62,7 +62,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="elementType"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType* elementType);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetType ([Out] CorElementType* elementType);
 
     /// <summary>
     /// GetSize returns the size of the value in bytes. Note that for reference
@@ -71,7 +71,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (uint* pSize);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetSize (uint* pSize);
 
     /// <summary>
     /// GetAddress returns the address of the value in the debugee
@@ -82,7 +82,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -90,28 +90,28 @@ namespace CorApi.ComInterop
     /// <param name="ppBreakpoint"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
     /// <summary>
     /// IsNull tests whether the reference is null.
     /// </summary>
     /// <param name="pbNull"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsNull (int* pbNull);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 IsNull (int* pbNull);
 
     /// <summary>
     /// GetValue returns the current address of the object referred to by this reference.
     /// </summary>
     /// <param name="pValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetValue ([ComAliasName ("CORDB_ADDRESS")] ulong* pValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetValue ([ComAliasName ("CORDB_ADDRESS")] ulong* pValue);
 
     /// <summary>
     /// SetValue sets this reference to refer to a different address.
     /// </summary>
     /// <param name="value"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetValue ([In] [ComAliasName ("CORDB_ADDRESS")] ulong value);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 SetValue ([In] [ComAliasName ("CORDB_ADDRESS")] ulong value);
 
     /// <summary>
     /// Dereference returns a ICorDebugValue representing the value
@@ -119,7 +119,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Dereference ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 Dereference ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// DEPRECATED
@@ -127,7 +127,7 @@ namespace CorApi.ComInterop
     /// <param name="ppValue"></param>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 DereferenceStrong ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 DereferenceStrong ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// returns the type of this handle.

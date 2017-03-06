@@ -59,7 +59,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="elementType"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType* elementType);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetType ([Out] CorElementType* elementType);
 
     /// <summary>
     /// GetSize returns the size of the value in bytes. Note that for reference
@@ -68,7 +68,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (uint* pSize);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetSize (uint* pSize);
 
     /// <summary>
     /// GetAddress returns the address of the value in the debugee
@@ -79,7 +79,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -87,7 +87,7 @@ namespace CorApi.ComInterop
     /// <param name="ppBreakpoint"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
     /// <summary>
     /// GetValue copies the value into the specified buffer.  The buffer should

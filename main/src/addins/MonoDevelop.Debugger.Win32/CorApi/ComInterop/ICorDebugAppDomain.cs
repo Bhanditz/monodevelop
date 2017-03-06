@@ -24,19 +24,19 @@ namespace CorApi.ComInterop
     {
         /// <inheritdoc cref="ICorDebugController.Stop"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Stop ([In] UInt32 dwTimeoutIgnored);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 Stop ([In] UInt32 dwTimeoutIgnored);
 
         /// <inheritdoc cref="ICorDebugController.Continue"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Continue ([In] Int32 fIsOutOfBand);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 Continue ([In] Int32 fIsOutOfBand);
 
         /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsRunning (Int32 *pbRunning);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 IsRunning (Int32 *pbRunning);
 
         /// <inheritdoc cref="ICorDebugController.HasQueuedCallbacks"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <inheritdoc cref="ICorDebugController.EnumerateThreads"/>
         [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
@@ -46,26 +46,26 @@ namespace CorApi.ComInterop
 
         /// <inheritdoc cref="ICorDebugController.SetAllThreadsDebugState"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetAllThreadsDebugState ([In] CorDebugThreadState state,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 SetAllThreadsDebugState ([In] CorDebugThreadState state,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pExceptThisThread);
 
         /// <inheritdoc cref="ICorDebugController.Detach"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Detach ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 Detach ();
 
         /// <inheritdoc cref="ICorDebugController.Terminate"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Terminate ([In] UInt32 exitCode);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 Terminate ([In] UInt32 exitCode);
 
         /// <inheritdoc cref="ICorDebugController.CanCommitChanges"/>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <inheritdoc cref="ICorDebugController.CommitChanges"/>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <summary>
         /// GetProcess returns the process containing the app domain

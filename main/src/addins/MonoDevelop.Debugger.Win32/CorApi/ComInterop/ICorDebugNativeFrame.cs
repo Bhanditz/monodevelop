@@ -133,14 +133,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppChain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
     /// <summary>
     /// GetCode returns the code which this stack frame is running if any.
     /// </summary>
     /// <param name="ppCode"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
 
     /// <summary>
     /// GetFunction returns the function for the code which this stack
@@ -152,7 +152,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFunction"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
 
     /// <summary>
     /// GetFunctionToken is a convenience routine to return the token for the
@@ -161,7 +161,7 @@ namespace CorApi.ComInterop
     /// associated with this frame.</summary>
     /// <param name="pToken"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunctionToken ([ComAliasName ("mdMethodDef")] uint* pToken);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetFunctionToken ([ComAliasName ("mdMethodDef")] uint* pToken);
 
     /// <summary>
     /// GetStackRange returns the absolute address range of the stack
@@ -176,7 +176,7 @@ namespace CorApi.ComInterop
     /// <param name="pStart"></param>
     /// <param name="pEnd"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStackRange ([ComAliasName ("CORDB_ADDRESS")] ulong* pStart, [ComAliasName ("CORDB_ADDRESS")] ulong* pEnd);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetStackRange ([ComAliasName ("CORDB_ADDRESS")] ulong* pStart, [ComAliasName ("CORDB_ADDRESS")] ulong* pEnd);
 
     /// <summary>
     /// GetCaller returns a pointer to the frame in the current chain
@@ -185,7 +185,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFrame"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCaller ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetCaller ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
 
     /// <summary>
     /// GetCallee returns a pointer to the frame in the current chain
@@ -194,7 +194,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFrame"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCallee ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 GetCallee ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
 
     /// <summary>
     /// CreateStepper creates a stepper object which operates relative to the
@@ -204,7 +204,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppStepper"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateStepper ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] new System.Int32 CreateStepper ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
 
     /// <summary>
     /// GetIP returns the stack frame's offset into the function's
