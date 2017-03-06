@@ -201,7 +201,9 @@
     <Compile Include="IMetadataImport2.cs" />
     <Compile Include="Infra\Tracepoints.cs" />
     <Compile Include="Pinvoke\CLSCTX.cs" />
+    <Compile Include="Pinvoke\DUPLICATE.cs" />
     <Compile Include="Pinvoke\Ole32Dll.cs" />
+    <Compile Include="Pinvoke\OVERLAPPED.cs" />
     <Compile Include="Pinvoke\PROCESS_ACCESS.cs" />
     <Compile Include="Pinvoke\CoreClrShimUtil.cs" />
     <Compile Include="Pinvoke\DbgShimInterop.cs" />
@@ -216,6 +218,7 @@
     <Compile Include="Pinvoke\PlatformUtilUnix.cs" />
     <Compile Include="Pinvoke\ProcessorArchitecture.cs" />
     <Compile Include="Pinvoke\ProcessorUtil.cs" />
+    <Compile Include="Pinvoke\StdHandles.cs" />
     <Compile Include="Pinvoke\StringUtils.cs" />
     <Compile Include="Pinvoke\SYSTEM_INFO.cs" />
     <Compile Include="Pinvoke\UnixDllLoader.cs" />

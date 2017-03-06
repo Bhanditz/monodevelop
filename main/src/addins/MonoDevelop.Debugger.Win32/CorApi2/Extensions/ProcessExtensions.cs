@@ -27,6 +27,9 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+
+using CorApi.Pinvoke;
+
 using Microsoft.Samples.Debugging.CorDebug;
 using Microsoft.Win32.SafeHandles;
 
@@ -75,7 +78,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 
 			try {
 				while (true) {
-					if (!DebuggerExtensions.ReadFile (pipe, buffer, buffer.Length, out nBytesRead, IntPtr.Zero) || nBytesRead == 0)
+					if (!Kernel32Dll.ReadFile (pipe, buffer, buffer.Length, out nBytesRead, IntPtr.Zero) || nBytesRead == 0)
 						break; // pipe done - normal exit path.
 
 					string s = System.Text.Encoding.Default.GetString (buffer, 0, nBytesRead);

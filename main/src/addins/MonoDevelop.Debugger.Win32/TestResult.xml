@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<test-run start-time="2017-03-06 19:22:40Z">
+  <command-line><![CDATA[Q:\Copybox\monodevelop\main\src\addins\MonoDevelop.Debugger.Win32\packages\NUnit.ConsoleRunner.3.6.0\tools\nunit3-console.exe Q:\Copybox\monodevelop\main\src\addins\MonoDevelop.Debugger.Win32\CorApi.Tests\bin\Debug\CorApi.Tests.dll --inprocess --where:cat==Core--inprocess --where:cat==Core]]></command-line>
+</test-run>

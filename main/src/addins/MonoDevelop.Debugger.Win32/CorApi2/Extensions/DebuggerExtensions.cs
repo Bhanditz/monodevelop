@@ -25,6 +25,7 @@
 // THE SOFTWARE.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 using Microsoft.Samples.Debugging.CorDebug;
 using CorApi.ComInterop;
@@ -39,93 +40,54 @@ namespace Microsoft.Samples.Debugging.Extensions
 	{
 		// [Xamarin] Output redirection.
 		public const int CREATE_REDIRECT_STD = 0x40000000;
-		const string Kernel32LibraryName = "kernel32.dll";
 
-		[
-			DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
-		]
-		public static extern bool CreatePipe (out SafeFileHandle hReadPipe, out SafeFileHandle hWritePipe, SECURITY_ATTRIBUTES lpPipeAttributes, int nSize);
-
-		[
-			DllImport (Kernel32LibraryName)
-		]
-		public static extern bool DuplicateHandle (
-			IntPtr hSourceProcessHandle,
-			SafeFileHandle hSourceHandle,
-			IntPtr hTargetProcessHandle,
-			out SafeFileHandle lpTargetHandle,
-			uint dwDesiredAccess,
-			bool bInheritHandle,
-			uint dwOptions
-		);
-
-		const uint DUPLICATE_CLOSE_SOURCE = 0x00000001;
-		const uint DUPLICATE_SAME_ACCESS = 0x00000002;
-
-		[
-			DllImport (Kernel32LibraryName)
-		]
-		public static extern void* GetStdHandle (uint nStdHandle);
-
-		const uint STD_INPUT_HANDLE = unchecked ((uint)-10);
-		const uint STD_OUTPUT_HANDLE = unchecked ((uint)-11);
-		const uint STD_ERROR_HANDLE = unchecked ((uint)-12);
-
-		[
-			DllImport (Kernel32LibraryName)
-		]
-		public static extern bool ReadFile (
-			SafeFileHandle hFile,
-			byte[] lpBuffer,
-			int nNumberOfBytesToRead,
-			out int lpNumberOfBytesRead,
-			IntPtr lpOverlapped
-		);
-
-		[
-			DllImport (Kernel32LibraryName, CharSet = CharSet.Auto, SetLastError = true)
-		]
-		public static extern IntPtr GetCurrentProcess ();
-
-		static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe, out Action closehandles)
+		static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipeSafeHandle, out SafeFileHandle errorReadPipeSafeHandle, out Action closehandles)
 		{
 			closehandles = () => { };
 
 			si.dwFlags |= 0x00000100; /*			STARTF_USESTDHANDLES*/
 			var sa = new SECURITY_ATTRIBUTES ();
 			sa.bInheritHandle = 1;
-			IntPtr curProc = GetCurrentProcess ();
+			void* curProc = Kernel32Dll.GetCurrentProcess();
 
-			SafeFileHandle outWritePipe, outReadPipeTmp;
-			if (!CreatePipe (out outReadPipeTmp, out outWritePipe, sa, 0))
-				throw new Exception ("Pipe creation failed");
+			void* outWritePipe, outReadPipeTmp;
+			if (Kernel32Dll.CreatePipe (&outReadPipeTmp, &outWritePipe, &sa, 0)==0)
+				throw new Exception ("Pipe creation failed", new Win32Exception());
+			SafeFileHandle outWritePipeSafeHandle = new SafeFileHandle((IntPtr)outWritePipe, true);
+			SafeFileHandle outReadPipeTmpSafeHandle = new SafeFileHandle((IntPtr)outReadPipeTmp, true);
 
 			// Create the child error pipe.
-			SafeFileHandle errorWritePipe, errorReadPipeTmp;
-			if (!CreatePipe (out errorReadPipeTmp, out errorWritePipe, sa, 0))
+			void* errorWritePipe, errorReadPipeTmp;
+			if (Kernel32Dll.CreatePipe (&errorReadPipeTmp, &errorWritePipe, &sa, 0)==0)
 				throw new Exception ("Pipe creation failed");
+			SafeFileHandle errorWritePipeSafeHandle = new SafeFileHandle(((IntPtr)errorWritePipe), true);
+			SafeFileHandle errorReadPipeTmpSafeHandle = new SafeFileHandle(((IntPtr)errorReadPipeTmp), true);
 
 			// Create new output read and error read handles. Set
 			// the Properties to FALSE. Otherwise, the child inherits the
 			// properties and, as a result, non-closeable handles to the pipes
 			// are created.
-			if (!DuplicateHandle (curProc, outReadPipeTmp, curProc, out outReadPipe, 0, false, DUPLICATE_SAME_ACCESS))
+			void* outReadPipe;
+			if (Kernel32Dll.DuplicateHandle (curProc, outReadPipeTmp, curProc, &outReadPipe, 0, 0, DUPLICATE.DUPLICATE_SAME_ACCESS)==0)
 				throw new Exception ("Pipe creation failed");
-			if (!DuplicateHandle (curProc, errorReadPipeTmp, curProc, out errorReadPipe, 0, false, DUPLICATE_SAME_ACCESS))
+			outReadPipeSafeHandle = new SafeFileHandle(((IntPtr)outReadPipe), true);
+			void* errorReadPipe;
+			if (Kernel32Dll.DuplicateHandle (curProc, errorReadPipeTmp, curProc, &errorReadPipe, 0, 0, DUPLICATE.DUPLICATE_SAME_ACCESS)==0)
 				throw new Exception ("Pipe creation failed");
+			errorReadPipeSafeHandle = new SafeFileHandle(((IntPtr)errorReadPipe), true);
 
-			Kernel32Dll.CloseHandle ((void*)curProc);
+			Kernel32Dll.CloseHandle (curProc);
 
 			// Close inheritable copies of the handles you do not want to be
 			// inherited.
-			outReadPipeTmp.Close ();
-			errorReadPipeTmp.Close ();
+			outReadPipeTmpSafeHandle.Close ();
+			errorReadPipeTmpSafeHandle.Close ();
 
-			si.hStdInput = GetStdHandle (STD_INPUT_HANDLE);
-			si.hStdOutput = (void*) outWritePipe.DangerousGetHandle ();
-			closehandles += outWritePipe.Close;
-			si.hStdError = (void*) errorWritePipe.DangerousGetHandle ();
-			closehandles += errorWritePipe.Close;
+			si.hStdInput = Kernel32Dll.GetStdHandle ((uint)StdHandles.STD_INPUT_HANDLE);
+			si.hStdOutput = outWritePipe;
+			closehandles += outWritePipeSafeHandle.Close;
+			si.hStdError = errorWritePipe;
+			closehandles += errorWritePipeSafeHandle.Close;
 		}
 
 		internal static void SetupOutputRedirection (STARTUPINFOW si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe, out Action closehandles)

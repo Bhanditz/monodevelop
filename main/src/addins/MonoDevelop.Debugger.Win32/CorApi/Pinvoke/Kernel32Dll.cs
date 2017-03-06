@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
+using CorApi.ComInterop;
+
 namespace CorApi.Pinvoke
 {
     public static unsafe class Kernel32Dll
@@ -15,6 +17,12 @@ namespace CorApi.Pinvoke
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
         public static extern int CloseHandle(void* hObject);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+        public static extern int CreatePipe(void** hReadPipe, void** hWritePipe, SECURITY_ATTRIBUTES* lpPipeAttributes, uint nSize);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Ansi, SetLastError = true, BestFitMapping = false, ExactSpelling = true)]
+        public static extern int DuplicateHandle(void* hSourceProcessHandle, void* hSourceHandle, void* hTargetProcessHandle, void** lpTargetHandle, uint dwDesiredAccess, int bInheritHandle, uint dwOptions);
+
         /// <summary>
         /// Frees the loaded dynamic-link library (DLL) module and, if necessary, decrements its reference count.
         /// When the reference count reaches zero, the module is unloaded from the address space of the calling process and the handle is no longer valid.
@@ -25,6 +33,13 @@ namespace CorApi.Pinvoke
         /// If the function fails, the return value is zero. To get extended error information, call the GetLastError function.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
         public static extern int FreeLibrary(void* hModule);
+
+        /// <summary>
+        /// Retrieves a pseudo handle for the current process.
+        /// </summary>
+        /// <returns>The return value is a pseudo handle to the current process.</returns>
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = false, ExactSpelling = true)]
+        public static extern void* GetCurrentProcess();
 
         /// <summary>
         /// Retrieves the fully-qualified path for the file that contains the specified module. The module must have been loaded by the current process.
@@ -81,6 +96,9 @@ namespace CorApi.Pinvoke
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
         public static extern void* GetProcAddress(void* hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
 
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+        public static extern void* GetStdHandle(uint nStdHandle);
+
         /// <summary>
         /// Retrieves information about the current system. To retrieve accurate information for an application running on WOW64, call the GetNativeSystemInfo function.
         /// </summary>
@@ -108,6 +126,19 @@ namespace CorApi.Pinvoke
         /// <returns>If the function succeeds, the return value is an open handle to the specified process. If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
         public static extern void* OpenProcess(uint dwDesiredAccess, int bInheritHandle, uint dwProcessId);
+
+        /// <summary>
+        /// Reads data from the specified file or input/output (I/O) device. Reads occur at the position specified by the file pointer if supported by the device.
+        /// This function is designed for both synchronous and asynchronous operations. For a similar function designed solely for asynchronous operation, see ReadFileEx.
+        /// </summary>
+        /// <param name="hFile"></param>
+        /// <param name="lpBuffer"></param>
+        /// <param name="nNumberOfBytesToRead"></param>
+        /// <param name="lpNumberOfBytesRead"></param>
+        /// <param name="lpOverlapped"></param>
+        /// <returns></returns>
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+        public static extern int ReadFile(void* hFile, void* lpBuffer, uint nNumberOfBytesToRead, uint* lpNumberOfBytesRead, OVERLAPPED* lpOverlapped);
 
         /// <summary>
         /// Adds a directory to the search path used to locate DLLs for the application.
