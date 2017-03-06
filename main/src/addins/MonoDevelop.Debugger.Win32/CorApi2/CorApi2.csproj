@@ -36,6 +36,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <NoWarn>1589</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -66,9 +67,6 @@
     <Compile Include="debug\Debugger.cs" />
     <Compile Include="debug\Eval.cs" />
     <Compile Include="debug\HResults.cs" />
-    <Compile Include="debug\HResultUtil.cs" />
-    <Compile Include="debug\Module.cs" />
-    <Compile Include="debug\NativeMethods.cs" />
     <Compile Include="debug\PdbHResult.cs" />
     <Compile Include="debug\Process.cs" />
     <Compile Include="debug\ProcessSafeHandle.cs" />

@@ -5,44 +5,15 @@ using System.Runtime.InteropServices;
 
 namespace CorApi.Pinvoke
 {
-    [CLSCompliant(false)]
     public static unsafe class Kernel32Dll
     {
         /// <summary>
-        /// Adds a directory to the search path used to locate DLLs for the application.
-        /// The <c>SetDllDirectory</c> function affects all subsequent calls to the <c>LoadLibrary</c> and <c>LoadLibraryEx</c> functions. 
-        /// It also effectively disables safe DLL search mode while the specified directory is in the search path.
+        /// Closes an open object handle.
         /// </summary>
-        /// <param name="lpPathName">[in, optional] The directory to be added to the search path. 
-        /// If this parameter is an empty string (""), the call removes the current directory from the default DLL search order.
-        /// If this parameter is NULL, the function restores the default search order.</param>
-        /// <returns>If the function succeeds, the return value is nonzero. 
-        /// If the function fails, the return value is zero. To get extended error information, call GetLastError. </returns>
+        /// <param name="hObject">A valid handle to an open object.</param>
+        /// <returns>If the function succeeds, the return value is nonzero. If the function fails, the return value is zero. To get extended error information, call GetLastError. If the application is running under a debugger, the function will throw an exception if it receives either a handle value that is not valid or a pseudo-handle value. This can happen if you close a handle twice, or if you call CloseHandle on a handle returned by the FindFirstFile function.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-        public static extern Int32 SetDllDirectoryW(string lpPathName);
-
-        /// <summary>
-        /// The LoadLibrary function maps the specified executable module into the address space of the calling process.
-        /// For additional load options, use the LoadLibraryEx function.
-        /// </summary>
-        /// <param name="lpFileName">[in] Pointer to a null-terminated string that names the executable module (either a .dll or .exe file). The name specified is the file name of the module and is not related to the name stored in the library module itself, as specified by the LIBRARY keyword in the module-definition (.def) file.
-        /// If the string specifies a path but the file does not exist in the specified directory, the function fails. When specifying a path, be sure to use backslashes (\), not forward slashes (/).
-        /// If the string does not specify a path, the function uses a standard search strategy to find the file. See the Remarks for more information.</param>
-        /// <returns>If the function succeeds, the return value is a handle to the module.
-        /// If the function fails, the return value is NULL. To get extended error information, call GetLastError.
-        /// Windows Me/98/95:  If you are using LoadLibrary to load a module that contains a resource whose numeric identifier is greater than 0x7FFF, LoadLibrary fails.
-        /// If you are attempting to load a 16-bit DLL directly from 32-bit code, LoadLibrary fails. If you are attempting to load a DLL whose subsystem version is greater than 4.0, LoadLibrary fails. If your DllMain function tries to call the Unicode version of a function, LoadLibrary fails.</returns>
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-        public static extern void* LoadLibraryW(string lpFileName);
-
-        /// <summary>
-        /// Retrieves the address of an exported function or variable from the specified dynamic-link library (DLL).
-        /// </summary>
-        /// <param name="hModule">A handle to the DLL module that contains the function or variable. The LoadLibrary or GetModuleHandle function returns this handle.</param>
-        /// <param name="lpProcName">The function or variable name, or the function's ordinal value. If this parameter is an ordinal value, it must be in the low-order word; the high-order word must be zero.</param>
-        /// <returns>If the function succeeds, the return value is the address of the exported function or variable. If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
-        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-        public static extern void* GetProcAddress(void* hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+        public static extern int CloseHandle(void* hObject);
 
         /// <summary>
         /// Frees the loaded dynamic-link library (DLL) module and, if necessary, decrements its reference count.
@@ -53,7 +24,7 @@ namespace CorApi.Pinvoke
         /// <returns>If the function succeeds, the return value is nonzero.
         /// If the function fails, the return value is zero. To get extended error information, call the GetLastError function.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-        public static extern Int32 FreeLibrary(void* hModule);
+        public static extern int FreeLibrary(void* hModule);
 
         /// <summary>
         /// Retrieves the fully-qualified path for the file that contains the specified module. The module must have been loaded by the current process.
@@ -76,7 +47,7 @@ namespace CorApi.Pinvoke
         /// If the function fails, the return value is 0 (zero). To get extended error information, call GetLastError.
         /// </returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]
-        public static extern UInt32 GetModuleFileNameW(void* hModule, char* lpFilename, UInt32 nSize);
+        public static extern uint GetModuleFileNameW(void* hModule, char* lpFilename, uint nSize);
 
         /// <summary>
         /// Retrieves a module handle for the specified module. The module must have been loaded by the calling process.
@@ -96,16 +67,39 @@ namespace CorApi.Pinvoke
         public static extern void* GetModuleHandleW(string lpModuleName);
 
         /// <summary>
+        /// Retrieves information about the current system to an application running under WOW64. If the function is called from a 64-bit application, it is equivalent to the GetSystemInfo function.
+        /// </summary>
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+        public static extern void GetNativeSystemInfo(SYSTEM_INFO* lpSystemInfo);
+
+        /// <summary>
+        /// Retrieves the address of an exported function or variable from the specified dynamic-link library (DLL).
+        /// </summary>
+        /// <param name="hModule">A handle to the DLL module that contains the function or variable. The LoadLibrary or GetModuleHandle function returns this handle.</param>
+        /// <param name="lpProcName">The function or variable name, or the function's ordinal value. If this parameter is an ordinal value, it must be in the low-order word; the high-order word must be zero.</param>
+        /// <returns>If the function succeeds, the return value is the address of the exported function or variable. If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+        public static extern void* GetProcAddress(void* hModule, [MarshalAs(UnmanagedType.LPStr)] string lpProcName);
+
+        /// <summary>
         /// Retrieves information about the current system. To retrieve accurate information for an application running on WOW64, call the GetNativeSystemInfo function.
         /// </summary>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
         public static extern void GetSystemInfo(SYSTEM_INFO* lpSystemInfo);
 
         /// <summary>
-        /// Retrieves information about the current system to an application running under WOW64. If the function is called from a 64-bit application, it is equivalent to the GetSystemInfo function.
+        /// The LoadLibrary function maps the specified executable module into the address space of the calling process.
+        /// For additional load options, use the LoadLibraryEx function.
         /// </summary>
+        /// <param name="lpFileName">[in] Pointer to a null-terminated string that names the executable module (either a .dll or .exe file). The name specified is the file name of the module and is not related to the name stored in the library module itself, as specified by the LIBRARY keyword in the module-definition (.def) file.
+        /// If the string specifies a path but the file does not exist in the specified directory, the function fails. When specifying a path, be sure to use backslashes (\), not forward slashes (/).
+        /// If the string does not specify a path, the function uses a standard search strategy to find the file. See the Remarks for more information.</param>
+        /// <returns>If the function succeeds, the return value is a handle to the module.
+        /// If the function fails, the return value is NULL. To get extended error information, call GetLastError.
+        /// Windows Me/98/95:  If you are using LoadLibrary to load a module that contains a resource whose numeric identifier is greater than 0x7FFF, LoadLibrary fails.
+        /// If you are attempting to load a 16-bit DLL directly from 32-bit code, LoadLibrary fails. If you are attempting to load a DLL whose subsystem version is greater than 4.0, LoadLibrary fails. If your DllMain function tries to call the Unicode version of a function, LoadLibrary fails.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-        public static extern void GetNativeSystemInfo(SYSTEM_INFO* lpSystemInfo);
+        public static extern void* LoadLibraryW(string lpFileName);
 
         /// <summary>Opens an existing local process object.</summary>
         /// <param name="dwDesiredAccess">The access to the process object.</param>
@@ -113,35 +107,26 @@ namespace CorApi.Pinvoke
         /// <param name="dwProcessId">The identifier of the local process to be opened. If the specified process is the System Process (0x00000000), the function fails and the last error code is ERROR_INVALID_PARAMETER. If the specified process is the Idle process or one of the CSRSS processes, this function fails and the last error code is ERROR_ACCESS_DENIED because their access restrictions prevent user-level code from opening them.</param>
         /// <returns>If the function succeeds, the return value is an open handle to the specified process. If the function fails, the return value is NULL. To get extended error information, call GetLastError.</returns>
         [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
-        public static extern void* OpenProcess(UInt32 dwDesiredAccess, Int32 bInheritHandle, UInt32 dwProcessId);
+        public static extern void* OpenProcess(uint dwDesiredAccess, int bInheritHandle, uint dwProcessId);
+
+        /// <summary>
+        /// Adds a directory to the search path used to locate DLLs for the application.
+        /// The <c>SetDllDirectory</c> function affects all subsequent calls to the <c>LoadLibrary</c> and <c>LoadLibraryEx</c> functions.
+        /// It also effectively disables safe DLL search mode while the specified directory is in the search path.
+        /// </summary>
+        /// <param name="lpPathName">[in, optional] The directory to be added to the search path.
+        /// If this parameter is an empty string (""), the call removes the current directory from the default DLL search order.
+        /// If this parameter is NULL, the function restores the default search order.</param>
+        /// <returns>If the function succeeds, the return value is nonzero.
+        /// If the function fails, the return value is zero. To get extended error information, call GetLastError. </returns>
+        [DllImport("kernel32.dll", CharSet = CharSet.Unicode, PreserveSig = true, SetLastError = true, ExactSpelling = true)]
+        public static extern int SetDllDirectoryW(string lpPathName);
 
         /// <summary>
         /// Wrappers for the functions in this DLL.
         /// </summary>
         public static class Helpers
         {
-            /// <summary>
-            /// Retrieves the fully qualified path for the file that contains the specified module. The module must have been loaded by the current process.
-            /// Wraps WinAPI function <see cref="GetModuleFileNameW"/>.
-            /// </summary>
-            /// <param name="hModule">A handle to the loaded module whose path is being requested.
-            /// If this parameter is NULL, GetModuleFileName retrieves the path of the executable file of the current process.</param>
-            /// <returns>The fully qualified path of the module.</returns>
-            public static string GetModulePath(void* hModule)
-            {
-                char* szPath = stackalloc char[WinDef.MAX_PATH];
-                uint nActualLengthWithoutZero;
-                if ((nActualLengthWithoutZero = GetModuleFileNameW(hModule, szPath, WinDef.MAX_PATH)) == 0)
-                {
-                    var exInner = new Win32Exception();
-                    throw new InvalidOperationException("Could not get the file name of the module in the current process.", exInner);
-                }
-                nActualLengthWithoutZero = nActualLengthWithoutZero < WinDef.MAX_PATH ? nActualLengthWithoutZero : WinDef.MAX_PATH - 1;
-                szPath[nActualLengthWithoutZero] = (char)0; // Ensure zero-terminated, on XP this is not guaranteed if the path is long enough
-
-                return new string(szPath);
-            }
-
             public static string GetEnvString(IDictionary<string, string> environment)
             {
                 if(environment == null)
@@ -152,9 +137,31 @@ namespace CorApi.Pinvoke
                 senv += "\0";
                 return senv;
             }
+
+            /// <summary>
+            /// Retrieves the fully qualified path for the file that contains the specified module. The module must have been loaded by the current process.
+            /// Wraps WinAPI function <see cref="GetModuleFileNameW" />.
+            /// </summary>
+            /// <param name="hModule">A handle to the loaded module whose path is being requested.
+            /// If this parameter is NULL, GetModuleFileName retrieves the path of the executable file of the current process.</param>
+            /// <returns>The fully qualified path of the module.</returns>
+            public static string GetModulePath(void* hModule)
+            {
+                char* szPath = stackalloc char[WinDef.MAX_PATH];
+                uint nActualLengthWithoutZero;
+                if((nActualLengthWithoutZero = GetModuleFileNameW(hModule, szPath, WinDef.MAX_PATH)) == 0)
+                {
+                    var exInner = new Win32Exception();
+                    throw new InvalidOperationException("Could not get the file name of the module in the current process.", exInner);
+                }
+                nActualLengthWithoutZero = nActualLengthWithoutZero < WinDef.MAX_PATH ? nActualLengthWithoutZero : WinDef.MAX_PATH - 1;
+                szPath[nActualLengthWithoutZero] = (char)0; // Ensure zero-terminated, on XP this is not guaranteed if the path is long enough
+
+                return new string(szPath);
+            }
         }
 
-        static class WinDef
+        private static class WinDef
         {
             public const int MAX_PATH = 260;
         }

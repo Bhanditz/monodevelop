@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Microsoft.Samples.Debugging.CorDebug;
 using CorApi.ComInterop;
+using CorApi.Pinvoke;
+
 using Microsoft.Win32.SafeHandles;
 
 namespace Microsoft.Samples.Debugging.Extensions
@@ -112,7 +114,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 			if (!DuplicateHandle (curProc, errorReadPipeTmp, curProc, out errorReadPipe, 0, false, DUPLICATE_SAME_ACCESS))
 				throw new Exception ("Pipe creation failed");
 
-			NativeMethods.CloseHandle (curProc);
+			Kernel32Dll.CloseHandle ((void*)curProc);
 
 			// Close inheritable copies of the handles you do not want to be
 			// inherited.

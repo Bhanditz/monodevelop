@@ -18,22 +18,6 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 
-using ICorDebugAppDomain = Microsoft.Samples.Debugging.CorDebug.ICorDebugAppDomain;
-using ICorDebugBreakpoint = Microsoft.Samples.Debugging.CorDebug.ICorDebugBreakpoint;
-using ICorDebugFrame = Microsoft.Samples.Debugging.CorDebug.ICorDebugFrame;
-using ICorDebugFunction = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunction;
-using ICorDebugFunctionBreakpoint = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunctionBreakpoint;
-using ICorDebugGenericValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugGenericValue;
-using ICorDebugHeapValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugHeapValue;
-using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
-using ICorDebugObjectValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugObjectValue;
-using ICorDebugReferenceValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugReferenceValue;
-using ICorDebugStepper = Microsoft.Samples.Debugging.CorDebug.ICorDebugStepper;
-using ICorDebugThread = Microsoft.Samples.Debugging.CorDebug.ICorDebugThread;
-using ICorDebugType = Microsoft.Samples.Debugging.CorDebug.ICorDebugType;
-using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
-using ISymbolReader = System.Diagnostics.SymbolStore.ISymbolReader;
-
 namespace Mono.Debugging.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
@@ -662,15 +646,13 @@ namespace Mono.Debugging.Win32
 						}
 					}
 				}
-				catch (COMException ex) {
-					var hResult = ex.ToHResult<PdbHResult> ();
-					if (hResult != null) {
-						if (hResult != PdbHResult.E_PDB_OK) {
-							OnDebuggerOutput (false, string.Format ("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})\n", file, hResult, ex.ErrorCode));
-						}
-					}
-					else {
-						DebuggerLoggingService.LogError (string.Format ("Loading symbols of module {0} failed", e.Module.Name), ex);
+				catch (COMException ex)
+				{
+					if(ex.ErrorCode != (int)PdbHResult.E_PDB_OK)
+					{
+						OnDebuggerOutput(false, string.Format("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})\n", file, ex.ErrorCode, ex.ErrorCode));
+						if(!typeof(PdbHResult).IsEnumDefined(ex.ErrorCode))
+							DebuggerLoggingService.LogError(string.Format("Loading symbols of module {0} failed", e.Module.Name), ex);
 					}
 				}
 				catch (Exception ex) {
@@ -1292,26 +1274,22 @@ namespace Mono.Debugging.Win32
 
 		private static void HandleBreakpointException (BreakEventInfo binfo, COMException e)
 		{
-			var code = e.ToHResult<HResult> ();
-			if (code != null) {
-				switch (code) {
-					case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
-						binfo.SetStatus (BreakEventStatus.Invalid, "Invalid breakpoint position");
-						break;
-					case HResult.CORDBG_E_PROCESS_TERMINATED:
-						binfo.SetStatus (BreakEventStatus.BindError, "Process terminated");
-						break;
-					case HResult.CORDBG_E_CODE_NOT_AVAILABLE:
-						binfo.SetStatus (BreakEventStatus.BindError, "Module is not loaded");
-						break;
-					default:
-						binfo.SetStatus (BreakEventStatus.BindError, e.Message);
-						break;
-				}
-			}
-			else {
-				binfo.SetStatus (BreakEventStatus.BindError, e.Message);
-				DebuggerLoggingService.LogError ("Unknown exception when setting breakpoint", e);
+			switch(((HResult)e.ErrorCode))
+			{
+			case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
+				binfo.SetStatus(BreakEventStatus.Invalid, "Invalid breakpoint position");
+				break;
+			case HResult.CORDBG_E_PROCESS_TERMINATED:
+				binfo.SetStatus(BreakEventStatus.BindError, "Process terminated");
+				break;
+			case HResult.CORDBG_E_CODE_NOT_AVAILABLE:
+				binfo.SetStatus(BreakEventStatus.BindError, "Module is not loaded");
+				break;
+			default:
+				binfo.SetStatus(BreakEventStatus.BindError, e.Message);
+				if(!typeof(HResult).IsEnumDefined(e.ErrorCode))
+					DebuggerLoggingService.LogError("Unknown exception when setting breakpoint", e);
+				break;
 			}
 		}
 
@@ -1596,29 +1574,29 @@ namespace Mono.Debugging.Win32
 			return NewSpecialObject (ctx, eval => eval.NewParameterizedArray (elemType, 1, 1, 0));
 		}
 
-		private static EvaluatorException TryConvertToEvalException (COMException ex)
+		private static EvaluatorException TryConvertToEvalException(COMException ex)
 		{
-			var hResult = ex.ToHResult<HResult> ();
 			string message = null;
-			switch (hResult) {
-				case HResult.CORDBG_E_ILLEGAL_AT_GC_UNSAFE_POINT:
-					message = "The thread is not at a GC-safe point";
-					break;
-				case HResult.CORDBG_E_ILLEGAL_IN_PROLOG:
-					message = "The thread is in the prolog";
-					break;
-				case HResult.CORDBG_E_ILLEGAL_IN_NATIVE_CODE:
-					message = "The thread is in native code";
-					break;
-				case HResult.CORDBG_E_ILLEGAL_IN_OPTIMIZED_CODE:
-					message = "The thread is in optimized code";
-					break;
-				case HResult.CORDBG_E_FUNC_EVAL_BAD_START_POINT:
-					message = "Bad starting point to perform evaluation";
-					break;
+			switch((HResult)ex.ErrorCode)
+			{
+			case HResult.CORDBG_E_ILLEGAL_AT_GC_UNSAFE_POINT:
+				message = "The thread is not at a GC-safe point";
+				break;
+			case HResult.CORDBG_E_ILLEGAL_IN_PROLOG:
+				message = "The thread is in the prolog";
+				break;
+			case HResult.CORDBG_E_ILLEGAL_IN_NATIVE_CODE:
+				message = "The thread is in native code";
+				break;
+			case HResult.CORDBG_E_ILLEGAL_IN_OPTIMIZED_CODE:
+				message = "The thread is in optimized code";
+				break;
+			case HResult.CORDBG_E_FUNC_EVAL_BAD_START_POINT:
+				message = "Bad starting point to perform evaluation";
+				break;
 			}
-			if (message != null)
-				return new EvaluatorException ("Evaluation is not allowed: {0}", message);
+			if(message != null)
+				return new EvaluatorException("Evaluation is not allowed: {0}", message);
 			return null;
 		}
 

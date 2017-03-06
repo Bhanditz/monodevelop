@@ -200,45 +200,45 @@ namespace CorApi.Tests
             public readonly ConcurrentBag<Exception> Exceptions = new ConcurrentBag<Exception>();
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.Break(ICorDebugAppDomain pAppDomain, ICorDebugThread thread)
+            int ICorDebugManagedCallback.Break(ICorDebugAppDomain pAppDomain, ICorDebugThread thread)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint)
+            int ICorDebugManagedCallback.Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.BreakpointSetError(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint, uint dwError)
+            int ICorDebugManagedCallback.BreakpointSetError(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugBreakpoint pBreakpoint, uint dwError)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.ChangeConnection(ICorDebugProcess pProcess, uint dwConnectionId)
+            int ICorDebugManagedCallback2.ChangeConnection(ICorDebugProcess pProcess, uint dwConnectionId)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.ControlCTrap(ICorDebugProcess pProcess)
+            int ICorDebugManagedCallback.ControlCTrap(ICorDebugProcess pProcess)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.CreateAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
+            int ICorDebugManagedCallback.CreateAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, ushort* pConnName)
+            int ICorDebugManagedCallback2.CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, ushort* pConnName)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
@@ -257,161 +257,161 @@ namespace CorApi.Tests
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.CreateThread(ICorDebugAppDomain pAppDomain, ICorDebugThread thread)
+            int ICorDebugManagedCallback.CreateThread(ICorDebugAppDomain pAppDomain, ICorDebugThread thread)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)
+            int ICorDebugManagedCallback.DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.DestroyConnection(ICorDebugProcess pProcess, uint dwConnectionId)
+            int ICorDebugManagedCallback2.DestroyConnection(ICorDebugProcess pProcess, uint dwConnectionId)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.EditAndContinueRemap(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction, int fAccurate)
+            int ICorDebugManagedCallback.EditAndContinueRemap(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction, int fAccurate)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval pEval)
+            int ICorDebugManagedCallback.EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval pEval)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval pEval)
+            int ICorDebugManagedCallback.EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval pEval)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
+            int ICorDebugManagedCallback.Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+            int ICorDebugManagedCallback2.Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
+            int ICorDebugManagedCallback2.ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
+            int ICorDebugManagedCallback.ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.ExitProcess(ICorDebugProcess pProcess)
+            int ICorDebugManagedCallback.ExitProcess(ICorDebugProcess pProcess)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread thread)
+            int ICorDebugManagedCallback.ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread thread)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)
+            int ICorDebugManagedCallback2.FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pOldFunction, ICorDebugFunction pNewFunction, uint oldILOffset)
+            int ICorDebugManagedCallback2.FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pOldFunction, ICorDebugFunction pNewFunction, uint oldILOffset)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.LoadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
+            int ICorDebugManagedCallback.LoadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.LoadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
+            int ICorDebugManagedCallback.LoadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
+            int ICorDebugManagedCallback.LoadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.LogMessage(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, ushort* pLogSwitchName, ushort* pMessage)
+            int ICorDebugManagedCallback.LogMessage(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, ushort* pLogSwitchName, ushort* pMessage)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.LogSwitch(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, uint ulReason, ushort* pLogSwitchName, ushort* pParentName)
+            int ICorDebugManagedCallback.LogSwitch(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, uint ulReason, ushort* pLogSwitchName, ushort* pParentName)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback2.MDANotification(ICorDebugController pController, ICorDebugThread pThread, ICorDebugMDA pMDA)
+            int ICorDebugManagedCallback2.MDANotification(ICorDebugController pController, ICorDebugThread pThread, ICorDebugMDA pMDA)
             {
-                // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
+            int ICorDebugManagedCallback.NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             public event Action<ICorDebugProcess> OnProcess = o => { };
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
+            int ICorDebugManagedCallback.StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.UnloadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
+            int ICorDebugManagedCallback.UnloadAssembly(ICorDebugAppDomain pAppDomain, ICorDebugAssembly pAssembly)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.UnloadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
+            int ICorDebugManagedCallback.UnloadClass(ICorDebugAppDomain pAppDomain, ICorDebugClass c)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.UnloadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
+            int ICorDebugManagedCallback.UnloadModule(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
 
             /// <inheritdoc />
-            void ICorDebugManagedCallback.UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
+            int ICorDebugManagedCallback.UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, IStream pSymbolStream)
             {
-                // // TODO_IMPLEMENT_ME();
+                return 0; // TODO_IMPL();
             }
         }
     }

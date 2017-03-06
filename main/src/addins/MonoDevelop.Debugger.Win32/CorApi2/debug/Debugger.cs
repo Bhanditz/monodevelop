@@ -17,6 +17,7 @@ using System.Globalization;
 using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 using CorApi.Pinvoke;
 
@@ -36,51 +37,53 @@ namespace Microsoft.Samples.Debugging.CorDebug
     public sealed unsafe class CorDebugger : MarshalByRefObject
     {
         private const int MaxVersionStringLength = 256; // == MAX_PATH
-        
+
         public static string GetDebuggerVersionFromFile(string pathToExe)
         {
-            Debug.Assert( !string.IsNullOrEmpty(pathToExe) );
-            if( string.IsNullOrEmpty(pathToExe) )
+            Debug.Assert(!string.IsNullOrEmpty(pathToExe));
+            if(string.IsNullOrEmpty(pathToExe))
                 throw new ArgumentException("Value cannot be null or empty.", "pathToExe");
-            int neededSize;
-            StringBuilder sb = new StringBuilder(MaxVersionStringLength);
-            NativeMethods.GetRequestedRuntimeVersion(pathToExe, sb, sb.Capacity, out neededSize);
-            return sb.ToString();
+            uint dwLength;
+            ushort* pch = stackalloc ushort[MaxVersionStringLength];
+            fixed(char* pchPathCopy = pathToExe.ToCharArray() /*declared as a mutable string, so shan't pass the original*/)
+                MscoreeDll.GetRequestedRuntimeVersion((ushort*)pchPathCopy, pch, MaxVersionStringLength, &dwLength).AssertSucceeded($"Could not get the requested runtime version from an executable file “{pathToExe}”.");
+            return new string((char*)pch);
         }
 
-        public static string GetDebuggerVersionFromPid(int pid)
+        public static string GetDebuggerVersionFromPid(uint pid)
         {
-            using(ProcessSafeHandle ph = NativeMethods.OpenProcess((int)(NativeMethods.ProcessAccessOptions.PROCESS_VM_READ |
-                                                                         NativeMethods.ProcessAccessOptions.PROCESS_QUERY_INFORMATION |
-                                                                         NativeMethods.ProcessAccessOptions.PROCESS_DUP_HANDLE |
-                                                                         NativeMethods.ProcessAccessOptions.SYNCHRONIZE),
-                                                                   false, // inherit handle
-                                                                   pid) )
+            using(var hProcess = new ProcessSafeHandle(Kernel32Dll.OpenProcess((int)(PROCESS_ACCESS.PROCESS_VM_READ | PROCESS_ACCESS.PROCESS_QUERY_INFORMATION | PROCESS_ACCESS.PROCESS_DUP_HANDLE | PROCESS_ACCESS.SYNCHRONIZE), 0, /*inherit handle*/ pid), true))
             {
-                if( ph.IsInvalid )
-                    throw new System.ComponentModel.Win32Exception(Marshal.GetLastWin32Error());
-                int neededSize;
-                StringBuilder sb = new StringBuilder(MaxVersionStringLength);
-                NativeMethods.GetVersionFromProcess(ph, sb, sb.Capacity, out neededSize);
-                return sb.ToString();
+                if(hProcess.IsInvalid)
+                    throw new Win32Exception(Marshal.GetLastWin32Error());
+                uint dwLength;
+                ushort* pch = stackalloc ushort[MaxVersionStringLength];
+                MscoreeDll.GetVersionFromProcess(hProcess.Value, pch, MaxVersionStringLength, &dwLength).AssertSucceeded($"Could not get the debugger version from a running process with PID {pid:N0}.");
+                return new string((char*)pch);
             }
         }
 
-        public static List<string> GetProcessLoadedRuntimes (int pid)
+        public static List<string> GetProcessLoadedRuntimes (uint pid)
         {
-            using (ProcessSafeHandle ph = NativeMethods.OpenProcess (
-                (int) (NativeMethods.ProcessAccessOptions.PROCESS_VM_READ |
-                       NativeMethods.ProcessAccessOptions.PROCESS_QUERY_INFORMATION |
-                       NativeMethods.ProcessAccessOptions.PROCESS_DUP_HANDLE |
-                       NativeMethods.ProcessAccessOptions.SYNCHRONIZE),
-                false, // inherit handle
-                pid)) {
+            using (ProcessSafeHandle ph = new ProcessSafeHandle(Kernel32Dll.OpenProcess (
+                (int) (PROCESS_ACCESS.PROCESS_VM_READ |
+                    PROCESS_ACCESS.PROCESS_QUERY_INFORMATION |
+                    PROCESS_ACCESS.PROCESS_DUP_HANDLE |
+                    PROCESS_ACCESS.SYNCHRONIZE),
+                0, // inherit handle
+                pid), true)) {
                 if (ph.IsInvalid)
                     return new List<string> ();
                 int neededSize = MaxVersionStringLength;
                 IClrMetaHost host;
-                NativeMethods.CLRCreateInstance (ref NativeMethods.CLSID_CLRMetaHost,
-                    ref NativeMethods.IID_ICLRMetaHost, out host);
+                void* pClrMetaHost = null;
+                using(Com.UsingReference(&pClrMetaHost))
+                {
+                    Guid CLSID_CLRMetaHost = typeof(MscoreeDll.CLSID_CLRMetaHost).GUID;
+                    Guid IID_ICLRMetaHost = typeof(IClrMetaHost).GUID;
+                    MscoreeDll.CLRCreateInstance(&CLSID_CLRMetaHost, &IID_ICLRMetaHost, &pClrMetaHost).AssertSucceeded("Failed to create the CLR Meta Host instance.");
+                    host = Com.QueryInteface<IClrMetaHost>(pClrMetaHost);
+                }
                 var result = new List<string> ();
                 var runtimes = host.EnumerateLoadedRuntimes (ph);
                 var array = new object[1];
@@ -99,26 +102,21 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         public static string GetDefaultDebuggerVersion()
         {
-            int size;
-            NativeMethods.GetCORVersion(null,0,out size);
-            Debug.Assert(size>0);
-            StringBuilder sb = new StringBuilder(size);
-            int hr = NativeMethods.GetCORVersion(sb,sb.Capacity,out size);
-            Marshal.ThrowExceptionForHR(hr);
-            return sb.ToString();
+            return MscoreeHelpers.GetCORVersion();
         }
      
 
         /// <summary>Creates a debugger wrapper from Guid.</summary>
         public CorDebugger(Guid debuggerGuid)
         {
-            ICorDebug rawDebuggingAPI;
-            NativeMethods.CoCreateInstance(ref debuggerGuid,
-                                           IntPtr.Zero, // pUnkOuter
-                                           1, // CLSCTX_INPROC_SERVER
-                                           ref NativeMethods.IIDICorDebug,
+            object rawDebuggingAPI;
+            Guid iidiCorDebug = typeof(ICorDebug).GUID;
+            Ole32Dll.CoCreateInstance(ref debuggerGuid,
+                                           null, // pUnkOuter
+                                           CLSCTX.CLSCTX_INPROC_SERVER,
+                                           ref iidiCorDebug,
                                            out rawDebuggingAPI);
-            InitFromICorDebug(rawDebuggingAPI);
+            InitFromICorDebug(Com.QueryInteface<ICorDebug>(rawDebuggingAPI));
         }
         /// <summary>Creates a debugger interface that is able debug requested verison of CLR</summary>
         /// <param name="debuggerVersion">Version number of the debugging interface.</param>
@@ -272,10 +270,10 @@ namespace Microsoft.Samples.Debugging.CorDebug
                                      si,     // startup info
                                      ref pi, // process information
                                      CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS);
-                if (pi.hProcess != null)
-                    NativeMethods.CloseHandle ((IntPtr) pi.hProcess);
-                if (pi.hThread != null)
-                    NativeMethods.CloseHandle ((IntPtr) pi.hThread);
+                if(pi.hProcess != null)
+                    Kernel32Dll.CloseHandle(pi.hProcess);
+                if(pi.hThread != null)
+                    Kernel32Dll.CloseHandle(pi.hThread);
             }
 
 			DebuggerExtensions.TearDownOutputRedirection (outReadPipe, errorReadPipe, ret, closehandles);
@@ -418,21 +416,21 @@ namespace Microsoft.Samples.Debugging.CorDebug
 			rawDebuggingAPI = new NativeApi.CorDebugClass(pUnk);
 #else
 			int apiVersion = debuggerVersion.StartsWith ("v4") ? 4 : 3;
-			rawDebuggingAPI = NativeMethods.CreateDebuggingInterfaceFromVersion (apiVersion, debuggerVersion);
+            rawDebuggingAPI = MscoreeHelpers.CreateDebuggingInterfaceFromVersion(apiVersion, debuggerVersion);
 #endif
 		    InitFromICorDebug(rawDebuggingAPI);
     	}
-        
+
         private void InitFromICorDebug(ICorDebug rawDebuggingAPI)
         {
-            Debug.Assert(rawDebuggingAPI!=null);
-            if( rawDebuggingAPI==null )
-                throw new ArgumentException("Cannot be null.","rawDebugggingAPI");
-            
+            Debug.Assert(rawDebuggingAPI != null);
+            if(rawDebuggingAPI == null)
+                throw new ArgumentException("Cannot be null.", nameof(rawDebuggingAPI));
+
             m_debugger = rawDebuggingAPI;
-            m_debugger.Initialize ();
-            m_debugger.SetManagedHandler (new ManagedCallback(this));
-    	}            
+            m_debugger.Initialize().AssertSucceeded("Could not initialize the debugger interface.");
+            m_debugger.SetManagedHandler(new ManagedCallback(this)).AssertSucceeded("Could not assign the managed handler to the debugger interface.");
+        }            
 
         /**
          * Helper for invoking events.  Checks to make sure that handlers
@@ -1252,7 +1250,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
     public class CorMDAEventArgs : CorProcessEventArgs
     {
         // Thread may be null.
-        public CorMDAEventArgs(CorMDA mda, ICorDebugThread thread, CorProcess proc)
+        public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, CorProcess proc)
             : base(proc)
         {
             m_mda = mda;
@@ -1260,7 +1258,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             //m_proc = proc;
         }
 
-        public CorMDAEventArgs(CorMDA mda, ICorDebugThread thread, CorProcess proc,
+        public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, CorProcess proc,
             ManagedCallbackType callbackType)
             : base(proc, callbackType)
         {
@@ -1269,8 +1267,8 @@ namespace Microsoft.Samples.Debugging.CorDebug
             //m_proc = proc;
         }
 
-        CorMDA m_mda;
-        public CorMDA MDA { get { return m_mda; } }
+        ICorDebugMDA m_mda;
+        public ICorDebugMDA MDA { get { return m_mda; } }
 
         public override string ToString()
         {
@@ -2124,9 +2122,9 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         void ICorDebugManagedCallback2.MDANotification(CorApi.ComInterop.ICorDebugController pController,
                                                        CorApi.ComInterop.ICorDebugThread thread,
-                                                       ICorDebugMDA pMDA)
+                                                       CorApi.ComInterop.ICorDebugMDA pMDA)
         {
-            CorMDA c = new CorMDA(pMDA);
+            ICorDebugMDA c = new ICorDebugMDA(pMDA);
             string szName = c.Name;
             CorDebugMDAFlags f = c.Flags;
             CorProcess p = GetProcessFromController(pController);

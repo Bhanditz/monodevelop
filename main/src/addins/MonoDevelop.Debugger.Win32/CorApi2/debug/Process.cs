@@ -13,7 +13,7 @@ using CorApi.ComInterop;
 namespace Microsoft.Samples.Debugging.CorDebug
 {
     /** A process running some managed code. */
-    public sealed unsafe class CorProcess : ICorDebugController, IDisposable
+    public sealed unsafe class CorProcess : IDisposable
     {
         [CLSCompliant(false)]
         public static CorProcess GetCorProcess(ICorDebugProcess process)
@@ -45,7 +45,6 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         private CorProcess (ICorDebugProcess process)
-            : base (process)
         {
             InitCallbacks ();
         }

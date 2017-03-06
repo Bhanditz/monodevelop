@@ -128,8 +128,7 @@ namespace Mono.Debugging.Win32
 				}
 
 			} catch (COMException e) {
-				var hResult = e.ToHResult<HResult> ();
-				switch (hResult) {
+				switch (((HResult)e.ErrorCode)) {
 					case HResult.CORDBG_E_PROCESS_TERMINATED:
 						DebuggerLoggingService.LogMessage ("Process was terminated. Set cancelled for eval");
 						tcs.TrySetCanceled ();

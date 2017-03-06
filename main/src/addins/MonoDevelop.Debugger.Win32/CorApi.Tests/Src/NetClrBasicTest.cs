@@ -3,20 +3,15 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
 using CorApi.ComInterop;
+using CorApi.Pinvoke;
 using CorApi.Tests.Infra;
 
 using NUnit.Framework;
 
 namespace CorApi.Tests
 {
-    [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
     public unsafe class NetClrBasicTest : BasicTestCommon
     {
-        private const string ShimLibraryName = "mscoree.dll";
-
-        [DllImport(ShimLibraryName, CharSet = CharSet.Unicode, PreserveSig = true)]
-        public static extern Int32 CreateDebuggingInterfaceFromVersion(Int32 iDebuggerVersion, UInt16* szDebuggeeVersion, void**ppCordb);
-
         [Test]
         public void Run()
         {
@@ -26,17 +21,7 @@ namespace CorApi.Tests
             try
             {
                 Console.Error.WriteLine(1.0);
-                void* pCorDb;
-                ICorDebug cordbg;
-                using(Com.UsingReference(&pCorDb))
-                {
-                    Console.Error.WriteLine(1.1);
-                    fixed(char* pchVer = "v4.0.30319")
-                        CreateDebuggingInterfaceFromVersion(4, (ushort*)pchVer, &pCorDb).AssertSucceeded("Could not CreateDebuggingInterfaceFromVersion.");
-                    Console.Error.WriteLine(1.2);
-                    cordbg = Com.QueryInteface<ICorDebug>(pCorDb);
-                    Console.Error.WriteLine(1.3);
-                }
+                ICorDebug cordbg = MscoreeHelpers.CreateDebuggingInterfaceFromVersion(4, MscoreeHelpers.GetCORVersion());
 
                 CheckBaseCorDbg(cordbg, cdbg =>
                 {
@@ -72,4 +57,5 @@ namespace CorApi.Tests
             }
         }
     }
+
 }

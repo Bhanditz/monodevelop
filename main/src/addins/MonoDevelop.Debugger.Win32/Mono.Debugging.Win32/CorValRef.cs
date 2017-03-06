@@ -59,7 +59,7 @@ namespace Mono.Debugging.Win32
 				var valExactType = val.ExactType;
 			}
 			catch (COMException e) {
-				if (e.ToHResult<HResult> () == HResult.CORDBG_E_OBJECT_NEUTERED) {
+				if (e.ErrorCode == (int)HResult.CORDBG_E_OBJECT_NEUTERED) {
 					DebuggerLoggingService.LogMessage (string.Format ("Value is out of date: {0}", e.Message));
 					return false;
 				}

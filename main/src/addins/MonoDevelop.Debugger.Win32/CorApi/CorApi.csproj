@@ -100,6 +100,7 @@
     <Compile Include="ComInterop\Helpers\ICorDebugFrameEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugProcessEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugThreadEx.cs" />
+    <Compile Include="ComInterop\Helpers\MscoreeHelpers.cs" />
     <Compile Include="ComInterop\ICorDebug.cs" />
     <Compile Include="ComInterop\ICorDebugAppDomain.cs" />
     <Compile Include="ComInterop\ICorDebugAppDomain2.cs" />
@@ -199,12 +200,16 @@
     <Compile Include="IMetadataImport.cs" />
     <Compile Include="IMetadataImport2.cs" />
     <Compile Include="Infra\Tracepoints.cs" />
+    <Compile Include="Pinvoke\CLSCTX.cs" />
+    <Compile Include="Pinvoke\Ole32Dll.cs" />
+    <Compile Include="Pinvoke\PROCESS_ACCESS.cs" />
     <Compile Include="Pinvoke\CoreClrShimUtil.cs" />
     <Compile Include="Pinvoke\DbgShimInterop.cs" />
     <Compile Include="Pinvoke\HResults.cs" />
     <Compile Include="Pinvoke\IClassFactory.cs" />
     <Compile Include="Pinvoke\IDllLoader.cs" />
     <Compile Include="Pinvoke\Kernel32Dll.cs" />
+    <Compile Include="Pinvoke\MscoreeDll.cs" />
     <Compile Include="Pinvoke\NativeDll.cs" />
     <Compile Include="Pinvoke\NativeDllsLoader.cs" />
     <Compile Include="Pinvoke\PlatformUtil.cs" />
