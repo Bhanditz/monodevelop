@@ -5,13 +5,12 @@ using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 using DC = Mono.Debugging.Client;
-using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
 
 namespace Mono.Debugging.Win32
 {
 	public class CorEvaluationContext: EvaluationContext
 	{
-		CorEval corEval;
+		ICorDebugEval corEval;
 		ICorDebugFrame frame;
 		ICorDebugChain activeChain;
 		int frameIndex;
@@ -79,7 +78,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public CorEval Eval {
+		public ICorDebugEval Eval {
 			get {
 				CheckTimestamp ();
 				if (corEval == null)

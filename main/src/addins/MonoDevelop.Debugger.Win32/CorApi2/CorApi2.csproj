@@ -65,7 +65,6 @@
     <Compile Include="CorAPIAssemblyAttributes.cs" />
     <Compile Include="debug\CorException.cs" />
     <Compile Include="debug\Debugger.cs" />
-    <Compile Include="debug\Eval.cs" />
     <Compile Include="debug\HResults.cs" />
     <Compile Include="debug\PdbHResult.cs" />
     <Compile Include="debug\Process.cs" />

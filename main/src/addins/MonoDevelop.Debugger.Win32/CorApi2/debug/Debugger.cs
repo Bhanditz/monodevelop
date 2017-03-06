@@ -885,24 +885,24 @@ namespace Microsoft.Samples.Debugging.CorDebug
      */
     public class CorEvalEventArgs : CorThreadEventArgs
     {
-        CorEval m_eval;
+        ICorDebugEval m_eval;
 
         public CorEvalEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
-                                 CorEval eval)
+                                 ICorDebugEval eval)
             : base(appDomain, thread)
         {
             m_eval = eval;
         }
 
         public CorEvalEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
-                                 CorEval eval, ManagedCallbackType callbackType)
+                                 ICorDebugEval eval, ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
             m_eval = eval;
         }
 
         /** The object being evaluated. */
-        public CorEval Eval
+        public ICorDebugEval Eval
         {
             get
             {
@@ -1798,24 +1798,24 @@ namespace Microsoft.Samples.Debugging.CorDebug
         void ICorDebugManagedCallback.EvalComplete(
                                   CorApi.ComInterop.ICorDebugAppDomain appDomain,
                                   CorApi.ComInterop.ICorDebugThread thread,
-                                  ICorDebugEval eval)
+                                  CorApi.ComInterop.ICorDebugEval eval)
         {
             HandleEvent(ManagedCallbackType.OnEvalComplete,
                               new CorEvalEventArgs( appDomain == null ? null : new ICorDebugAppDomain(appDomain),
                                                     thread == null ? null : new ICorDebugThread(thread),
-                                                    eval == null ? null : new CorEval(eval),
+                                                    eval == null ? null : new ICorDebugEval(eval),
                                                     ManagedCallbackType.OnEvalComplete));
         }
 
         void ICorDebugManagedCallback.EvalException(
                                    CorApi.ComInterop.ICorDebugAppDomain appDomain,
                                    CorApi.ComInterop.ICorDebugThread thread,
-                                   ICorDebugEval eval)
+                                   CorApi.ComInterop.ICorDebugEval eval)
         {
             HandleEvent(ManagedCallbackType.OnEvalException,
                               new CorEvalEventArgs( appDomain == null ? null : new ICorDebugAppDomain(appDomain),
                                                     thread == null ? null : new ICorDebugThread(thread),
-                                                    eval == null ? null : new CorEval(eval),
+                                                    eval == null ? null : new ICorDebugEval(eval),
                                                     ManagedCallbackType.OnEvalException));
         }
 

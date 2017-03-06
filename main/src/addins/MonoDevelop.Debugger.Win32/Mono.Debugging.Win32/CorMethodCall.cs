@@ -6,10 +6,6 @@ using CorApi.ComInterop;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
-using ICorDebugFunction = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunction;
-using ICorDebugType = Microsoft.Samples.Debugging.CorDebug.ICorDebugType;
-using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
-
 namespace Mono.Debugging.Win32
 {
 	class CorMethodCall: AsyncOperationBase<ICorDebugValue>
@@ -19,7 +15,7 @@ namespace Mono.Debugging.Win32
 		readonly ICorDebugType[] typeArgs;
 		readonly ICorDebugValue[] args;
 
-		readonly CorEval eval;
+		readonly ICorDebugEval eval;
 
 		public CorMethodCall (CorEvaluationContext context, ICorDebugFunction function, ICorDebugType[] typeArgs, ICorDebugValue[] args)
 		{
@@ -88,9 +84,9 @@ namespace Mono.Debugging.Win32
 			SubscribeOnEvals ();
 
 			if (function.GetMethodInfo (context.Session).Name == ".ctor")
-				eval.NewParameterizedObject (function, typeArgs, args);
+				eval.NewParameterizedObject(function, typeArgs, args);
 			else
-				eval.CallParameterizedFunction (function, typeArgs, args);
+				eval.CallParameterizedFunction(function, typeArgs, args);
 			context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread);
 			context.Session.ClearEvalStatus ();
 			context.Session.OnStartEvaluating ();

@@ -3,6 +3,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
   /// <summary>
@@ -125,8 +127,10 @@ namespace CorApi.ComInterop
     /// <param name="ppTypeArgs"></param>
     /// <param name="nArgs"></param>
     /// <param name="ppArgs"></param>
-    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CallParameterizedFunction ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
+    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [PreserveSig]
+    [MustUseReturnValue]
+    Int32 CallParameterizedFunction([MarshalAs(UnmanagedType.Interface)] [In] ICorDebugFunction pFunction, [In] UInt32 nTypeArgs, [ComAliasName("ICorDebugType *[]")] [In] void**ppTypeArgs, [In] UInt32 nArgs, [ComAliasName("ICorDebugValue *[]")] [In] void**ppArgs);
 
     /// <summary>
     /// CreateValueForType generalizes CreateValue by allowing you to specify an
@@ -150,8 +154,10 @@ namespace CorApi.ComInterop
     /// <param name="ppTypeArgs"></param>
     /// <param name="nArgs"></param>
     /// <param name="ppArgs"></param>
-    [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewParameterizedObject ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pConstructor, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
+    [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
+    [PreserveSig]
+    [MustUseReturnValue]
+    Int32 NewParameterizedObject([MarshalAs(UnmanagedType.Interface)] [In] ICorDebugFunction pConstructor, [In] UInt32 nTypeArgs, [ComAliasName("ICorDebugType*[]")] [In] void** ppTypeArgs, [In] UInt32 nArgs, [ComAliasName("ICorDebugValue*[]")] [In] void** ppArgs);
 
     /// <summary>
     /// NewParameterizedObjectNoConstructor allocates a new object without

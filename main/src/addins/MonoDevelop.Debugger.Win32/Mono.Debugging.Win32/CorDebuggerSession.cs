@@ -18,6 +18,8 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 
+using ICorDebugEval = Microsoft.Samples.Debugging.CorDebug.ICorDebugEval;
+
 namespace Mono.Debugging.Win32
 {
 	public class CorDebuggerSession: DebuggerSession
@@ -1511,7 +1513,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		ICorDebugValue NewSpecialObject (CorEvaluationContext ctx, Action<CorEval> createCall)
+		ICorDebugValue NewSpecialObject (CorEvaluationContext ctx, Action<ICorDebugEval> createCall)
 		{
 			ManualResetEvent doneEvent = new ManualResetEvent (false);
 			ICorDebugValue result = null;

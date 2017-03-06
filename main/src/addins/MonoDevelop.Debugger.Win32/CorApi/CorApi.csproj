@@ -97,6 +97,7 @@
     <Compile Include="ComInterop\Helpers\Common\HResultHelpers.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResults.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResultsEx.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugEvalEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugFrameEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugGenericValueEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugProcessEx.cs" />
@@ -203,6 +204,7 @@
     <Compile Include="Infra\Tracepoints.cs" />
     <Compile Include="Pinvoke\CLSCTX.cs" />
     <Compile Include="Pinvoke\DUPLICATE.cs" />
+    <Compile Include="Pinvoke\MemoryUtil.cs" />
     <Compile Include="Pinvoke\Ole32Dll.cs" />
     <Compile Include="Pinvoke\OVERLAPPED.cs" />
     <Compile Include="Pinvoke\PROCESS_ACCESS.cs" />

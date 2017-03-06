@@ -1,4 +1,7 @@
 ﻿using System.Runtime.InteropServices;
+
+using CorApi.ComInterop;
+
 using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Client;
 
