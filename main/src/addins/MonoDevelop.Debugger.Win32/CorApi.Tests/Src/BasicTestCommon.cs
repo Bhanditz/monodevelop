@@ -69,7 +69,7 @@ namespace CorApi.Tests
         private static void TestThread(ICorDebugThread thread)
         {
             uint tid;
-            thread.GetID(&tid);
+            thread.GetID(&tid).AssertSucceeded("Could not get the Thread ID.");
             Console.Error.WriteLine("Got thread {0:N0}.", tid);
         }
 
@@ -81,11 +81,11 @@ namespace CorApi.Tests
         public static void CheckBaseCorDbg(ICorDebug cordbg, Func<ICorDebug, ICorDebugProcess> onCreateProcess)
         {
             Console.Error.WriteLine(2);
-            cordbg.Initialize();
+            cordbg.Initialize().AssertSucceeded("Could not init the debugger.");
             Console.Error.WriteLine(3);
             var callback = new CorDbgCallback();
             Console.Error.WriteLine(4);
-            cordbg.SetManagedHandler(callback);
+            cordbg.SetManagedHandler(callback).AssertSucceeded("Could not set the managed handler.");
             //cordbg.SetUnmanagedHandler(callback);
             Console.Error.WriteLine(5);
 
@@ -100,7 +100,7 @@ namespace CorApi.Tests
                     Console.Error.WriteLine("CB 0");
                     // Not running yet
                     int run;
-                    ppc.IsRunning(&run);
+                    ppc.IsRunning(&run).AssertSucceeded("IsRunning");
                     run.ShouldEqual(0);
                     Console.Error.WriteLine("CB 1");
 
@@ -169,8 +169,8 @@ namespace CorApi.Tests
 
                 TestProcess(process);
 
-                process.Stop(0);
-                process.Terminate(42);
+                process.Stop(0).AssertSucceeded("process.Stop(0)");
+                process.Terminate(42).AssertSucceeded("process.Terminate(42)");
                 //                cordbg.Terminate();
                 /*
                           session = new CorDebuggerSession(new char[] { });
