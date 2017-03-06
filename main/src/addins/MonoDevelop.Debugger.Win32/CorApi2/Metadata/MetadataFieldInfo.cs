@@ -22,7 +22,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class MetadataFieldInfo : FieldInfo
     {
-        internal MetadataFieldInfo(IMetadataImport importer,int fieldToken, MetadataType declaringType)
+        internal MetadataFieldInfo(IMetadataImport importer,uint fieldToken, MetadataType declaringType)
         {
             m_importer = importer;
             m_fieldToken = fieldToken;
@@ -79,7 +79,9 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 Debug.Assert(callingConv == CorCallingConvention.Field);
 
                 CorElementType elementType = MetadataHelperFunctions.CorSigUncompressElementType(ref ppvSigTemp);
+#pragma warning disable 618
                 if (elementType == CorElementType.ELEMENT_TYPE_VALUETYPE)
+#pragma warning restore 618
                 {
                         uint token = MetadataHelperFunctions.CorSigUncompressToken(ref ppvSigTemp);
 
@@ -247,12 +249,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-                return m_fieldToken;
+                return (int)m_fieldToken;
             }
         }
 
         private IMetadataImport m_importer;
-        private int m_fieldToken;
+        private uint m_fieldToken;
         private MetadataType m_declaringType;
 
         private string m_name;

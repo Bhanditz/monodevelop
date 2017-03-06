@@ -21,11 +21,17 @@ using CorApi;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
-    public sealed class CorMetadataImport
+    public unsafe sealed class CorMetadataImport
     {
         public CorMetadataImport(ICorDebugModule managedModule)
         {
-            m_importer = managedModule.GetMetaDataInterface <IMetadataImport>();
+            Guid iid = typeof(IMetadataImport).GUID;
+            void* pInterface = null;
+            using(Com.UsingReference(&pInterface))
+            {
+                managedModule.GetMetaDataInterface(&iid, &pInterface).AssertSucceeded($"Could not query for metadata interface {iid.ToString("B").ToUpperInvariant()}.");
+                m_importer = Com.QueryInteface<IMetadataImport>(pInterface);
+            }
             Debug.Assert(m_importer != null);
         }
 
@@ -36,12 +42,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         }
 
         // methods
-        public MethodInfo GetMethodInfo(int methodToken)
+        public MethodInfo GetMethodInfo(uint methodToken)
         {
             return new MetadataMethodInfo(m_importer,methodToken, Instantiation.Empty);
         }
 
-        public Type GetType(int typeToken)
+        public Type GetType(uint typeToken)
         {
             return new MetadataType(m_importer,typeToken);
         }
@@ -50,7 +56,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         // Get number of generic parameters on a given type.
         // Eg, for 'Foo<t, u>', returns 2.
         // for 'Foo', returns 0.
-        public int CountGenericParams(int typeToken)
+        public int CountGenericParams(uint typeToken)
         {
             
             // This may fail in pre V2.0 debuggees.
@@ -158,7 +164,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return token;
         }
 
-        public string GetTypeNameFromRef(int token)
+        public string GetTypeNameFromRef(uint token)
         {
             int resScope,size;
             m_importer.GetTypeRefProps(token,out resScope,null,0,out size);
@@ -167,7 +173,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             return sb.ToString();
         }
 
-        public string GetTypeNameFromDef(int token,out int extendsToken)
+        public string GetTypeNameFromDef(uint token,out uint extendsToken)
         {
             int size;
             TypeAttributes pdwTypeDefFlags;
@@ -186,7 +192,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 throw new ArgumentException();
 
             uint size;
-            int classToken;
+            uint classToken;
             IntPtr ppvSigBlob;
             int pbSig;
 
@@ -220,7 +226,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
                 break;
             case CorTokenType.mdtTypeDef: 
                 {           
-                    int parentToken;
+                    uint parentToken;
                     className = GetTypeNameFromDef(classToken,out parentToken);
                     break;
                 }
@@ -267,7 +273,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
     public sealed class MetadataMethodInfo : MethodInfo
     {
-        internal MetadataMethodInfo(IMetadataImport importer, int methodToken, Instantiation instantiation)
+        internal MetadataMethodInfo(IMetadataImport importer, uint methodToken, Instantiation instantiation)
         {
             if(!importer.IsValidToken((uint)methodToken))
                 throw new ArgumentException();
@@ -449,7 +455,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         {
             get 
             {
-                return m_methodToken;
+                return (int)m_methodToken;
             }
         }
 
@@ -469,7 +475,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         private IMetadataImport m_importer;
         private string m_name;
         private uint m_classToken;
-        private int m_methodToken;
+        private uint m_methodToken;
         private MethodAttributes m_methodAttributes;
         // [Xamarin] Expression evaluator.
         private List<Type> m_argTypes;
@@ -534,12 +540,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     
     public struct MetadataToken
     {
-        public MetadataToken(int value)
+        public MetadataToken(uint value)
         {
             this.value = value;
         }
 
-        public int Value
+        public uint Value
         {
             get
             {
@@ -555,7 +561,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
 
-        public int Index
+        public uint Index
         {
             get
             {
@@ -563,11 +569,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
             }
         }
         
-        public static implicit operator int(MetadataToken token) { return token.value; }
+        public static implicit operator uint(MetadataToken token) { return token.value; }
         public static bool operator==(MetadataToken v1, MetadataToken v2) { return (v1.value == v2.value);}
         public static bool operator!=(MetadataToken v1, MetadataToken v2) { return !(v1 == v2);}
 
-        public static bool IsTokenOfType(int token, params MetadataTokenType[] types)
+        public static bool IsTokenOfType(uint token, params MetadataTokenType[] types)
         {
             for (int i = 0; i < types.Length; i++)
             {
@@ -592,7 +598,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         public override int GetHashCode() { return value.GetHashCode();}
 
-        private int value;
+        private uint value;
     }
 
     static class MetadataHelperFunctions
@@ -794,7 +800,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
         }*/
         
         static internal string[] GetGenericArgumentNames(IMetadataImport importer,
-                                                int typeOrMethodToken) 
+                                                uint typeOrMethodToken) 
         {          
             IMetadataImport2 importer2 = (importer as IMetadataImport2);
             if(importer2 == null)

@@ -5,6 +5,7 @@
 //---------------------------------------------------------------------
 
 using System;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -35,11 +36,7 @@ namespace CorApi
         
         //STDMETHOD(EnumTypeDefs)(HCORENUM *phEnum, mdTypeDef rTypeDefs[],ULONG cMax, ULONG *pcTypeDefs) PURE;
         //void EnumTypeDefs(out IntPtr phEnum,int[] rTypeDefs,uint cMax, out uint pcTypeDefs);  
-        void EnumTypeDefs(
-                            ref IntPtr phEnum, 
-                            [ComAliasName("mdTypeDef*")] out int rTypeDefs,
-                            uint cMax /*must be 1*/, 
-                            [ComAliasName("ULONG*")] out uint pcTypeDefs); 
+        void EnumTypeDefs(ref IntPtr phEnum, [ComAliasName("mdTypeDef*")] out uint rTypeDefs, uint cMax, [ComAliasName("ULONG*")] out uint pcTypeDefs); 
 
         //STDMETHOD(EnumInterfaceImpls)(HCORENUM *phEnum, mdTypeDef td, mdInterfaceImpl rImpls[], ULONG cMax, ULONG* pcImpls) PURE;
         void EnumInterfaceImpls(
@@ -85,22 +82,13 @@ namespace CorApi
         //         ULONG       *pchTypeDef,            // [OUT] put size of name (wide chars) here.
         //         DWORD       *pdwTypeDefFlags,       // [OUT] Put flags here.
         //         mdToken     *ptkExtends) PURE;      // [OUT] Put base class TypeDef/TypeRef here.
-        void GetTypeDefProps([In] int td,
-                             [Out, MarshalAs( UnmanagedType.LPWStr)] StringBuilder szTypeDef,
-                             [In] int cchTypeDef,
-                             [ComAliasName("ULONG*")] [Out] out int pchTypeDef,
-                             [Out, MarshalAs(UnmanagedType.U4)] out System.Reflection.TypeAttributes pdwTypeDefFlags,
-                             [ComAliasName("mdToken*")] [Out] out int ptkExtends
-                             );
+        void GetTypeDefProps([In] uint td, [Out] [MarshalAs( UnmanagedType.LPWStr)] StringBuilder szTypeDef, [In] int cchTypeDef, [ComAliasName("ULONG*")] [Out] out int pchTypeDef, [Out] [MarshalAs(UnmanagedType.U4)] out TypeAttributes pdwTypeDefFlags, [ComAliasName("mdToken*")] [Out] out uint ptkExtends);
 #if !MDBG_FAKE_COM
         //     STDMETHOD(GetInterfaceImplProps)(       // S_OK or error.
         //         mdInterfaceImpl iiImpl,             // [IN] InterfaceImpl token.
         //         mdTypeDef   *pClass,                // [OUT] Put implementing class token here.
         //         mdToken     *ptkIface) PURE;        // [OUT] Put implemented interface token here.
-		void GetInterfaceImplProps (
-			[In] int iiImpl,
-			[Out] out int pClass,
-			[Out] out int ptkIface);
+		void GetInterfaceImplProps ([In] int iiImpl, [Out] out int pClass, [Out] out uint ptkIface);
 #endif
         //     STDMETHOD(GetTypeRefProps)(             // S_OK or error.
         //         mdTypeRef   tr,                     // [IN] TypeRef token.
@@ -108,13 +96,7 @@ namespace CorApi
         //         LPWSTR      szName,                 // [OUT] Name of the TypeRef.
         //         ULONG       cchName,                // [IN] Size of buffer.
         //         ULONG       *pchName) PURE;         // [OUT] Size of Name.
-        void GetTypeRefProps(
-                             int tr,
-                             [ComAliasName("mdToken*")] [Out] out int ptkResolutionScope,
-                             [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder szName,
-                             [In] int cchName,
-                             [ComAliasName("ULONG*")] out int pchName
-                             );
+        void GetTypeRefProps(uint tr, [ComAliasName("mdToken*")] [Out] out int ptkResolutionScope, [Out] [MarshalAs(UnmanagedType.LPWStr)] StringBuilder szName, [In] int cchName, [ComAliasName("ULONG*")] out int pchName);
 #if !MDBG_FAKE_COM
         //     STDMETHOD(ResolveTypeRef)(mdTypeRef tr, REFIID riid, IUnknown **ppIScope, mdTypeDef *ptd) PURE;
         void ResolveTypeRef_();
@@ -142,12 +124,8 @@ namespace CorApi
         //         mdMethodDef rMethods[],             // [OUT] Put MethodDefs here.   
         //         ULONG       cMax,                   // [IN] Max MethodDefs to put.  
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
-        void EnumMethods(ref IntPtr phEnum,
-                         int cl,
-                         [ComAliasName("mdMethodDef*")] out int mdMethodDef,
-                         int cMax, /*must be 1*/
-                         [ComAliasName("ULONG*")] out int pcTokens
-                         );
+        void EnumMethods(ref IntPtr phEnum, int cl, [ComAliasName("mdMethodDef*")] out uint mdMethodDef, int cMax, [ComAliasName("ULONG*")] out int pcTokens
+                /*must be 1*/);
 #if !MDBG_FAKE_COM
         //     STDMETHOD(EnumMethodsWithName)(         // S_OK, S_FALSE, or error.             
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.                
@@ -166,11 +144,7 @@ namespace CorApi
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.    
         //void EnumFields_();
         /*[PreserveSig]*/
-        void EnumFields(ref IntPtr phEnum,
-                        int cl,
-                        [ComAliasName("mdFieldDef*")] out int mdFieldDef,
-                        int cMax /*must be 1*/, 
-                        [ComAliasName("ULONG*")] out uint pcTokens); 
+        void EnumFields(ref IntPtr phEnum, uint cl, [ComAliasName("mdFieldDef*")] out uint mdFieldDef, int cMax, [ComAliasName("ULONG*")] out uint pcTokens); 
 
 #if !MDBG_FAKE_COM
         //     STDMETHOD(EnumFieldsWithName)(         // S_OK, S_FALSE, or error.              
@@ -188,11 +162,7 @@ namespace CorApi
         //         mdParamDef  rParams[],              // [OUT] Put ParamDefs here.    
         //         ULONG       cMax,                   // [IN] Max ParamDefs to put.   
         //         ULONG       *pcTokens) PURE;        // [OUT] Put # put here.
-        void EnumParams(ref IntPtr phEnum,
-                        int mdMethodDef,
-                        [ComAliasName("mdParamDef*")] out int mdParamDef,
-                        int cMax /*must be 1*/,
-                        [ComAliasName("ULONG*")] out uint pcTokens);
+        void EnumParams(ref IntPtr phEnum, uint mdMethodDef, [ComAliasName("mdParamDef*")] out int mdParamDef, int cMax, [ComAliasName("ULONG*")] out uint pcTokens);
 #if !MDBG_FAKE_COM
         //     STDMETHOD(EnumMemberRefs)(              // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
@@ -263,17 +233,7 @@ namespace CorApi
         //         ULONG       *pcbSigBlob,            // [OUT] actual size of signature blob  
         //         ULONG       *pulCodeRVA,            // [OUT] codeRVA    
         //         DWORD       *pdwImplFlags) PURE;    // [OUT] Impl. Flags    
-        void GetMethodProps([In] uint md,
-                            [ComAliasName("mdTypeDef*")] [Out] out int pClass,
-                            [Out, MarshalAs( UnmanagedType.LPWStr)] StringBuilder szMethod,
-                            [In] int cchMethod,
-                            [ComAliasName("ULONG*")] [Out] out int pchMethod,
-                            [ComAliasName("DWORD*")] [Out] out uint pdwAttr,
-                            [ComAliasName("PCCOR_SIGNATURE*")] [Out] out IntPtr ppvSigBlob,
-                            [ComAliasName("ULONG*")] [Out] out uint pcbSigBlob,
-                            [ComAliasName("ULONG*")] [Out] out uint pulCodeRVA,
-                            [ComAliasName("DWORD*")] [Out] out uint pdwImplFlags
-                            );
+        void GetMethodProps([In] uint md, [ComAliasName("mdTypeDef*")] [Out] out uint pClass, [Out] [MarshalAs( UnmanagedType.LPWStr)] StringBuilder szMethod, [In] int cchMethod, [ComAliasName("ULONG*")] [Out] out int pchMethod, [ComAliasName("DWORD*")] [Out] out uint pdwAttr, [ComAliasName("PCCOR_SIGNATURE*")] [Out] out IntPtr ppvSigBlob, [ComAliasName("ULONG*")] [Out] out uint pcbSigBlob, [ComAliasName("ULONG*")] [Out] out uint pulCodeRVA, [ComAliasName("DWORD*")] [Out] out uint pdwImplFlags);
         
         //     STDMETHOD(GetMemberRefProps)(           // S_OK or error.   
         //         mdMemberRef mr,                     // [IN] given memberref 
@@ -283,14 +243,7 @@ namespace CorApi
         //         ULONG       *pchMember,             // [OUT] actual count of char in member name    
         //         PCCOR_SIGNATURE *ppvSigBlob,        // [OUT] point to meta data blob value  
         //         ULONG       *pbSig) PURE;           // [OUT] actual size of signature blob  
-        void GetMemberRefProps([In] uint mr,
-                               [ComAliasName("mdMemberRef*")] [Out] out int ptk,
-                               [Out,MarshalAs(UnmanagedType.LPWStr)] StringBuilder szMember,
-                               [In] int cchMember,
-                               [ComAliasName("ULONG*")] [Out] out uint pchMember,
-                               [ComAliasName("PCCOR_SIGNATURE*")] [Out] out IntPtr ppvSigBlob,
-                               [ComAliasName("ULONG*")] [Out] out int pbSig
-                               );
+        void GetMemberRefProps([In] uint mr, [ComAliasName("mdMemberRef*")] [Out] out uint ptk, [Out] [MarshalAs(UnmanagedType.LPWStr)] StringBuilder szMember, [In] int cchMember, [ComAliasName("ULONG*")] [Out] out uint pchMember, [ComAliasName("PCCOR_SIGNATURE*")] [Out] out IntPtr ppvSigBlob, [ComAliasName("ULONG*")] [Out] out int pbSig);
         
         //     STDMETHOD(EnumProperties)(              // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
@@ -298,11 +251,7 @@ namespace CorApi
         //         mdProperty  rProperties[],          // [OUT] Put Properties here.   
         //         ULONG       cMax,                   // [IN] Max properties to put.  
         //         ULONG       *pcProperties) PURE;    // [OUT] Put # put here.    
-        void EnumProperties(ref IntPtr phEnum,
-                            int td,
-                            [ComAliasName("mdProperty*")] out int mdProperty,
-                            int cMax /*must be 1*/,
-                            [ComAliasName("ULONG*")] out uint pcProperties);
+        void EnumProperties(ref IntPtr phEnum, int td, [ComAliasName("mdProperty*")] out uint mdProperty, int cMax, [ComAliasName("ULONG*")] out uint pcProperties);
 #if !MDBG_FAKE_COM
         //     STDMETHOD(EnumEvents)(                  // S_OK, S_FALSE, or error. 
         //         HCORENUM    *phEnum,                // [IN|OUT] Pointer to the enum.    
@@ -513,18 +462,7 @@ namespace CorApi
         //         DWORD       *pdwCPlusTypeFlag,      // [OUT] flag for value type. selected ELEMENT_TYPE_*   
         //         void const  **ppValue,              // [OUT] constant value 
         //         ULONG       *pcchValue) PURE;       // [OUT] size of constant string in chars, 0 for non-strings.
-        void GetFieldProps(int mb,
-                           [ComAliasName("mdTypeDef*")] out int mdTypeDef,
-                           [Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder szField,
-                           int cchField,
-                           [ComAliasName("ULONG*")] out int pchField,
-                           [ComAliasName("DWORD*")] out int pdwAttr,
-                           [ComAliasName("PCCOR_SIGNATURE*")] out IntPtr ppvSigBlob,
-                           [ComAliasName("ULONG*")] out int pcbSigBlob,
-                           [ComAliasName("DWORD*")] out int pdwCPlusTypeFlab,
-                           [ComAliasName("UVCP_CONSTANT*")] out IntPtr ppValue,
-                           [ComAliasName("ULONG*")] out int pcchValue
-                           );
+        void GetFieldProps(uint mb, [ComAliasName("mdTypeDef*")] out int mdTypeDef, [Out] [MarshalAs(UnmanagedType.LPWStr)] StringBuilder szField, int cchField, [ComAliasName("ULONG*")] out int pchField, [ComAliasName("DWORD*")] out int pdwAttr, [ComAliasName("PCCOR_SIGNATURE*")] out IntPtr ppvSigBlob, [ComAliasName("ULONG*")] out int pcbSigBlob, [ComAliasName("DWORD*")] out int pdwCPlusTypeFlab, [ComAliasName("UVCP_CONSTANT*")] out IntPtr ppValue, [ComAliasName("ULONG*")] out int pcchValue);
 
         //     STDMETHOD(GetPropertyProps)(            // S_OK, S_FALSE, or error. 
         //         mdProperty  prop,                   // [IN] property token  
@@ -543,23 +481,8 @@ namespace CorApi
         //         mdMethodDef rmdOtherMethod[],       // [OUT] other method of the property   
         //         ULONG       cMax,                   // [IN] size of rmdOtherMethod  
         //         ULONG       *pcOtherMethod) PURE;   // [OUT] total number of other method of this property
-        void GetPropertyProps(int prop,
-                             [ComAliasName ("mdTypeDef*")] out int mdTypeDef,
-                             [Out, MarshalAs (UnmanagedType.LPWStr)] StringBuilder szProperty,
-                             int cchProperty,
-                             [ComAliasName ("ULONG*")] out int pchProperty,
-                             [ComAliasName ("DWORD*")] out int pdwPropFlags,
-                             [ComAliasName ("PCCOR_SIGNATURE*")] out IntPtr ppvSig,
-                             [ComAliasName ("ULONG*")] out int pbSig,
-                             [ComAliasName ("DWORD*")] out int pdwCPlusTypeFlag,
-                             [ComAliasName ("UVCP_CONSTANT*")] out IntPtr ppDefaultValue,
-                             [ComAliasName ("ULONG*")] out int pcchDefaultValue,
-                             [ComAliasName ("mdMethodDef*")] out int pmdSetter,
-                             [ComAliasName ("mdMethodDef*")] out int pmdGetter,
-                             [ComAliasName ("mdMethodDef*")] out int rmdOtherMethod,
-                             [ComAliasName ("ULONG*")] int cMax, /* must be 1 */
-                             [ComAliasName ("ULONG*")] out int pcOtherMethod
-                             );
+        void GetPropertyProps(uint prop, [ComAliasName ("mdTypeDef*")] out int mdTypeDef, [Out] [MarshalAs (UnmanagedType.LPWStr)] StringBuilder szProperty, int cchProperty, [ComAliasName ("ULONG*")] out int pchProperty, [ComAliasName ("DWORD*")] out int pdwPropFlags, [ComAliasName ("PCCOR_SIGNATURE*")] out IntPtr ppvSig, [ComAliasName ("ULONG*")] out int pbSig, [ComAliasName ("DWORD*")] out int pdwCPlusTypeFlag, [ComAliasName ("UVCP_CONSTANT*")] out IntPtr ppDefaultValue, [ComAliasName ("ULONG*")] out int pcchDefaultValue, [ComAliasName ("mdMethodDef*")] out uint pmdSetter, [ComAliasName ("mdMethodDef*")] out uint pmdGetter, [ComAliasName ("mdMethodDef*")] out int rmdOtherMethod, [ComAliasName ("ULONG*")] int cMax, [ComAliasName ("ULONG*")] out int pcOtherMethod
+                /* must be 1 */);
 
         //     STDMETHOD(GetParamProps)(               // S_OK or error.
         //         mdParamDef  tk,                     // [IN]The Parameter.
@@ -590,11 +513,7 @@ namespace CorApi
         //         const void  **ppData,               // [OUT] Put pointer to data here.
         //         ULONG       *pcbData) PURE;         // [OUT] Put size of data here.
         [PreserveSig]
-        int GetCustomAttributeByName(
-                            int tkObj,
-                            [MarshalAs(UnmanagedType.LPWStr)]string szName,
-                            out IntPtr ppData,
-                            out uint pcbData);
+        int GetCustomAttributeByName(uint tkObj, [MarshalAs(UnmanagedType.LPWStr)] string szName, out IntPtr ppData, out uint pcbData);
 
         //     STDMETHOD_(BOOL, IsValidToken)(         // True or False.
         //         mdToken     tk) PURE;               // [IN] Given token.
@@ -603,7 +522,7 @@ namespace CorApi
         //     STDMETHOD(GetNestedClassProps)(         // S_OK or error.
         //         mdTypeDef   tdNestedClass,          // [IN] NestedClass token.
         //         mdTypeDef   *ptdEnclosingClass) PURE; // [OUT] EnclosingClass token.
-        void GetNestedClassProps(int tdNestedClass, [ComAliasName("mdTypeDef*")] out int tdEnclosingClass);
+        void GetNestedClassProps(uint tdNestedClass, [ComAliasName("mdTypeDef*")] out uint tdEnclosingClass);
 #if !MDBG_FAKE_COM
         //     STDMETHOD(GetNativeCallConvFromSig)(    // S_OK or error.
         //         void const  *pvSig,                 // [IN] Pointer to signature.

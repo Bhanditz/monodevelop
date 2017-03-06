@@ -617,12 +617,8 @@ namespace CorApi
           ULONG       cMax,                   // [IN] Max GenericParams to put.  
           ULONG       *pcGenericParams) PURE; // [OUT] Put # put here.    
         */
-                void EnumGenericParams(
-                        ref IntPtr hEnum, 
-                        int tk, 
-                        [ComAliasName("mdGenericParam*")] out int rGenericParams, 
-                        uint cMax, // must be 1
-                        [ComAliasName("ULONG*")] out uint pcGenericParams
+                void EnumGenericParams(ref IntPtr hEnum, uint tk, [ComAliasName("mdGenericParam*")] out int rGenericParams, uint cMax, [ComAliasName("ULONG*")] out uint pcGenericParams
+                                // must be 1
                 );    
 
                 //         STDMETHOD(GetGenericParamProps)(        // S_OK or error.

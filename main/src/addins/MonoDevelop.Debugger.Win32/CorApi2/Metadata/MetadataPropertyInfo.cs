@@ -16,20 +16,20 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 	public class MetadataPropertyInfo: PropertyInfo
 	{
 		private IMetadataImport m_importer;
-		private int m_propertyToken;
+		private uint m_propertyToken;
 		private MetadataType m_declaringType;
 		private object[] m_customAttributes;
 
 		private string m_name;
 		private PropertyAttributes m_propAttributes;
 
-		int m_pmdSetter;
-		int m_pmdGetter;
+		uint m_mdSetter;
+		uint m_mdGetter;
 
 		MetadataMethodInfo m_setter;
 		MetadataMethodInfo m_getter;
 
-		internal MetadataPropertyInfo (IMetadataImport importer, int propertyToken, MetadataType declaringType)
+		internal MetadataPropertyInfo (IMetadataImport importer, uint propertyToken, MetadataType declaringType)
 		{
 			m_importer = importer;
 			m_propertyToken = propertyToken;
@@ -58,8 +58,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				out pdwCPlusTypeFlag,
 				out ppDefaultValue,
 				out pcchDefaultValue,
-				out m_pmdSetter,
-				out m_pmdGetter,
+				out m_mdSetter,
+				out m_mdGetter,
 				out rmdOtherMethod,
 				0,
 				out pcOtherMethod);
@@ -77,8 +77,8 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 				out pdwCPlusTypeFlag,
 				out ppDefaultValue,
 				out pcchDefaultValue,
-				out m_pmdSetter,
-				out m_pmdGetter,
+				out m_mdSetter,
+				out m_mdGetter,
 				out rmdOtherMethod,
 				0,
 				out pcOtherMethod);
@@ -87,11 +87,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 			m_name = szProperty.ToString ();
 			MetadataHelperFunctionsExtensions.GetCustomAttribute (importer, propertyToken, typeof (System.Diagnostics.DebuggerBrowsableAttribute));
 
-			if (!m_importer.IsValidToken ((uint)m_pmdGetter))
-				m_pmdGetter = 0;
+			if (!m_importer.IsValidToken ((uint)m_mdGetter))
+				m_mdGetter = 0;
 
-			if (!m_importer.IsValidToken ((uint)m_pmdSetter))
-				m_pmdSetter = 0;
+			if (!m_importer.IsValidToken ((uint)m_mdSetter))
+				m_mdSetter = 0;
 		}
 
 		public override PropertyAttributes Attributes
@@ -101,12 +101,12 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 		public override bool CanRead
 		{
-			get { return m_pmdGetter != 0; }
+			get { return m_mdGetter != 0; }
 		}
 
 		public override bool CanWrite
 		{
-			get { return m_pmdSetter != 0; }
+			get { return m_mdSetter != 0; }
 		}
 
 		public override MethodInfo[] GetAccessors (bool nonPublic)
@@ -116,11 +116,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 		public override MethodInfo GetGetMethod (bool nonPublic)
 		{
-			if (m_pmdGetter == 0)
+			if (m_mdGetter == 0)
 				return null;
 
 			if (m_getter == null)
-				m_getter = new MetadataMethodInfo (m_importer, m_pmdGetter, Instantiation.Create (m_declaringType.GenericTypeArguments));
+				m_getter = new MetadataMethodInfo (m_importer, m_mdGetter, Instantiation.Create (m_declaringType.GenericTypeArguments));
 
 			if (nonPublic || m_getter.IsPublic)
 				return m_getter;
@@ -137,11 +137,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
 		public override MethodInfo GetSetMethod (bool nonPublic)
 		{
-			if (m_pmdSetter == 0)
+			if (m_mdSetter == 0)
 				return null;
 
 			if (m_setter == null)
-				m_setter = new MetadataMethodInfo (m_importer, m_pmdSetter, Instantiation.Create (m_declaringType.GenericTypeArguments));
+				m_setter = new MetadataMethodInfo (m_importer, m_mdSetter, Instantiation.Create (m_declaringType.GenericTypeArguments));
 
 			if (nonPublic || m_setter.IsPublic)
 				return m_setter;

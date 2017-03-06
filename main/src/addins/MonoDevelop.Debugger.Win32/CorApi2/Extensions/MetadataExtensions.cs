@@ -245,7 +245,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 			case CorElementType.ELEMENT_TYPE_VALUETYPE:
 			case CorElementType.ELEMENT_TYPE_CLASS: {
 					uint token = MetadataHelperFunctions.CorSigUncompressToken (ref pData);
-					return new MetadataType (importer, (int) token);
+					return new MetadataType (importer, token);
 				}
 
 			case CorElementType.ELEMENT_TYPE_ARRAY: {
@@ -284,17 +284,20 @@ namespace Microsoft.Samples.Debugging.Extensions
 			case CorElementType.ELEMENT_TYPE_CMOD_REQD:
 			case CorElementType.ELEMENT_TYPE_CMOD_OPT: {
 					uint token = MetadataHelperFunctions.CorSigUncompressToken (ref pData);
-					return new MetadataType (importer, (int) token);
+					return new MetadataType (importer, token);
 				}
 
 			case CorElementType.ELEMENT_TYPE_INTERNAL:
 				return typeof(object); // hack to avoid the exceptions. CLR spec says that this type should never occurs, but it occurs sometimes, mystics
+			}
 
-			case CorElementType.ELEMENT_TYPE_NATIVE_ARRAY_TEMPLATE_ZAPSIG:
-			case CorElementType.ELEMENT_TYPE_NATIVE_VALUETYPE_ZAPSIG:
-				return ReadType (importer, instantiation, ref pData);
+			switch(((CorElementTypeZapSig)et))
+			{
+			case CorElementTypeZapSig.ELEMENT_TYPE_NATIVE_ARRAY_TEMPLATE_ZAPSIG:
+			case CorElementTypeZapSig.ELEMENT_TYPE_NATIVE_VALUETYPE_ZAPSIG:
+				return ReadType(importer, instantiation, ref pData);
 
-			case CorElementType.ELEMENT_TYPE_CANON_ZAPSIG:
+			case CorElementTypeZapSig.ELEMENT_TYPE_CANON_ZAPSIG:
 				return typeof(object); // this is representation of __Canon type, but it's inaccessible, using object instead
 			}
 			throw new NotSupportedException ("Unknown sig element type: " + et);
@@ -302,7 +305,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 
 		static readonly object[] emptyAttributes = new object[0];
 
-		static internal object[] GetDebugAttributes (IMetadataImport importer, int token)
+		static internal object[] GetDebugAttributes (IMetadataImport importer, uint token)
 		{
 			var attributes = new ArrayList ();
 			object attr = GetCustomAttribute (importer, token, typeof (System.Diagnostics.DebuggerTypeProxyAttribute));
@@ -334,7 +337,7 @@ namespace Microsoft.Samples.Debugging.Extensions
 		}
 
 		// [Xamarin] Expression evaluator.
-		static internal object GetCustomAttribute (IMetadataImport importer, int token, Type type)
+		static internal object GetCustomAttribute (IMetadataImport importer, uint token, Type type)
 		{
 			uint sigSize;
 			IntPtr ppvSig;
