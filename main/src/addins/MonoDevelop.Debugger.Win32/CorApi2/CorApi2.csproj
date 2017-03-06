@@ -72,6 +72,9 @@
     <Compile Include="debug\ProcessSafeHandle.cs" />
     <Compile Include="debug\Value.cs" />
     <Compile Include="debug\WrapperBase.cs" />
+    <Compile Include="Extensions\CorProcessExtensions.cs" />
+    <Compile Include="Extensions\CorTargetOutputEventHandler.cs" />
+    <Compile Include="Extensions\MetadataHelperFunctionsExtensions.cs" />
     <Compile Include="Metadata\CorMetadata.cs" />
     <Compile Include="Metadata\MetadataFieldInfo.cs" />
     <Compile Include="Metadata\MetadataParameterInfo.cs" />
@@ -101,7 +104,7 @@
     <Compile Include="SymStore\symvariable.cs" />
     <Compile Include="SymStore\SymWriter.cs" />
     <Compile Include="Extensions\MetadataExtensions.cs" />
-    <Compile Include="Extensions\ProcessExtensions.cs" />
+    <Compile Include="Extensions\CorTargetOutputEventArgs.cs" />
     <Compile Include="Extensions\DebuggerExtensions.cs" />
   </ItemGroup>
   <Import Project="..\..\..\..\\external\debugger-libs\Mono.Debugging.settings" />
