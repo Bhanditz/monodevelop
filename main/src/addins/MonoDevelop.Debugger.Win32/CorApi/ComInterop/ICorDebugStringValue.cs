@@ -54,7 +54,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="elementType"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetType ([Out] CorElementType* elementType);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType* elementType);
 
     /// <summary>
     /// GetSize returns the size of the value in bytes. Note that for reference
@@ -63,7 +63,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetSize (uint* pSize);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (uint* pSize);
 
     /// <summary>
     /// GetAddress returns the address of the value in the debugee
@@ -74,7 +74,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -82,7 +82,7 @@ namespace CorApi.ComInterop
     /// <param name="ppBreakpoint"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
     /// <summary>
     /// DEPRECATED.
@@ -91,18 +91,18 @@ namespace CorApi.ComInterop
     /// <param name="pbValid"></param>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void IsValid (int* pbValid);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsValid (int* pbValid);
 
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
     /// <summary>
     /// GetLength returns the number of characters in the string.
     /// </summary>
     /// <param name="pcchString"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetLength (uint* pcchString);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetLength (uint* pcchString);
 
     /// <summary>
     /// GetString returns the contents of the string.
@@ -111,6 +111,6 @@ namespace CorApi.ComInterop
     /// <param name="pcchString"></param>
     /// <param name="szString"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetString ([In] uint cchString, uint* pcchString, ushort* szString);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetString ([In] uint cchString, uint* pcchString, ushort* szString);
   }
 }

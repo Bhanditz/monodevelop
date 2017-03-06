@@ -39,6 +39,6 @@ namespace CorApi.ComInterop
     /// <param name="type"></param>
     /// <param name="ppHandle"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateHandle ([In] CorDebugHandleType type, [MarshalAs (UnmanagedType.Interface)] out ICorDebugHandleValue ppHandle);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateHandle ([In] CorDebugHandleType type, [MarshalAs (UnmanagedType.Interface)] out ICorDebugHandleValue ppHandle);
   }
 }

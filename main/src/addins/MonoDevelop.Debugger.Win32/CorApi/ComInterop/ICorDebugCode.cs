@@ -152,28 +152,28 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pbIL"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsIL (Int32* pbIL);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsIL (Int32* pbIL);
 
     /// <summary>
     /// GetFunction returns the function for the code.
     /// </summary>
     /// <param name="ppFunction"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
 
     /// <summary>
     /// GetAddress returns the address of the code.
     /// </summary>
     /// <param name="pStart"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetAddress ([ComAliasName ("CORDB_ADDRESS")] UInt64* pStart);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] UInt64* pStart);
 
     /// <summary>
     /// GetSize returns the size in bytes of the code.
     /// </summary>
     /// <param name="pcBytes"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetSize (UInt32* pcBytes);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (UInt32* pcBytes);
 
     /// <summary>
     /// CreateBreakpoint creates a breakpoint in the function at the
@@ -185,7 +185,7 @@ namespace CorApi.ComInterop
     /// <param name="offset"></param>
     /// <param name="ppBreakpoint"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateBreakpoint ([In] UInt32 offset, [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([In] UInt32 offset, [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
 
     /// <summary>
     /// GetCode returns the code of the method, suitable for disassembly.  Note
@@ -200,7 +200,7 @@ namespace CorApi.ComInterop
     /// <param name="buffer"></param>
     /// <param name="pcBufferSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCode ([In] UInt32 startOffset, [In] UInt32 endOffset, [In] UInt32 cBufferAlloc, Byte* buffer, UInt32* pcBufferSize);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCode ([In] UInt32 startOffset, [In] UInt32 endOffset, [In] UInt32 cBufferAlloc, Byte* buffer, UInt32* pcBufferSize);
 
     /// <summary>
     /// GetVersionNumber returns the 1 based number identifying the
@@ -210,7 +210,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="nVersion"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetVersionNumber (UInt32* nVersion);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetVersionNumber (UInt32* nVersion);
 
     /// <summary>
     /// GetILToNativeMapping returns a map from IL offsets to native
@@ -226,7 +226,7 @@ namespace CorApi.ComInterop
     /// <param name="pcMap"></param>
     /// <param name="map"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetILToNativeMapping ([In] UInt32 cMap, UInt32* pcMap, COR_DEBUG_IL_TO_NATIVE_MAP* map);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetILToNativeMapping ([In] UInt32 cMap, UInt32* pcMap, COR_DEBUG_IL_TO_NATIVE_MAP* map);
 
     /// <summary>
     /// Not implemented.
@@ -236,6 +236,6 @@ namespace CorApi.ComInterop
     /// <param name="offsets"></param>
     [Obsolete ("Not implemented.")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetEnCRemapSequencePoints ([In] UInt32 cMap, UInt32* pcMap, UInt32* offsets);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetEnCRemapSequencePoints ([In] UInt32 cMap, UInt32* pcMap, UInt32* offsets);
   }
 }

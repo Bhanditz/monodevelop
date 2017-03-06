@@ -63,7 +63,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="newILOffset"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void RemapFunction ([In] UInt32 newILOffset);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemapFunction ([In] UInt32 newILOffset);
 
     /// <summary>
     /// EnumerateTypeParameters returns the type parameters active on a frame.

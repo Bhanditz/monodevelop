@@ -188,7 +188,7 @@ namespace CorApi.ComInterop
     /// <param name="nArgs"></param>
     /// <param name="ppArgs"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CallFunction ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CallFunction ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
 
     /// <summary>
     /// NewObject allocates and calls the constructor for an object.
@@ -197,7 +197,7 @@ namespace CorApi.ComInterop
     /// <param name="nArgs"></param>
     /// <param name="ppArgs"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewObject ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pConstructor, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewObject ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pConstructor, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
 
     /// <summary>
     /// NewObjectNoConstructor allocates a new object without
@@ -205,7 +205,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pClass"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewObjectNoConstructor ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pClass);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewObjectNoConstructor ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pClass);
 
     /// <summary>
     /// NewString allocates a string object with the given contents.
@@ -213,7 +213,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="string"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewString (UInt16* @string);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewString (UInt16* @string);
 
     /// <summary>
     /// NewArray allocates a new array with the given element type and
@@ -230,21 +230,21 @@ namespace CorApi.ComInterop
     /// <param name="dims"></param>
     /// <param name="lowBounds"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewArray ([In] CorElementType elementType, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pElementClass, [In] UInt32 rank, [In] UInt32* dims, [In] UInt32* lowBounds);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewArray ([In] CorElementType elementType, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pElementClass, [In] UInt32 rank, [In] UInt32* dims, [In] UInt32* lowBounds);
 
     /// <summary>
     /// IsActive returns whether the func-eval is currently executing.
     /// </summary>
     /// <param name="pbActive"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsActive (Int32* pbActive);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsActive (Int32* pbActive);
 
     /// <summary>
     /// Abort aborts the current computation.  Note that in the case of nested
     /// Evals, this may fail unless it is the most recent Eval.
     /// </summary>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void Abort ();
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Abort ();
 
     /// <summary>
     /// GetResult returns the result of the evaluation.  This is only
@@ -256,14 +256,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppResult"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetResult ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppResult);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetResult ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppResult);
 
     /// <summary>
     /// GetThread returns the thread on which this eval will run or is running.
     /// </summary>
     /// <param name="ppThread"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetThread ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetThread ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
 
     /// <summary>
     /// CreateValue creates an ICorDebugValue of the given type for the
@@ -283,6 +283,6 @@ namespace CorApi.ComInterop
     /// <param name="pElementClass"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateValue ([In] CorElementType elementType, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pElementClass, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateValue ([In] CorElementType elementType, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pElementClass, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
   }
 }

@@ -80,21 +80,21 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppProcess"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
     /// <summary>
     /// GetAppDomain returns the app domain containing the assembly.
     /// </summary>
     /// <param name="ppAppDomain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetAppDomain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAppDomain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
 
     /// <summary>
     /// EnumerateModules enumerates all modules in the assembly.
     /// </summary>
     /// <param name="ppModules"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumerateModules ([MarshalAs (UnmanagedType.Interface)] out ICorDebugModuleEnum ppModules);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateModules ([MarshalAs (UnmanagedType.Interface)] out ICorDebugModuleEnum ppModules);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -104,7 +104,7 @@ namespace CorApi.ComInterop
     /// <param name="szName"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCodeBase ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCodeBase ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
 
     /// <summary>
     /// GetName returns the full path and filename of the assembly.
@@ -115,6 +115,6 @@ namespace CorApi.ComInterop
     /// <param name="pcchName"></param>
     /// <param name="szName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetName ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetName ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
   }
 }

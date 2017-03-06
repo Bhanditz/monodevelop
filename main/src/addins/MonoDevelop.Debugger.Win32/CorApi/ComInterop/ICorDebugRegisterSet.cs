@@ -260,7 +260,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAvailable"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetRegistersAvailable (UInt64* pAvailable);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRegistersAvailable (UInt64* pAvailable);
 
     /// <summary>
     /// GetRegisters returns an array of register values corresponding
@@ -282,7 +282,7 @@ namespace CorApi.ComInterop
     /// <param name="regCount"></param>
     /// <param name="regBuffer"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetRegisters ([In] UInt64 mask, [In] UInt32 regCount, [ComAliasName ("CORDB_REGISTER")] UInt64* regBuffer);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRegisters ([In] UInt64 mask, [In] UInt32 regCount, [ComAliasName ("CORDB_REGISTER")] UInt64* regBuffer);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -292,7 +292,7 @@ namespace CorApi.ComInterop
     /// <param name="regBuffer"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetRegisters ([In] UInt64 mask, [In] UInt32 regCount, [ComAliasName ("CORDB_REGISTER")] UInt64* regBuffer);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetRegisters ([In] UInt64 mask, [In] UInt32 regCount, [ComAliasName ("CORDB_REGISTER")] UInt64* regBuffer);
 
     /// <summary>
     /// GetThreadContext returns the context for the given thread.  The
@@ -306,7 +306,7 @@ namespace CorApi.ComInterop
     /// <param name="contextSize"></param>
     /// <param name="context"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetThreadContext ([In] UInt32 contextSize, Byte* context);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetThreadContext ([In] UInt32 contextSize, Byte* context);
 
     /// <summary>
     /// Not implemented in v2.0. It is too dangerous to manipulate the context of
@@ -316,6 +316,6 @@ namespace CorApi.ComInterop
     /// <param name="contextSize"></param>
     /// <param name="context"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetThreadContext ([In] UInt32 contextSize, Byte* context);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetThreadContext ([In] UInt32 contextSize, Byte* context);
   }
 }

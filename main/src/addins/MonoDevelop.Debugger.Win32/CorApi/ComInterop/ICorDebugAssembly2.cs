@@ -40,6 +40,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pbFullyTrusted"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsFullyTrusted (int* pbFullyTrusted);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsFullyTrusted (int* pbFullyTrusted);
   }
 }

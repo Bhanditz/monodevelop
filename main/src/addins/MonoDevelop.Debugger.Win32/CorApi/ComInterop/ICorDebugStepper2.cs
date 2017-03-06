@@ -28,6 +28,6 @@ namespace CorApi.ComInterop
   public interface ICorDebugStepper2
   {
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetJMC ([In] int fIsJMCStepper);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetJMC ([In] int fIsJMCStepper);
   }
 }

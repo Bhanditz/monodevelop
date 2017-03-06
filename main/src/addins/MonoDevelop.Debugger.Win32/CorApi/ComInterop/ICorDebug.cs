@@ -42,7 +42,7 @@ namespace CorApi.ComInterop
         /// </summary>
         /// <example><code>HRESULT Initialize();</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Initialize ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Initialize ();
 
         /// <summary>
         /// Terminate must be called when the ICorDebug is no longer needed.
@@ -52,7 +52,7 @@ namespace CorApi.ComInterop
         /// </summary>
         /// <example><code>HRESULT Terminate();</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Terminate ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Terminate ();
 
         /// <summary>
         /// SetManagedHandler should be called at creation time to specify the
@@ -67,7 +67,7 @@ namespace CorApi.ComInterop
         /// <param name="pCallback"></param>
         /// <example><code>HRESULT SetManagedHandler([in] ICorDebugManagedCallback *pCallback);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetManagedHandler ([MarshalAs (UnmanagedType.Interface), In] ICorDebugManagedCallback pCallback);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetManagedHandler ([MarshalAs (UnmanagedType.Interface), In] ICorDebugManagedCallback pCallback);
 
         /// <summary>
         /// SetUnmanagedHandler should be called at creation time to specify the
@@ -89,7 +89,7 @@ namespace CorApi.ComInterop
         /// <param name="pCallback"></param>
         /// <example><code>HRESULT SetUnmanagedHandler([in] ICorDebugUnmanagedCallback *pCallback);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetUnmanagedHandler ([MarshalAs (UnmanagedType.Interface), In] ICorDebugUnmanagedCallback pCallback);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetUnmanagedHandler ([MarshalAs (UnmanagedType.Interface), In] ICorDebugUnmanagedCallback pCallback);
 
         /// <summary>
         /// CreateProcess launches a process under the control of the debugger
@@ -131,7 +131,7 @@ namespace CorApi.ComInterop
         ///                                      [in] CorDebugCreateProcessFlags debuggingFlags,
         ///                                      [out] ICorDebugProcess **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateProcess (
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateProcess (
             UInt16* lpApplicationName,
             UInt16* lpCommandLine,
             [In] SECURITY_ATTRIBUTES* lpProcessAttributes,
@@ -160,7 +160,7 @@ namespace CorApi.ComInterop
         ///                                  [in] BOOL win32Attach,
         ///                                  [out] ICorDebugProcess **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void DebugActiveProcess ([In] UInt32 id, [In] Int32 win32Attach,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 DebugActiveProcess ([In] UInt32 id, [In] Int32 win32Attach,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
         /// <summary>
@@ -169,7 +169,7 @@ namespace CorApi.ComInterop
         /// <param name="ppProcess"></param>
         /// <example><code>HRESULT EnumerateProcesses([out] ICorDebugProcessEnum **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateProcesses ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateProcesses ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcessEnum ppProcess);
 
         /// <summary>
         /// GetProcess returns the ICorDebugProcess with the given OS Id.
@@ -180,7 +180,7 @@ namespace CorApi.ComInterop
         /// <code>HRESULT GetProcess([in] DWORD dwProcessId, [out] ICorDebugProcess **ppProcess);</code>
         /// </example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetProcess ([In] UInt32 dwProcessId, [MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetProcess ([In] UInt32 dwProcessId, [MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
         /// <summary>
         /// CanLaunchOrAttach returns S_OK if the debugging services believe that
@@ -203,6 +203,6 @@ namespace CorApi.ComInterop
         /// <code>HRESULT CanLaunchOrAttach([in] DWORD dwProcessId, [in] BOOL win32DebuggingEnabled);</code>
         /// </example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CanLaunchOrAttach ([In] UInt32 dwProcessId, [In] Int32 win32DebuggingEnabled);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CanLaunchOrAttach ([In] UInt32 dwProcessId, [In] Int32 win32DebuggingEnabled);
     }
 }

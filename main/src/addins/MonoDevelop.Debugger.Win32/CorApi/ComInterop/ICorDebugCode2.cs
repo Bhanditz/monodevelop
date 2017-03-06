@@ -47,12 +47,12 @@ namespace CorApi.ComInterop
     /// <param name="cbufSize"></param>
     /// <param name="pcnumChunks"></param>
     /// <param name="chunks"></param>
-    void GetCodeChunks ([In] UInt32 cbufSize, [Out] UInt32* pcnumChunks, CodeChunkInfo* chunks);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCodeChunks ([In] UInt32 cbufSize, [Out] UInt32* pcnumChunks, CodeChunkInfo* chunks);
 
     /// <summary>
     /// GetCompilerFlags returns the flags under which this piece of code was JITted or NGENed.
     /// </summary>
     /// <param name="pdwFlags"></param>
-    void GetCompilerFlags ([Out] UInt32* pdwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCompilerFlags ([Out] UInt32* pdwFlags);
   }
 }

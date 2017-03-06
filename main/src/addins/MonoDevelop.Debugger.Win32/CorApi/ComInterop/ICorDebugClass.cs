@@ -102,14 +102,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pModule"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetModule ([MarshalAs (UnmanagedType.Interface)] out ICorDebugModule pModule);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetModule ([MarshalAs (UnmanagedType.Interface)] out ICorDebugModule pModule);
 
     /// <summary>
     /// GetTypeDefToken returns the metadata typedef token for the class.
     /// </summary>
     /// <param name="pTypeDef"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetToken ([ComAliasName ("mdTypeDef")] UInt32* pTypeDef);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetToken ([ComAliasName ("mdTypeDef")] UInt32* pTypeDef);
 
     /// <summary>
     /// GetStaticFieldValue returns a value object (ICorDebugValue) for the given static field
@@ -132,6 +132,6 @@ namespace CorApi.ComInterop
     /// <param name="pFrame"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetStaticFieldValue ([In] UInt32 fieldDef, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFrame pFrame, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStaticFieldValue ([In] UInt32 fieldDef, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFrame pFrame, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
   }
 }

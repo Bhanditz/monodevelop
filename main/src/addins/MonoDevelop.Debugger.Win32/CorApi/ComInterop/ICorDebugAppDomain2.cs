@@ -37,7 +37,7 @@ namespace CorApi.ComInterop
         ///                                              [in] ICorDebugType *pTypeArg,
         ///                                              [out] ICorDebugType **ppType);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetArrayOrPointerType (
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetArrayOrPointerType (
             [In] CorElementType elementType,
             [In] UInt32 nRank,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugType pTypeArg,
@@ -55,7 +55,7 @@ namespace CorApi.ComInterop
         ///                                               [in, size_is(nTypeArgs)] ICorDebugType *ppTypeArgs[],
         ///                                               [out] ICorDebugType **ppType);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetFunctionPointerType (
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunctionPointerType (
             [In] UInt32 nTypeArgs,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugType[] ppTypeArgs,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugType ppType);

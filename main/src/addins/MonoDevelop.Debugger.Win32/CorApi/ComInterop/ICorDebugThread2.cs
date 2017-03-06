@@ -107,21 +107,21 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pdwConnectionId"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetConnectionID ([ComAliasName("CONNID")]UInt32* pdwConnectionId);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetConnectionID ([ComAliasName("CONNID")]UInt32* pdwConnectionId);
 
       /// <summary>
       /// Return the TASKID of this thread.
       /// </summary>
       /// <param name="pTaskId"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetTaskID ([ComAliasName("TASKID")] UInt64 *pTaskId);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetTaskID ([ComAliasName("TASKID")] UInt64 *pTaskId);
 
       /// <summary>
       /// Return the OS Thread ID
       /// </summary>
       /// <param name="pdwTid"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetVolatileOSThreadID (UInt32 *pdwTid);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetVolatileOSThreadID (UInt32 *pdwTid);
 
       /// <summary>
       /// Allow the debugger to intercept the current exception on a thread.  It can be
@@ -133,6 +133,6 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pFrame"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void InterceptCurrentException ([MarshalAs (UnmanagedType.Interface), In] ICorDebugFrame pFrame);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 InterceptCurrentException ([MarshalAs (UnmanagedType.Interface), In] ICorDebugFrame pFrame);
     }
 }

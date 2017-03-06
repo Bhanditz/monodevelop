@@ -38,7 +38,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetAddress (UInt64* pAddress);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress (UInt64* pAddress);
 
     /// <summary>
     /// Check if an internal frame is closer to the leaf than pFrameToCompare.
@@ -46,6 +46,6 @@ namespace CorApi.ComInterop
     /// <param name="pFrameToCompare"></param>
     /// <param name="pIsCloser"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsCloserToLeaf ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFrame pFrameToCompare, Int32* pIsCloser);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsCloserToLeaf ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFrame pFrameToCompare, Int32* pIsCloser);
   }
 }

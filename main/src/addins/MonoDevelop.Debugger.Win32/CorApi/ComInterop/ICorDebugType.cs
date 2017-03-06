@@ -140,7 +140,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ty"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetType ([Out] CorElementType *ty);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType *ty);
 
       /// <summary>
       /// GetClass is used if the CorElementType returned by GetType is ELEMENT_TYPE_CLASS,
@@ -152,7 +152,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppClass"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetClass ([MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetClass ([MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
 
       /// <summary>
       ///     EnumerateTypeParameters may be used if the CorElementType
@@ -166,7 +166,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppTyParEnum"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateTypeParameters ([MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateTypeParameters ([MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppTyParEnum);
 
       /// <summary>
       ///  GetFirstTypeParameter can be used in those cases where the further
@@ -179,7 +179,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="value"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetFirstTypeParameter ([MarshalAs (UnmanagedType.Interface)] out ICorDebugType value);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFirstTypeParameter ([MarshalAs (UnmanagedType.Interface)] out ICorDebugType value);
 
       /// <summary>
       /// GetBase returns the ICorDebugType object for the base type of this type, if it
@@ -201,7 +201,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pBase"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetBase ([MarshalAs (UnmanagedType.Interface)] out ICorDebugType pBase);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetBase ([MarshalAs (UnmanagedType.Interface)] out ICorDebugType pBase);
 
       /// <summary>
       /// GetStaticFieldValue returns a value object (ICorDebugValue)
@@ -220,7 +220,7 @@ namespace CorApi.ComInterop
       /// <param name="pFrame"></param>
       /// <param name="ppValue"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetStaticFieldValue ([In][ComAliasName("mdFieldDef")] UInt32 fieldDef, [MarshalAs (UnmanagedType.Interface), In] ICorDebugFrame pFrame,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStaticFieldValue ([In][ComAliasName("mdFieldDef")] UInt32 fieldDef, [MarshalAs (UnmanagedType.Interface), In] ICorDebugFrame pFrame,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
       /// <summary>
@@ -228,6 +228,6 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pnRank"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetRank ([Out] UInt32 *pnRank);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRank ([Out] UInt32 *pnRank);
     }
 }

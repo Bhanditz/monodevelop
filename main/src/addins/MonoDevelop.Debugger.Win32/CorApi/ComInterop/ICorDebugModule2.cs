@@ -93,7 +93,7 @@ namespace CorApi.ComInterop
     /// <param name="cTokens"></param>
     /// <param name="pTokens"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetJMCStatus ([In] Int32 bIsJustMyCode, [In] UInt32 cTokens, [In] [ComAliasName ("mdToken[]")] UInt32* pTokens);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetJMCStatus ([In] Int32 bIsJustMyCode, [In] UInt32 cTokens, [In] [ComAliasName ("mdToken[]")] UInt32* pTokens);
 
     /// <summary>
     /// ApplyChanges is called to apply an Edit and Continue delta to the running process.
@@ -107,7 +107,7 @@ namespace CorApi.ComInterop
     /// <param name="cbIL"></param>
     /// <param name="pbIL"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void ApplyChanges ([In] UInt32 cbMetadata, [In] Byte* pbMetadata, [In] UInt32 cbIL, [In] Byte* pbIL);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ApplyChanges ([In] UInt32 cbMetadata, [In] Byte* pbMetadata, [In] UInt32 cbIL, [In] Byte* pbIL);
 
     /// <summary>
     /// SetJITCompilerFlags sets the flags that control the JIT compiler. If the set of flags is invalid,
@@ -117,14 +117,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="dwFlags"><see cref="CorDebugJITCompilerFlags"/></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetJITCompilerFlags ([In] UInt32 dwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetJITCompilerFlags ([In] UInt32 dwFlags);
 
     /// <summary>
     /// GetJITCompilerFlags gets the set of flags that control the JIT compiler for this module.
     /// </summary>
     /// <param name="pdwFlags"><see cref="CorDebugJITCompilerFlags"/></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetJITCompilerFlags (UInt32* pdwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetJITCompilerFlags (UInt32* pdwFlags);
 
     /// <summary>
     /// Resolve an assembly given an AssemblyRef token. Note that
@@ -134,6 +134,6 @@ namespace CorApi.ComInterop
     /// <param name="tkAssemblyRef"></param>
     /// <param name="ppAssembly"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void ResolveAssembly ([In] UInt32 tkAssemblyRef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugAssembly ppAssembly);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ResolveAssembly ([In] UInt32 tkAssemblyRef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugAssembly ppAssembly);
   }
 }

@@ -378,7 +378,7 @@ namespace CorApi.ComInterop
       /// <param name="pThread"></param>
       /// <param name="pBreakpoint"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Breakpoint ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Breakpoint ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugBreakpoint pBreakpoint);
 
@@ -412,7 +412,7 @@ namespace CorApi.ComInterop
       /// <param name="pStepper"></param>
       /// <param name="reason"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void StepComplete ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 StepComplete ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugStepper pStepper, [In] CorDebugStepReason reason);
 
@@ -423,7 +423,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="thread"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Break ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Break ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread thread);
 
       /// <summary>
@@ -440,7 +440,7 @@ namespace CorApi.ComInterop
       /// <param name="pThread"></param>
       /// <param name="unhandled"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Exception ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Exception ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread, [In] Int32 unhandled);
 
       /// <summary>
@@ -450,7 +450,7 @@ namespace CorApi.ComInterop
       /// <param name="pThread"></param>
       /// <param name="pEval"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EvalComplete ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EvalComplete ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugEval pEval);
 
@@ -462,7 +462,7 @@ namespace CorApi.ComInterop
       /// <param name="pThread"></param>
       /// <param name="pEval"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EvalException ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EvalException ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugEval pEval);
 
@@ -494,7 +494,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pProcess"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ExitProcess ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ExitProcess ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess);
 
       /// <summary>
       /// CreateThread is called when a thread first begins executing managed
@@ -504,7 +504,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="thread"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateThread ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateThread ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread thread);
 
       /// <summary>
@@ -514,7 +514,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="thread"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ExitThread ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ExitThread ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread thread);
 
       /// <summary>
@@ -526,7 +526,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="pModule"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void LoadModule ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 LoadModule ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugModule pModule);
 
       /// <summary>
@@ -536,7 +536,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="pModule"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void UnloadModule ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 UnloadModule ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugModule pModule);
 
       /// <summary>
@@ -550,7 +550,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="c"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void LoadClass ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 LoadClass ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugClass c);
 
       /// <summary>
@@ -561,7 +561,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="c"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void UnloadClass ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 UnloadClass ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugClass c);
 
       /// <summary>
@@ -580,7 +580,7 @@ namespace CorApi.ComInterop
       /// <param name="errorHR"></param>
       /// <param name="errorCode"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void DebuggerError ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 DebuggerError ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess,
             [MarshalAs (UnmanagedType.Error)][In] Int32 errorHR, [In] UInt32 errorCode);
 
       /// <summary>
@@ -593,7 +593,7 @@ namespace CorApi.ComInterop
       /// <param name="pLogSwitchName"></param>
       /// <param name="pMessage"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void LogMessage ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 LogMessage ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread, [In] Int32 lLevel,
             [In] UInt16* pLogSwitchName, [In] UInt16* pMessage);
 
@@ -608,7 +608,7 @@ namespace CorApi.ComInterop
       /// <param name="pLogSwitchName"></param>
       /// <param name="pParentName"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void LogSwitch ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 LogSwitch ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread, [In] Int32 lLevel, [In] UInt32 ulReason,
             [In] UInt16* pLogSwitchName, [In] UInt16* pParentName);
 
@@ -618,7 +618,7 @@ namespace CorApi.ComInterop
       /// <param name="pProcess"></param>
       /// <param name="pAppDomain"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateAppDomain ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateAppDomain ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain);
 
       /// <summary>
@@ -627,7 +627,7 @@ namespace CorApi.ComInterop
       /// <param name="pProcess"></param>
       /// <param name="pAppDomain"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ExitAppDomain ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ExitAppDomain ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain);
 
       /// <summary>
@@ -637,7 +637,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="pAssembly"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void LoadAssembly ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 LoadAssembly ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugAssembly pAssembly);
 
       /// <summary>
@@ -647,7 +647,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="pAssembly"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void UnloadAssembly ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 UnloadAssembly ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugAssembly pAssembly);
 
       /// <summary>
@@ -660,7 +660,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pProcess"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ControlCTrap ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ControlCTrap ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugProcess pProcess);
 
       /// <summary>
       /// NameChange() is called if either an AppDomain's or
@@ -669,7 +669,7 @@ namespace CorApi.ComInterop
       /// <param name="pAppDomain"></param>
       /// <param name="pThread"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void NameChange ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NameChange ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread);
 
       /// <summary>
@@ -686,7 +686,7 @@ namespace CorApi.ComInterop
       /// <param name="pModule"></param>
       /// <param name="pSymbolStream"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void UpdateModuleSymbols ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 UpdateModuleSymbols ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugModule pModule,
             [MarshalAs (UnmanagedType.Interface)][In] IStream pSymbolStream);
 
@@ -699,7 +699,7 @@ namespace CorApi.ComInterop
       /// <param name="fAccurate"></param>
       [Obsolete("DEPRECATED")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EditAndContinueRemap ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EditAndContinueRemap ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugFunction pFunction, [In] Int32 fAccurate);
 
@@ -713,7 +713,7 @@ namespace CorApi.ComInterop
       /// <param name="pBreakpoint"></param>
       /// <param name="dwError"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void BreakpointSetError ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 BreakpointSetError ([MarshalAs (UnmanagedType.Interface)][In] ICorDebugAppDomain pAppDomain,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugThread pThread,
             [MarshalAs (UnmanagedType.Interface)][In] ICorDebugBreakpoint pBreakpoint, [In] UInt32 dwError);
     }

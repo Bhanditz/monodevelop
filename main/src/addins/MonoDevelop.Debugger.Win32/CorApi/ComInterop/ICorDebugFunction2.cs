@@ -68,7 +68,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="bIsJustMyCode"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetJMCStatus ([In] Int32 bIsJustMyCode);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetJMCStatus ([In] Int32 bIsJustMyCode);
 
     /// <summary>
     /// IsUserCode outputs whether the function is marked as user code.
@@ -77,7 +77,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pbIsJustMyCode"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetJMCStatus (Int32* pbIsJustMyCode);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetJMCStatus (Int32* pbIsJustMyCode);
 
     /// <summary>
     /// Not yet implemented.
@@ -85,7 +85,7 @@ namespace CorApi.ComInterop
     /// <param name="ppCodeEnum"></param>
     [Obsolete ("Not yet implemented.")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumerateNativeCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCodeEnum ppCodeEnum);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateNativeCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCodeEnum ppCodeEnum);
 
     /// <summary>
     /// Obtains the EnC version number of the function represented by this ICorDebugFunction2.
@@ -96,6 +96,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pnVersion"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetVersionNumber (UInt32* pnVersion);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetVersionNumber (UInt32* pnVersion);
   }
 }

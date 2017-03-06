@@ -162,14 +162,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppChain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
     /// <summary>
     /// GetCode returns the code which this stack frame is running if any.
     /// </summary>
     /// <param name="ppCode"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
 
     /// <summary>
     /// GetFunction returns the function for the code which this stack
@@ -181,7 +181,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFunction"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
 
     /// <summary>
     /// GetFunctionToken is a convenience routine to return the token for the
@@ -190,7 +190,7 @@ namespace CorApi.ComInterop
     /// associated with this frame.</summary>
     /// <param name="pToken"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetFunctionToken ([ComAliasName ("mdMethodDef")] uint* pToken);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunctionToken ([ComAliasName ("mdMethodDef")] uint* pToken);
 
     /// <summary>
     /// GetStackRange returns the absolute address range of the stack
@@ -205,7 +205,7 @@ namespace CorApi.ComInterop
     /// <param name="pStart"></param>
     /// <param name="pEnd"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetStackRange ([ComAliasName ("CORDB_ADDRESS")] ulong* pStart, [ComAliasName ("CORDB_ADDRESS")] ulong* pEnd);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStackRange ([ComAliasName ("CORDB_ADDRESS")] ulong* pStart, [ComAliasName ("CORDB_ADDRESS")] ulong* pEnd);
 
     /// <summary>
     /// GetCaller returns a pointer to the frame in the current chain
@@ -214,7 +214,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFrame"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetCaller ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCaller ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
 
     /// <summary>
     /// GetCallee returns a pointer to the frame in the current chain
@@ -223,7 +223,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFrame"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetCallee ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCallee ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
 
     /// <summary>
     /// CreateStepper creates a stepper object which operates relative to the
@@ -233,7 +233,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppStepper"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void CreateStepper ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateStepper ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
 
     /// <summary>
     /// GetIP returns the stack frame's offset into the function's IL code.
@@ -263,7 +263,7 @@ namespace CorApi.ComInterop
     /// <param name="pnOffset"></param>
     /// <param name="pMappingResult"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetIP (UInt32* pnOffset, CorDebugMappingResult* pMappingResult);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetIP (UInt32* pnOffset, CorDebugMappingResult* pMappingResult);
 
     /// <summary>
     /// SetIP sets the instruction pointer to the IL at the given offset.
@@ -276,7 +276,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="nOffset"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetIP ([In] UInt32 nOffset);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetIP ([In] UInt32 nOffset);
 
     /// <summary>
     /// EnumerateLocalVariables returns a list of the local variables
@@ -286,7 +286,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppValueEnum"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumerateLocalVariables ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateLocalVariables ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
 
     /// <summary>
     /// GetLocalVariable gets the value for a local variable
@@ -306,7 +306,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppValueEnum"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnumerateArguments ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateArguments ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueEnum ppValueEnum);
 
     /// <summary>
     /// GetArgument gets the value for an argument
@@ -318,7 +318,7 @@ namespace CorApi.ComInterop
     /// <param name="dwIndex"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetArgument ([In] UInt32 dwIndex, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetArgument ([In] UInt32 dwIndex, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -326,14 +326,14 @@ namespace CorApi.ComInterop
     /// <param name="pDepth"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetStackDepth (UInt32* pDepth);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStackDepth (UInt32* pDepth);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
     /// </summary>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetStackValue ([In] UInt32 dwIndex, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStackValue ([In] UInt32 dwIndex, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// CanSetIP attempts to determine if it's safe to set the instruction pointer
@@ -344,6 +344,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="nOffset"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CanSetIP ([In] UInt32 nOffset);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CanSetIP ([In] UInt32 nOffset);
   }
 }

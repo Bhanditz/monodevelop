@@ -45,7 +45,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pIsChild"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsChild (Int32* pIsChild);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsChild (Int32* pIsChild);
 
     /// <summary>
     /// Return true if the specified frame is the parent frame of the current frame.
@@ -53,7 +53,7 @@ namespace CorApi.ComInterop
     /// <param name="pPotentialParentFrame"></param>
     /// <param name="pIsParent"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsMatchingParentFrame ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugNativeFrame2 pPotentialParentFrame, Int32* pIsParent);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsMatchingParentFrame ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugNativeFrame2 pPotentialParentFrame, Int32* pIsParent);
 
     /// <summary>
     /// Return the stack parameter size on x86.  On other platforms, we return S_FALSE and set pSize to 0.
@@ -61,6 +61,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetStackParameterSize (UInt32* pSize);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStackParameterSize (UInt32* pSize);
   }
 }

@@ -73,48 +73,48 @@ namespace CorApi.ComInterop
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CopyMetaData (void* pIStream, Guid* pMvid);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CopyMetaData (void* pIStream, Guid* pMvid);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetMvid (Guid* pMvid);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetMvid (Guid* pMvid);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetRoDataRVA (UInt32* pRoDataRVA);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRoDataRVA (UInt32* pRoDataRVA);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetRwDataRVA (UInt32* pRwDataRVA);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRwDataRVA (UInt32* pRwDataRVA);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetPEBytes (void* pIStream);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetPEBytes (void* pIStream);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetILMap ([In] UInt32 mdFunction, [In] UInt32 cMapSize, [In] COR_IL_MAP* map);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetILMap ([In] UInt32 mdFunction, [In] UInt32 cMapSize, [In] COR_IL_MAP* map);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetPESymbolBytes (void* pIStream);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetPESymbolBytes (void* pIStream);
   }
 }

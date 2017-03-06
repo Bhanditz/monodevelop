@@ -36,7 +36,7 @@ namespace CorApi.ComInterop
   public unsafe interface ICorDebugObjectValue2
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetVirtualMethodAndType ([In][ComAliasName("mdMemberRef")] UInt32 memberRef,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetVirtualMethodAndType ([In][ComAliasName("mdMemberRef")] UInt32 memberRef,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugType ppType);
     }

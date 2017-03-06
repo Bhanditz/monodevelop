@@ -39,7 +39,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="elementType"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetType ([Out] CorElementType* elementType);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType* elementType);
 
     /// <summary>
     /// GetSize returns the size of the value in bytes. Note that for reference
@@ -48,7 +48,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetSize (uint* pSize);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (uint* pSize);
 
     /// <summary>
     /// GetAddress returns the address of the value in the debugee
@@ -59,7 +59,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -67,14 +67,14 @@ namespace CorApi.ComInterop
     /// <param name="ppBreakpoint"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
     /// <summary>
     /// GetClass returns the runtime class of the object in the value.
     /// </summary>
     /// <param name="ppClass"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetClass ([MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetClass ([MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
 
     /// <summary>
     /// GetFieldValue returns a value for the given field in the given
@@ -85,7 +85,7 @@ namespace CorApi.ComInterop
     /// <param name="fieldDef"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetFieldValue ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pClass, [In] [ComAliasName ("mdFieldDef")] uint fieldDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFieldValue ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pClass, [In] [ComAliasName ("mdFieldDef")] uint fieldDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -94,7 +94,7 @@ namespace CorApi.ComInterop
     /// <param name="ppFunction"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetVirtualMethod ([In] [ComAliasName ("mdMemberRef")] uint memberRef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetVirtualMethod ([In] [ComAliasName ("mdMemberRef")] uint memberRef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -102,7 +102,7 @@ namespace CorApi.ComInterop
     /// <param name="ppContext"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetContext ([MarshalAs (UnmanagedType.Interface)] out ICorDebugContext ppContext);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetContext ([MarshalAs (UnmanagedType.Interface)] out ICorDebugContext ppContext);
 
     /// <summary>
     /// IsValueClass returns true if the the class of this object is
@@ -110,7 +110,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pbIsValueClass"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void IsValueClass (int* pbIsValueClass);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsValueClass (int* pbIsValueClass);
 
     /// <summary>
     /// DEPRECATED
@@ -118,7 +118,7 @@ namespace CorApi.ComInterop
     /// <param name="ppObject"></param>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetManagedCopy (void** ppObject);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetManagedCopy (void** ppObject);
 
     /// <summary>
     /// DEPRECATED
@@ -126,6 +126,6 @@ namespace CorApi.ComInterop
     /// <param name="pObject"></param>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void SetFromManagedCopy (void** pObject);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetFromManagedCopy (void** pObject);
   }
 }

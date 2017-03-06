@@ -13,11 +13,11 @@ namespace CorApi.ComInterop
     {
         /// <inheritdoc cref="ISequentialStream.RemoteRead" />
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void RemoteRead (void *pv, [In] UInt32 cb, UInt32* pcbRead);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteRead (void *pv, [In] UInt32 cb, UInt32* pcbRead);
 
         /// <inheritdoc cref="ISequentialStream.RemoteWrite" />
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void RemoteWrite ([In] void *pv, [In] UInt32 cb, UInt32* pcbWritten);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteWrite ([In] void *pv, [In] UInt32 cb, UInt32* pcbWritten);
 
       /// <summary>
       /// 
@@ -37,7 +37,7 @@ namespace CorApi.ComInterop
       ///        [in] DWORD dwOrigin,
       ///        [out] ULARGE_INTEGER *plibNewPosition);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void RemoteSeek ([In] LARGE_INTEGER dlibMove, [In] UInt32 dwOrigin, ULARGE_INTEGER *plibNewPosition);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteSeek ([In] LARGE_INTEGER dlibMove, [In] UInt32 dwOrigin, ULARGE_INTEGER *plibNewPosition);
 
       /// <summary>
       /// 
@@ -48,7 +48,7 @@ namespace CorApi.ComInterop
       ///        [in] ULARGE_INTEGER libNewSize);
       /// </code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetSize ([In] ULARGE_INTEGER libNewSize);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetSize ([In] ULARGE_INTEGER libNewSize);
 
       /// <summary>
       /// 
@@ -73,7 +73,7 @@ namespace CorApi.ComInterop
       ///        [out] ULARGE_INTEGER *pcbWritten);
       ///</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void RemoteCopyTo ([MarshalAs (UnmanagedType.Interface)] [In] IStream pstm, [In] ULARGE_INTEGER cb, ULARGE_INTEGER* pcbRead, ULARGE_INTEGER* pcbWritten);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteCopyTo ([MarshalAs (UnmanagedType.Interface)] [In] IStream pstm, [In] ULARGE_INTEGER cb, ULARGE_INTEGER* pcbRead, ULARGE_INTEGER* pcbWritten);
 
       /// <summary>
       /// 
@@ -84,7 +84,7 @@ namespace CorApi.ComInterop
       ///        [in] DWORD grfCommitFlags);
       ///</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Commit ([In] UInt32 grfCommitFlags);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Commit ([In] UInt32 grfCommitFlags);
 
       /// <summary>
       /// 
@@ -93,7 +93,7 @@ namespace CorApi.ComInterop
       ///     HRESULT Revert();
       /// </code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Revert ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Revert ();
 
       /// <summary>
       /// 
@@ -108,7 +108,7 @@ namespace CorApi.ComInterop
       ///        [in] DWORD dwLockType);
       /// </code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void LockRegion ([In] ULARGE_INTEGER libOffset, [In] ULARGE_INTEGER cb, [In] UInt32 dwLockType);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 LockRegion ([In] ULARGE_INTEGER libOffset, [In] ULARGE_INTEGER cb, [In] UInt32 dwLockType);
 
       /// <summary>
       /// 
@@ -123,7 +123,7 @@ namespace CorApi.ComInterop
       ///        [in] DWORD dwLockType);
       /// </code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void UnlockRegion ([In] ULARGE_INTEGER libOffset, [In] ULARGE_INTEGER cb, [In] UInt32 dwLockType);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 UnlockRegion ([In] ULARGE_INTEGER libOffset, [In] ULARGE_INTEGER cb, [In] UInt32 dwLockType);
 
       /// <summary>
       /// 
@@ -136,7 +136,7 @@ namespace CorApi.ComInterop
       ///        [in] DWORD grfStatFlag);
       /// </code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Stat (STATSTG *pstatstg, [In] UInt32 grfStatFlag);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Stat (STATSTG *pstatstg, [In] UInt32 grfStatFlag);
 
       /// <summary>
       /// 
@@ -147,6 +147,6 @@ namespace CorApi.ComInterop
       ///        [out] IStream **ppstm);
       /// </code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Clone ([MarshalAs (UnmanagedType.Interface)] out IStream ppstm);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Clone ([MarshalAs (UnmanagedType.Interface)] out IStream ppstm);
     }
 }

@@ -24,19 +24,19 @@ namespace CorApi.ComInterop
     {
         /// <inheritdoc cref="ICorDebugController.Stop"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Stop ([In] UInt32 dwTimeoutIgnored);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Stop ([In] UInt32 dwTimeoutIgnored);
 
         /// <inheritdoc cref="ICorDebugController.Continue"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Continue ([In] Int32 fIsOutOfBand);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Continue ([In] Int32 fIsOutOfBand);
 
         /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void IsRunning (Int32 *pbRunning);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsRunning (Int32 *pbRunning);
 
         /// <inheritdoc cref="ICorDebugController.HasQueuedCallbacks"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <inheritdoc cref="ICorDebugController.EnumerateThreads"/>
         [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
@@ -46,26 +46,26 @@ namespace CorApi.ComInterop
 
         /// <inheritdoc cref="ICorDebugController.SetAllThreadsDebugState"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void SetAllThreadsDebugState ([In] CorDebugThreadState state,
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetAllThreadsDebugState ([In] CorDebugThreadState state,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pExceptThisThread);
 
         /// <inheritdoc cref="ICorDebugController.Detach"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Detach ();
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Detach ();
 
         /// <inheritdoc cref="ICorDebugController.Terminate"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Terminate ([In] UInt32 exitCode);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Terminate ([In] UInt32 exitCode);
 
         /// <inheritdoc cref="ICorDebugController.CanCommitChanges"/>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <inheritdoc cref="ICorDebugController.CommitChanges"/>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <summary>
         /// GetProcess returns the process containing the app domain
@@ -73,7 +73,7 @@ namespace CorApi.ComInterop
         /// <param name="ppProcess"></param>
         /// <example><code>HRESULT GetProcess([out] ICorDebugProcess **ppProcess);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
         /// <summary>
         /// EnumerateAssemblies enumerates all assemblies in the app domain
@@ -97,7 +97,7 @@ namespace CorApi.ComInterop
         ///     </code>
         /// </example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetModuleFromMetaDataInterface (
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetModuleFromMetaDataInterface (
             [MarshalAs (UnmanagedType.IUnknown), In] object pIMetaData,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugModule ppModule);
 
@@ -109,7 +109,7 @@ namespace CorApi.ComInterop
         /// <param name="ppBreakpoints"></param>
         /// <example><code>HRESULT EnumerateBreakpoints([out] ICorDebugBreakpointEnum **ppBreakpoints);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateBreakpoints ([MarshalAs (UnmanagedType.Interface)] out ICorDebugBreakpointEnum ppBreakpoints);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateBreakpoints ([MarshalAs (UnmanagedType.Interface)] out ICorDebugBreakpointEnum ppBreakpoints);
 
         /// <summary>
         /// EnumerateSteppers returns an enum of all active steppers in the app domain.
@@ -117,7 +117,7 @@ namespace CorApi.ComInterop
         /// <param name="ppSteppers"></param>
         /// <example><code>HRESULT EnumerateSteppers([out] ICorDebugStepperEnum **ppSteppers);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateSteppers ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepperEnum ppSteppers);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateSteppers ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepperEnum ppSteppers);
 
         /// <summary>
         /// DEPRECATED.  Always returns TRUE in V3 (attaching is process-wide).
@@ -126,7 +126,7 @@ namespace CorApi.ComInterop
         /// <example><code>HRESULT IsAttached([out] BOOL *pbAttached);</code></example>
         [Obsolete("Always returns TRUE in V3 (attaching is process-wide).")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void IsAttached (Int32 *pbAttached);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsAttached (Int32 *pbAttached);
 
         /// <summary>
         /// GetName returns the name of the app domain.
@@ -175,7 +175,7 @@ namespace CorApi.ComInterop
         /// <param name="ppObject"></param>
         /// <example><code>HRESULT GetObject([out] ICorDebugValue **ppObject);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppObject);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppObject);
 
         /// <summary>
         /// DEPRECATED.  This does nothing in V3.  Attaching is process-wide.
@@ -183,7 +183,7 @@ namespace CorApi.ComInterop
         /// <example><code>HRESULT Attach();</code></example>
         [Obsolete]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Attach ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Attach ();
 
         /// <summary>
         /// Get the ID of this app domain. The ID will be unique within the
@@ -192,6 +192,6 @@ namespace CorApi.ComInterop
         /// <param name="pId"></param>
         /// <example><code>HRESULT GetID([out] ULONG32 *pId);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetID (UInt32 *pId);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetID (UInt32 *pId);
     }
 }

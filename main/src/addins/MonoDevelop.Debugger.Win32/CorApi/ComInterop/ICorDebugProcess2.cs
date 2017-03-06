@@ -99,14 +99,14 @@ namespace CorApi.ComInterop
     /// <param name="taskid"></param>
     /// <param name="ppThread"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetThreadForTaskID ([In] [ComAliasName ("TASKID")] UInt64 taskid, [MarshalAs (UnmanagedType.Interface)] out ICorDebugThread2 ppThread);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetThreadForTaskID ([In] [ComAliasName ("TASKID")] UInt64 taskid, [MarshalAs (UnmanagedType.Interface)] out ICorDebugThread2 ppThread);
 
     /// <summary>
     /// Returns the version of the runtime the debugee process is running.
     /// </summary>
     /// <param name="version"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetVersion (COR_VERSION* version);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetVersion (COR_VERSION* version);
 
     /// <summary>
     /// Set an unmanaged breakpoint at the given native address. If the address is within
@@ -120,14 +120,14 @@ namespace CorApi.ComInterop
     /// <param name="buffer"></param>
     /// <param name="bufLen"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetUnmanagedBreakpoint ([In] [ComAliasName ("CORDB_ADDRESS")] UInt64 address, [In] UInt32 bufsize, Byte* buffer, UInt32* bufLen);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetUnmanagedBreakpoint ([In] [ComAliasName ("CORDB_ADDRESS")] UInt64 address, [In] UInt32 bufsize, Byte* buffer, UInt32* bufLen);
 
     /// <summary>
     /// Remove a breakpoint set by SetUnmanagedBreakpoint.
     /// </summary>
     /// <param name="address"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void ClearUnmanagedBreakpoint ([In] [ComAliasName ("CORDB_ADDRESS")] UInt64 address);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ClearUnmanagedBreakpoint ([In] [ComAliasName ("CORDB_ADDRESS")] UInt64 address);
 
     /// <summary>
     /// SetDesiredNGENCompilerFlags specifies the set of flags that must be set in a pre-JITted
@@ -140,7 +140,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pdwFlags"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetDesiredNGENCompilerFlags ([In] UInt32 pdwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetDesiredNGENCompilerFlags ([In] UInt32 pdwFlags);
 
     /// <summary>
     ///  GetDesiredNGENCompilerFlags gets the set of flags that must be set in a pre-JITted image in order
@@ -148,7 +148,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pdwFlags"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetDesiredNGENCompilerFlags (UInt32* pdwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetDesiredNGENCompilerFlags (UInt32* pdwFlags);
 
     /// <summary>
     /// Gets an ICorDebugReferenceValue object from a raw GC handle value.
@@ -163,6 +163,6 @@ namespace CorApi.ComInterop
     /// <param name="handle"></param>
     /// <param name="pOutValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetReferenceValueFromGCHandle ([ComAliasName ("UINT_PTR")] [In] void* handle, [MarshalAs (UnmanagedType.Interface)] out ICorDebugReferenceValue pOutValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetReferenceValueFromGCHandle ([ComAliasName ("UINT_PTR")] [In] void* handle, [MarshalAs (UnmanagedType.Interface)] out ICorDebugReferenceValue pOutValue);
   }
 }

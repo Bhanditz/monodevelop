@@ -126,7 +126,7 @@ namespace CorApi.ComInterop
     /// <param name="nArgs"></param>
     /// <param name="ppArgs"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CallParameterizedFunction ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CallParameterizedFunction ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
 
     /// <summary>
     /// CreateValueForType generalizes CreateValue by allowing you to specify an
@@ -139,7 +139,7 @@ namespace CorApi.ComInterop
     /// <param name="pType"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateValueForType ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType pType, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateValueForType ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType pType, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// NewParameterizedObject allocates and calls the constructor for an object.
@@ -151,7 +151,7 @@ namespace CorApi.ComInterop
     /// <param name="nArgs"></param>
     /// <param name="ppArgs"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewParameterizedObject ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pConstructor, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewParameterizedObject ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pConstructor, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs, [In] UInt32 nArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugValue[] ppArgs);
 
     /// <summary>
     /// NewParameterizedObjectNoConstructor allocates a new object without
@@ -162,7 +162,7 @@ namespace CorApi.ComInterop
     /// <param name="nTypeArgs"></param>
     /// <param name="ppTypeArgs"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewParameterizedObjectNoConstructor ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pClass, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewParameterizedObjectNoConstructor ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugClass pClass, [In] UInt32 nTypeArgs, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType[] ppTypeArgs);
 
     /// <summary>
     /// NewParamaterizedArray allocates a new array whose elements may be instances
@@ -174,7 +174,7 @@ namespace CorApi.ComInterop
     /// <param name="dims"></param>
     /// <param name="lowBounds"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewParameterizedArray ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType pElementType, [In] UInt32 rank, [In] UInt32* dims, [In] UInt32* lowBounds);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewParameterizedArray ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugType pElementType, [In] UInt32 rank, [In] UInt32* dims, [In] UInt32* lowBounds);
 
     /// <summary>
     /// NewStringWithLength allocates a string object with the given contents.
@@ -186,7 +186,7 @@ namespace CorApi.ComInterop
     /// <param name="string"></param>
     /// <param name="uiLength"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void NewStringWithLength (UInt16 *@string, [In] UInt32 uiLength);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 NewStringWithLength (UInt16 *@string, [In] UInt32 uiLength);
 
     /// <summary>
     /// RudeAbort aborts the current computation.  Any locks the aborted
@@ -194,6 +194,6 @@ namespace CorApi.ComInterop
     /// is in an unsafe state.
     /// </summary>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void RudeAbort ();
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RudeAbort ();
   }
 }

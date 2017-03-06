@@ -114,6 +114,6 @@ namespace CorApi.ComInterop
       /// <param name="pDebugEvent"></param>
       /// <param name="fOutOfBand"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void DebugEvent ([ComAliasName ("LPDEBUG_EVENT"), In] void* pDebugEvent, [In] Int32 fOutOfBand);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 DebugEvent ([ComAliasName ("LPDEBUG_EVENT"), In] void* pDebugEvent, [In] Int32 fOutOfBand);
     }
 }

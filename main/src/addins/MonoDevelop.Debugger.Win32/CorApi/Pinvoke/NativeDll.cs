@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using CorApi.ComInterop;
+
 namespace PinvokeKit
 {
     /// <summary>
@@ -93,7 +95,7 @@ namespace PinvokeKit
 
                 // Make the factory create the object
                 var iidIUnknown = new Guid("00000000-0000-0000-C000-000000000046");
-                factory.CreateInstance(null, iidIUnknown, out instance);
+                factory.CreateInstance(null, iidIUnknown, out instance).AssertSucceeded("Factory Create Instance");
             }
             catch (Exception ex)
             {

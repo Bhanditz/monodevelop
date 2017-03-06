@@ -36,27 +36,27 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="bActive"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void Activate ([In] Int32 bActive);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Activate ([In] Int32 bActive);
 
       /// <summary>
       /// Returns whether the breakpoint is active.
       /// </summary>
       /// <param name="pbActive"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void IsActive ([Out] Int32 *pbActive);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsActive ([Out] Int32 *pbActive);
 
       /// <summary>
       /// Returns the function on which this breakpoint is set.
       /// </summary>
       /// <param name="ppFunction"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunction ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
 
       /// <summary>
       /// Returns the offset of this breakpoint within the function.
       /// </summary>
       /// <param name="pnOffset"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetOffset ([Out] UInt32* pnOffset);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetOffset ([Out] UInt32* pnOffset);
     }
 }

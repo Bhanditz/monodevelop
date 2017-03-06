@@ -89,6 +89,6 @@ namespace CorApi.ComInterop
       /// <param name="riid"></param>
       /// <param name="ppObj"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateReaderForInMemorySymbols ([In] Guid *riid, void **ppObj);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateReaderForInMemorySymbols ([In] Guid *riid, void **ppObj);
     }
 }

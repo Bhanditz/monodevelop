@@ -103,7 +103,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="elementType"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void GetType ([Out] CorElementType* elementType);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType* elementType);
 
       /// <summary>
       /// GetSize returns the size of the value in bytes. Note that for reference
@@ -112,7 +112,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pSize"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void GetSize (UInt32* pSize);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (UInt32* pSize);
 
       /// <summary>
       /// GetAddress returns the address of the value in the debugee
@@ -123,7 +123,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pAddress"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] UInt64* pAddress);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] UInt64* pAddress);
 
       /// <summary>
       /// NOT YET IMPLEMENTED
@@ -131,7 +131,7 @@ namespace CorApi.ComInterop
       /// <param name="ppBreakpoint"></param>
       [Obsolete ("NOT YET IMPLEMENTED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
       /// <summary>
       /// DEPRECATED.
@@ -140,11 +140,11 @@ namespace CorApi.ComInterop
       /// <param name="pbValid"></param>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void IsValid (Int32* pbValid);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsValid (Int32* pbValid);
 
       [Obsolete ("NOT YET IMPLEMENTED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      new void CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+      new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateRelocBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
       /// <summary>
       /// GetElementType returns the simple type of the elements in the
@@ -152,21 +152,21 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="elementType"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetElementType (CorElementType* elementType);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetElementType (CorElementType* elementType);
 
       /// <summary>
       /// GetRank returns the number of dimensions in the array.
       /// </summary>
       /// <param name="pnRank"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetRank (UInt32* pnRank);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRank (UInt32* pnRank);
 
       /// <summary>
       /// GetCount returns the total number of elements in the array.
       /// </summary>
       /// <param name="pnCount"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetCount (UInt32* pnCount);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCount (UInt32* pnCount);
 
       /// <summary>
       /// GetDimensions returns the dimensions of the array.
@@ -174,7 +174,7 @@ namespace CorApi.ComInterop
       /// <param name="cdim"></param>
       /// <param name="dims"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetDimensions ([In] UInt32 cdim, [Out] UInt32* dims);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetDimensions ([In] UInt32 cdim, [Out] UInt32* dims);
 
       /// <summary>
       /// HasBaseIndicies returns whether or not the array has base indicies.
@@ -182,7 +182,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pbHasBaseIndicies"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void HasBaseIndicies (Int32* pbHasBaseIndicies);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 HasBaseIndicies (Int32* pbHasBaseIndicies);
 
       /// <summary>
       /// GetBaseIndicies returns the base index of each dimension in
@@ -191,7 +191,7 @@ namespace CorApi.ComInterop
       /// <param name="cdim"></param>
       /// <param name="indicies"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetBaseIndicies ([In] UInt32 cdim, [Out] UInt32* indicies);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetBaseIndicies ([In] UInt32 cdim, [Out] UInt32* indicies);
 
       /// <summary>
       /// GetElement returns a value representing the given element in the array.
@@ -201,7 +201,7 @@ namespace CorApi.ComInterop
       /// <param name="indices"></param>
       /// <param name="ppValue"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetElement ([In] UInt32 cdim, [In] UInt32* indices, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetElement ([In] UInt32 cdim, [In] UInt32* indices, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
       /// <summary>
       /// GetElementAtPosition returns the element at the given position,
@@ -211,6 +211,6 @@ namespace CorApi.ComInterop
       /// <param name="nPosition"></param>
       /// <param name="ppValue"></param>
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void GetElementAtPosition ([In] UInt32 nPosition, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetElementAtPosition ([In] UInt32 nPosition, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
     }
 }

@@ -106,7 +106,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppModule"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetModule ([MarshalAs (UnmanagedType.Interface)] out ICorDebugModule ppModule);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetModule ([MarshalAs (UnmanagedType.Interface)] out ICorDebugModule ppModule);
 
     /// <summary>
     /// GetClass returns the class for the function. Returns null if
@@ -114,14 +114,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppClass"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetClass ([MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetClass ([MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
 
     /// <summary>
     /// GetToken returns the metadata methodDef token for the function.
     /// </summary>
     /// <param name="pMethodDef"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetToken ([ComAliasName ("mdMethodDef")] UInt32 pMethodDef);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetToken ([ComAliasName ("mdMethodDef")] UInt32 pMethodDef);
 
     /// <summary>
     /// GetILCode returns the IL code for the function.  Returns null
@@ -131,7 +131,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppCode"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetILCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetILCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
 
     /// <summary>
     /// GetNativeCode returns the native code for the function.
@@ -142,14 +142,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppCode"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetNativeCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetNativeCode ([MarshalAs (UnmanagedType.Interface)] out ICorDebugCode ppCode);
 
     /// <summary>
     /// CreateBreakpoint creates a breakpoint at the start of the function.
     /// </summary>
     /// <param name="ppBreakpoint"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFunctionBreakpoint ppBreakpoint);
 
     /// <summary>
     /// Returns the token for the local variable signature for this function.
@@ -158,7 +158,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pmdSig"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetLocalVarSigToken ([ComAliasName ("mdSignature")] UInt32* pmdSig);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetLocalVarSigToken ([ComAliasName ("mdSignature")] UInt32* pmdSig);
 
     /// <summary>
     /// Obtains the latest (largest) EnC version number for this function.
@@ -167,6 +167,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pnCurrentVersion"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCurrentVersionNumber (UInt32* pnCurrentVersion);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCurrentVersionNumber (UInt32* pnCurrentVersion);
   }
 }

@@ -76,7 +76,7 @@ namespace CorApi.ComInterop
     /// <param name="pcchName"></param>
     /// <param name="szName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetName ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetName ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
 
     /// <summary>
     /// Get a string description of the MDA. This may be empty (0-length).
@@ -85,7 +85,7 @@ namespace CorApi.ComInterop
     /// <param name="pcchName"></param>
     /// <param name="szName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetDescription ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetDescription ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
 
     /// <summary>
     /// Get the full associated XML for the MDA. This may be empty.
@@ -96,14 +96,14 @@ namespace CorApi.ComInterop
     /// <param name="pcchName"></param>
     /// <param name="szName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetXML ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetXML ([In] UInt32 cchName, UInt32* pcchName, UInt16* szName);
 
     /// <summary>
     /// Get the flags associated w/ the MDA. New flags may be added in future versions.
     /// </summary>
     /// <param name="pFlags"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetFlags ([In] CorDebugMDAFlags* pFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFlags ([In] CorDebugMDAFlags* pFlags);
 
     /// <summary>
     /// Thread that the MDA is fired on. We use the os tid instead of an ICDThread in case an MDA is fired on a
@@ -112,6 +112,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pOsTid"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetOSThreadId (UInt32* pOsTid);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetOSThreadId (UInt32* pOsTid);
   }
 }

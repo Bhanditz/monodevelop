@@ -33,6 +33,6 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppType"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetExactType ([MarshalAs (UnmanagedType.Interface)] out ICorDebugType ppType);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetExactType ([MarshalAs (UnmanagedType.Interface)] out ICorDebugType ppType);
     }
 }

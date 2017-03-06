@@ -62,7 +62,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="elementType"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetType ([Out] CorElementType* elementType);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType* elementType);
 
     /// <summary>
     /// GetSize returns the size of the value in bytes. Note that for reference
@@ -71,7 +71,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pSize"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetSize (uint* pSize);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (uint* pSize);
 
     /// <summary>
     /// GetAddress returns the address of the value in the debugee
@@ -82,7 +82,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAddress ([ComAliasName ("CORDB_ADDRESS")] ulong* pAddress);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -90,28 +90,28 @@ namespace CorApi.ComInterop
     /// <param name="ppBreakpoint"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValueBreakpoint ppBreakpoint);
 
     /// <summary>
     /// IsNull tests whether the reference is null.
     /// </summary>
     /// <param name="pbNull"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void IsNull (int* pbNull);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsNull (int* pbNull);
 
     /// <summary>
     /// GetValue returns the current address of the object referred to by this reference.
     /// </summary>
     /// <param name="pValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void GetValue ([ComAliasName ("CORDB_ADDRESS")] ulong* pValue);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetValue ([ComAliasName ("CORDB_ADDRESS")] ulong* pValue);
 
     /// <summary>
     /// SetValue sets this reference to refer to a different address.
     /// </summary>
     /// <param name="value"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void SetValue ([In] [ComAliasName ("CORDB_ADDRESS")] ulong value);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetValue ([In] [ComAliasName ("CORDB_ADDRESS")] ulong value);
 
     /// <summary>
     /// Dereference returns a ICorDebugValue representing the value
@@ -119,7 +119,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void Dereference ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Dereference ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// DEPRECATED
@@ -127,20 +127,20 @@ namespace CorApi.ComInterop
     /// <param name="ppValue"></param>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    new void DereferenceStrong ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 DereferenceStrong ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// returns the type of this handle.
     /// </summary>
     /// <param name="pType"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetHandleType (CorDebugHandleType* pType);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetHandleType (CorDebugHandleType* pType);
 
     /// <summary>
     /// The final release of the interface will also dispose of the handle. This
     /// API provides the ability for client to early dispose the handle.
     /// </summary>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void Dispose ();
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Dispose ();
   }
 }

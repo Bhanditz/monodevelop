@@ -233,7 +233,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppProcess"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
       /// <summary>
       /// GetID returns the current OS ID of the active part of the thread.
@@ -242,7 +242,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pdwThreadId"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetID (UInt32 *pdwThreadId);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetID (UInt32 *pdwThreadId);
 
       /// <summary>
       /// GetHandle returns the current Handle of the active part of the thread.
@@ -254,14 +254,14 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="phThreadHandle"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetHandle (void **phThreadHandle);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetHandle (void **phThreadHandle);
       
       /// <summary>
       /// GetAppDomain returns the app domain which the thread is currently executing in.
       /// </summary>
       /// <param name="ppAppDomain"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetAppDomain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAppDomain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAppDomain ppAppDomain);
 
       /// <summary>
       /// SetDebugState sets the current debug state of the thread.
@@ -288,7 +288,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="state"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetDebugState ([In] CorDebugThreadState state);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetDebugState ([In] CorDebugThreadState state);
 
       /// <summary>
       /// GetDebugState returns the current debug state of the thread.
@@ -298,7 +298,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pState"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetDebugState (CorDebugThreadState *pState);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetDebugState (CorDebugThreadState *pState);
 
       /// <summary>
       /// GetUserState returns the user state of the thread, that is, the state
@@ -307,7 +307,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pState"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetUserState (CorDebugUserState *pState);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetUserState (CorDebugUserState *pState);
 
       /// <summary>
       /// GetCurrentException returns the exception object which is
@@ -327,14 +327,14 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppExceptionObject"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetCurrentException ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppExceptionObject);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCurrentException ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppExceptionObject);
 
       /// <summary>
       /// This is not implemented.
       /// </summary>
       [Obsolete("This is not implemented.")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ClearCurrentException ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ClearCurrentException ();
 
       /// <summary>
       /// CreateStepper creates a stepper object which operates relative
@@ -344,7 +344,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppStepper"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateStepper ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateStepper ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStepper ppStepper);
 
       /// <summary>
       /// EnumerateChains returns an enum which will return all the stack
@@ -375,7 +375,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppChain"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetActiveChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetActiveChain ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
       /// <summary>
       /// GetActiveFrame is a convenience routine to return the
@@ -385,7 +385,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppFrame"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetActiveFrame ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetActiveFrame ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
 
       /// <summary>
       /// GetRegisterSet returns the register set for the active part
@@ -393,7 +393,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppRegisters"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetRegisterSet ([MarshalAs (UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRegisterSet ([MarshalAs (UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
 
       /// <summary>
       /// CreateEval creates an evaluation object which operates on the
@@ -405,13 +405,13 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ppEval"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateEval ([MarshalAs (UnmanagedType.Interface)] out ICorDebugEval ppEval);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateEval ([MarshalAs (UnmanagedType.Interface)] out ICorDebugEval ppEval);
 
       /// <summary>
       /// Returns the runtime thread object.
       /// </summary>
       /// <param name="ppObject"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppObject);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppObject);
     }
 }

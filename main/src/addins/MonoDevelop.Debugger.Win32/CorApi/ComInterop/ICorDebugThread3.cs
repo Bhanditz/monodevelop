@@ -36,9 +36,9 @@ namespace CorApi.ComInterop
     public unsafe interface ICorDebugThread3
     {
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void CreateStackWalk ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStackWalk ppStackWalk);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateStackWalk ([MarshalAs (UnmanagedType.Interface)] out ICorDebugStackWalk ppStackWalk);
 
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetActiveInternalFrames ([In] UInt32 cInternalFrames, UInt32* pcInternalFrames, void** ppInternalFrames);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetActiveInternalFrames ([In] UInt32 cInternalFrames, UInt32* pcInternalFrames, void** ppInternalFrames);
     }
 }

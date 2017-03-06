@@ -34,7 +34,7 @@ namespace CorApi.ComInterop
         ///      [in, size_is(cReqTypes)]  GUID               * iidsToResolve,
         ///      [out]                     ICorDebugTypeEnum ** ppTypesEnum);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetCachedWinRTTypesForIIDs (
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCachedWinRTTypesForIIDs (
             [In] UInt32 cReqTypes,
             [In] Guid *iidsToResolve,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppTypesEnum);
@@ -48,6 +48,6 @@ namespace CorApi.ComInterop
         /// HRESULT GetCachedWinRTTypes(
         ///      [out] ICorDebugGuidToTypeEnum ** ppGuidToTypeEnum);</code></example>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetCachedWinRTTypes ([MarshalAs (UnmanagedType.Interface)] out ICorDebugGuidToTypeEnum ppGuidToTypeEnum);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCachedWinRTTypes ([MarshalAs (UnmanagedType.Interface)] out ICorDebugGuidToTypeEnum ppGuidToTypeEnum);
     }
 }

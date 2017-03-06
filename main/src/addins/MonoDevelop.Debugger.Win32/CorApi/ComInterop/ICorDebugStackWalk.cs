@@ -88,7 +88,7 @@ namespace CorApi.ComInterop
     /// <param name="contextSize"></param>
     /// <param name="contextBuf"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetContext ([In] UInt32 contextFlags, [In] UInt32 contextBufSize, UInt32* contextSize, Byte* contextBuf);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetContext ([In] UInt32 contextFlags, [In] UInt32 contextBufSize, UInt32* contextSize, Byte* contextBuf);
 
     /// <summary>
     /// Change the current context of this stack walk, allowing the
@@ -103,7 +103,7 @@ namespace CorApi.ComInterop
     /// <param name="contextSize"></param>
     /// <param name="context"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetContext ([In] CorDebugSetContextFlag flag, [In] UInt32 contextSize, [In] Byte* context);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetContext ([In] CorDebugSetContextFlag flag, [In] UInt32 contextSize, [In] Byte* context);
 
     /// <summary>
     /// Attempt to advance the stackwalk to the next frame.
@@ -114,13 +114,13 @@ namespace CorApi.ComInterop
     /// This function will return CORDBG_S_AT_END_OF_STACK when there are no more frames.
     /// </summary>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void Next ();
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Next ();
 
     /// <summary>
     /// Return the current frame.  If the stackwalker is stopped at a native stack frame, we will return S_FALSE and set pFrame to NULL.
     /// </summary>
     /// <param name="pFrame"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetFrame ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame pFrame);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFrame ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame pFrame);
   }
 }

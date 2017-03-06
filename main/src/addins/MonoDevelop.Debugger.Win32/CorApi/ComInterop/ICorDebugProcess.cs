@@ -249,7 +249,7 @@ namespace CorApi.ComInterop
     {
         /// <inheritdoc cref="ICorDebugController.Stop"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Stop ([In] UInt32 dwTimeoutIgnored);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Stop ([In] UInt32 dwTimeoutIgnored);
 
         /// <inheritdoc cref="ICorDebugController.Continue"/>
         [MustUseReturnValue]
@@ -259,11 +259,11 @@ namespace CorApi.ComInterop
 
         /// <inheritdoc cref="ICorDebugController.IsRunning"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void IsRunning (Int32 *pbRunning);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsRunning (Int32 *pbRunning);
 
         /// <inheritdoc cref="ICorDebugController.HasQueuedCallbacks"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <inheritdoc cref="ICorDebugController.EnumerateThreads"/>
         [MethodImpl(MethodImplOptions.InternalCall | MethodImplOptions.PreserveSig, MethodCodeType = MethodCodeType.Runtime)]
@@ -273,33 +273,33 @@ namespace CorApi.ComInterop
 
         /// <inheritdoc cref="ICorDebugController.SetAllThreadsDebugState"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void SetAllThreadsDebugState ([In] CorDebugThreadState state,
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetAllThreadsDebugState ([In] CorDebugThreadState state,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pExceptThisThread);
 
         /// <inheritdoc cref="ICorDebugController.Detach"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Detach ();
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Detach ();
 
         /// <inheritdoc cref="ICorDebugController.Terminate"/>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void Terminate ([In] UInt32 exitCode);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Terminate ([In] UInt32 exitCode);
 
         /// <inheritdoc cref="ICorDebugController.CanCommitChanges"/>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
         /// <inheritdoc cref="ICorDebugController.CommitChanges"/>
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        new void CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+        new [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
       /// <summary>
       /// GetID returns the OS ID of the process.
       /// </summary>
       /// <param name="pdwProcessId"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetID (UInt32* pdwProcessId);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetID (UInt32* pdwProcessId);
 
       /// <summary>
       /// GetHandle returns a handle to the process. This handle is owned
@@ -308,7 +308,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="phProcessHandle"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetHandle ([ComAliasName("HPROCESS *")]void** phProcessHandle);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetHandle ([ComAliasName("HPROCESS *")]void** phProcessHandle);
 
       /// <summary>
       /// GetThread returns the ICorDebugThread with the given OS Id.
@@ -320,7 +320,7 @@ namespace CorApi.ComInterop
       /// <param name="dwThreadId"></param>
       /// <param name="ppThread"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetThread ([In] UInt32 dwThreadId, [MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetThread ([In] UInt32 dwThreadId, [MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
 
       /// <summary>
       /// NOT YET IMPLEMENTED
@@ -328,7 +328,7 @@ namespace CorApi.ComInterop
       /// <param name="ppObjects"></param>
       [Obsolete("NOT YET IMPLEMENTED")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnumerateObjects ([MarshalAs (UnmanagedType.Interface)] out ICorDebugObjectEnum ppObjects);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnumerateObjects ([MarshalAs (UnmanagedType.Interface)] out ICorDebugObjectEnum ppObjects);
 
       /// <summary>
       /// IsTransitionStub tests whether an address is inside of a transition stub
@@ -342,7 +342,7 @@ namespace CorApi.ComInterop
       /// <param name="address"></param>
       /// <param name="pbTransitionStub"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void IsTransitionStub ([In][ComAliasName("CORDB_ADDRESS")] UInt64 address, Int32* pbTransitionStub);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsTransitionStub ([In][ComAliasName("CORDB_ADDRESS")] UInt64 address, Int32* pbTransitionStub);
 
       /// <summary>
       /// IsOSSuspended returns whether or not the thread has been
@@ -358,7 +358,7 @@ namespace CorApi.ComInterop
       /// <param name="threadID"></param>
       /// <param name="pbSuspended"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void IsOSSuspended ([In] UInt32 threadID, Int32* pbSuspended);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsOSSuspended ([In] UInt32 threadID, Int32* pbSuspended);
 
       /// <summary>
       /// GetThreadContext returns the context for the given thread.  The
@@ -378,7 +378,7 @@ namespace CorApi.ComInterop
       /// <param name="contextSize"></param>
       /// <param name="context"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetThreadContext ([In] UInt32 threadID, [In] UInt32 contextSize, [In, Out] Byte* context);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetThreadContext ([In] UInt32 threadID, [In] UInt32 contextSize, [In, Out] Byte* context);
 
       /// <summary>
       /// SetThreadContext sets the context for the given thread.  The
@@ -402,7 +402,7 @@ namespace CorApi.ComInterop
       /// <param name="contextSize"></param>
       /// <param name="context"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetThreadContext ([In] UInt32 threadID, [In] UInt32 contextSize, [In, Out] Byte* context);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetThreadContext ([In] UInt32 threadID, [In] UInt32 contextSize, [In, Out] Byte* context);
 
       /// <summary>
       /// ReadMemory reads memory from the process.
@@ -422,7 +422,7 @@ namespace CorApi.ComInterop
       /// <param name="buffer"></param>
       /// <param name="read"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ReadMemory ([In][ComAliasName("CORDB_ADDRESS")] UInt64 address, [In] UInt32 size, [Out] Byte* buffer,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ReadMemory ([In][ComAliasName("CORDB_ADDRESS")] UInt64 address, [In] UInt32 size, [Out] Byte* buffer,
             UIntPtr* read);
 
       /// <summary>
@@ -442,7 +442,7 @@ namespace CorApi.ComInterop
       /// <param name="buffer"></param>
       /// <param name="written"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void WriteMemory ([In] UInt64 address, [In] UInt32 size, [In] Byte* buffer,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 WriteMemory ([In] UInt64 address, [In] UInt32 size, [In] Byte* buffer,
             UIntPtr* written);
 
       /// <summary>
@@ -458,7 +458,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="threadID"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ClearCurrentException ([In] UInt32 threadID);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ClearCurrentException ([In] UInt32 threadID);
 
       /// <summary>
       /// EnableLogMessages enables/disables sending of log messages to the
@@ -467,7 +467,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="fOnOff"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void EnableLogMessages ([In] Int32 fOnOff);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnableLogMessages ([In] Int32 fOnOff);
 
       /// <summary>
       /// ModifyLogSwitch modifies the specified switch's severity level.
@@ -476,7 +476,7 @@ namespace CorApi.ComInterop
       /// <param name="pLogSwitchName"></param>
       /// <param name="lLevel"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ModifyLogSwitch ([In] UInt16* pLogSwitchName, [In] Int32 lLevel);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ModifyLogSwitch ([In] UInt16* pLogSwitchName, [In] Int32 lLevel);
 
       /// <summary>
       /// EnumerateAppDomains enumerates all app domains in the process.
@@ -494,7 +494,7 @@ namespace CorApi.ComInterop
       /// <param name="ppObject"></param>
       [Obsolete("NOT YET IMPLEMENTED")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppObject);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetObject ([MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppObject);
 
       /// <summary>
       /// DEPRECATED
@@ -503,7 +503,7 @@ namespace CorApi.ComInterop
       /// <param name="ppThread"></param>
       [Obsolete("DEPRECATED")]
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void ThreadForFiberCookie ([In] UInt32 fiberCookie,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ThreadForFiberCookie ([In] UInt32 fiberCookie,
             [MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
 
       /// <summary>
@@ -527,6 +527,6 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="pThreadID"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void GetHelperThreadID (UInt32* pThreadID);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetHelperThreadID (UInt32* pThreadID);
     }
 }

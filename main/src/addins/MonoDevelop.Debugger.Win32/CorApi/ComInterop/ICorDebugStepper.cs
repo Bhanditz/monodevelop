@@ -215,14 +215,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pbActive"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsActive (Int32* pbActive);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsActive (Int32* pbActive);
 
     /// <summary>
     /// Deactivate causes a stepper to cancel the last stepping command it
     /// received.  A new stepping command may then be issued.
     /// </summary>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void Deactivate ();
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Deactivate ();
 
     /// <summary>
     /// SetInterceptMask controls which intercept code will be stepped
@@ -239,7 +239,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="mask"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetInterceptMask ([In] CorDebugIntercept mask);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetInterceptMask ([In] CorDebugIntercept mask);
 
     /// <summary>
     /// SetUnmappedStopMask controls whether the stepper
@@ -254,7 +254,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="mask"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetUnmappedStopMask ([In] CorDebugUnmappedStop mask);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetUnmappedStopMask ([In] CorDebugUnmappedStop mask);
 
     /// <summary>
     /// Step is called when a thread is to be single stepped.  The step
@@ -269,7 +269,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="bStepIn"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void Step ([In] Int32 bStepIn);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Step ([In] Int32 bStepIn);
 
     /// <summary>
     /// StepRange works just like Step, except it will not complete
@@ -286,7 +286,7 @@ namespace CorApi.ComInterop
     /// <param name="ranges"></param>
     /// <param name="cRangeCount"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void StepRange ([In] Int32 bStepIn, [In] COR_DEBUG_STEP_RANGE* ranges, [In] UInt32 cRangeCount);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 StepRange ([In] Int32 bStepIn, [In] COR_DEBUG_STEP_RANGE* ranges, [In] UInt32 cRangeCount);
 
     /// <summary>
     /// A StepOut operation will complete after the current frame is
@@ -298,7 +298,7 @@ namespace CorApi.ComInterop
     /// themselves.
     /// </summary>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void StepOut ();
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 StepOut ();
 
     /// <summary>
     /// SetRangeIL is used to set whether the ranges passed StepRange are
@@ -308,6 +308,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="bIL"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void SetRangeIL ([In] Int32 bIL);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetRangeIL ([In] Int32 bIL);
   }
 }

@@ -182,7 +182,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppProcess"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetProcess ([MarshalAs (UnmanagedType.Interface)] out ICorDebugProcess ppProcess);
 
     /// <summary>
     /// GetBaseAddress returns the base address of the module.
@@ -190,14 +190,14 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pAddress"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetBaseAddress (UInt64* pAddress);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetBaseAddress (UInt64* pAddress);
 
     /// <summary>
     /// GetAssembly returns the assembly of which this module is a part.
     /// </summary>
     /// <param name="ppAssembly"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetAssembly ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAssembly ppAssembly);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetAssembly ([MarshalAs (UnmanagedType.Interface)] out ICorDebugAssembly ppAssembly);
 
     /// <summary>
     /// GetName returns a name identifying the module.
@@ -210,7 +210,7 @@ namespace CorApi.ComInterop
     /// <param name="pcchName"></param>
     /// <param name="szName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetName ([In] UInt32 cchName, out UInt32 pcchName, [ComAliasName ("WCHAR[]")] UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetName ([In] UInt32 cchName, out UInt32 pcchName, [ComAliasName ("WCHAR[]")] UInt16* szName);
 
     /// <summary>
     /// EnableJITDebugging controls whether the jitter preserves
@@ -227,7 +227,7 @@ namespace CorApi.ComInterop
     /// <param name="bTrackJITInfo"></param>
     /// <param name="bAllowJitOpts"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnableJITDebugging ([In] Int32 bTrackJITInfo, [In] Int32 bAllowJitOpts);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnableJITDebugging ([In] Int32 bTrackJITInfo, [In] Int32 bAllowJitOpts);
 
     /// <summary>
     /// EnableClassLoadCallbacks controls whether on not LoadClass and
@@ -237,7 +237,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="bClassLoadCallbacks"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void EnableClassLoadCallbacks ([In] Int32 bClassLoadCallbacks);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 EnableClassLoadCallbacks ([In] Int32 bClassLoadCallbacks);
 
     /// <summary>
     /// GetFunctionFromToken returns the ICorDebugFunction from
@@ -248,14 +248,14 @@ namespace CorApi.ComInterop
     /// <param name="methodDef"></param>
     /// <param name="ppFunction"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetFunctionFromToken ([In] [ComAliasName ("mdMethodDef")] UInt32 methodDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunctionFromToken ([In] [ComAliasName ("mdMethodDef")] UInt32 methodDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugFunction ppFunction);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
     /// </summary>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetFunctionFromRVA ([In] UInt64 rva, void** ppFunction);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetFunctionFromRVA ([In] UInt64 rva, void** ppFunction);
 
     /// <summary>
     /// GetClassFromToken returns the ICorDebugClass from metadata information.
@@ -263,21 +263,21 @@ namespace CorApi.ComInterop
     /// <param name="typeDef"></param>
     /// <param name="ppClass"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetClassFromToken ([In] [ComAliasName ("mdTypeDef")] UInt32 typeDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetClassFromToken ([In] [ComAliasName ("mdTypeDef")] UInt32 typeDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugClass ppClass);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
     /// </summary>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateBreakpoint (void** ppBreakpoint);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateBreakpoint (void** ppBreakpoint);
 
     /// <summary>
     /// DEPRECATED
     /// </summary>
     [Obsolete ("DEPRECATED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetEditAndContinueSnapshot (void** ppEditAndContinueSnapshot);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetEditAndContinueSnapshot (void** ppEditAndContinueSnapshot);
 
     /// <summary>
     ///  Return a metadata interface pointer that can be used to examine the
@@ -286,7 +286,7 @@ namespace CorApi.ComInterop
     /// <param name="riid"></param>
     /// <param name="ppObj"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetMetaDataInterface ([In] Guid* riid, void** ppObj);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetMetaDataInterface ([In] Guid* riid, void** ppObj);
 
     /// <summary>
     /// Return the token for the Module table entry for this object.  The token
@@ -294,7 +294,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pToken"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetToken (UInt32* pToken);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetToken (UInt32* pToken);
 
     /// <summary>
     /// If this is a dynamic module, IsDynamic sets *pDynamic to true, otherwise
@@ -304,7 +304,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pDynamic"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsDynamic (Int32* pDynamic);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsDynamic (Int32* pDynamic);
 
     /// <summary>
     /// GetGlobalVariableValue returns a value object for the given global
@@ -313,7 +313,7 @@ namespace CorApi.ComInterop
     /// <param name="fieldDef"></param>
     /// <param name="ppValue"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetGlobalVariableValue ([In] [ComAliasName ("mdFieldDef")] UInt32 fieldDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetGlobalVariableValue ([In] [ComAliasName ("mdFieldDef")] UInt32 fieldDef, [MarshalAs (UnmanagedType.Interface)] out ICorDebugValue ppValue);
 
     /// <summary>
     /// GetSize returns the size, in bytes, of the module.
@@ -321,7 +321,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pcBytes"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetSize (UInt32* pcBytes);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetSize (UInt32* pcBytes);
 
     /// <summary>
     /// If this is a module that exists only in the debuggee's memory,
@@ -332,6 +332,6 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pInMemory"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsInMemory (Int32* pInMemory);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsInMemory (Int32* pInMemory);
   }
 }

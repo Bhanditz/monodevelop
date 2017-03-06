@@ -168,7 +168,7 @@ namespace CorApi.ComInterop
     /// <param name="pNewFunction"></param>
     /// <param name="oldILOffset"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void FunctionRemapOpportunity ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pOldFunction, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pNewFunction, [In] UInt32 oldILOffset);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 FunctionRemapOpportunity ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pOldFunction, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pNewFunction, [In] UInt32 oldILOffset);
 
     /// <summary>
     /// CreateConnection is called when a new connection is created.
@@ -177,7 +177,7 @@ namespace CorApi.ComInterop
     /// <param name="dwConnectionId"></param>
     /// <param name="pConnName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void CreateConnection ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugProcess pProcess, [In] [ComAliasName ("CONNID")] UInt32 dwConnectionId, [In] UInt16* pConnName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CreateConnection ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugProcess pProcess, [In] [ComAliasName ("CONNID")] UInt32 dwConnectionId, [In] UInt16* pConnName);
 
     /// <summary>
     /// ChangeConnection is called when a connection's set of tasks changes.
@@ -185,7 +185,7 @@ namespace CorApi.ComInterop
     /// <param name="pProcess"></param>
     /// <param name="dwConnectionId"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void ChangeConnection ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugProcess pProcess, [In] [ComAliasName ("CONNID")] UInt32 dwConnectionId);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ChangeConnection ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugProcess pProcess, [In] [ComAliasName ("CONNID")] UInt32 dwConnectionId);
 
     /// <summary>
     /// DestroyConnection is called when a connection is ended.
@@ -193,7 +193,7 @@ namespace CorApi.ComInterop
     /// <param name="pProcess"></param>
     /// <param name="dwConnectionId"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void DestroyConnection ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugProcess pProcess, [In] [ComAliasName ("CONNID")] UInt32 dwConnectionId);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 DestroyConnection ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugProcess pProcess, [In] [ComAliasName ("CONNID")] UInt32 dwConnectionId);
 
     /// <summary>
     /// Exception is called at various points during the search phase of the
@@ -207,7 +207,7 @@ namespace CorApi.ComInterop
     /// <param name="dwEventType"></param>
     /// <param name="dwFlags"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void Exception ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFrame pFrame, [In] UInt32 nOffset, [In] CorDebugExceptionCallbackType dwEventType, [In] UInt32 dwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Exception ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFrame pFrame, [In] UInt32 nOffset, [In] CorDebugExceptionCallbackType dwEventType, [In] UInt32 dwFlags);
 
     /// <summary>
     /// For non-intercepted exceptions, ExceptionUnwind is called at the beginning of the second pass
@@ -220,7 +220,7 @@ namespace CorApi.ComInterop
     /// <param name="dwEventType"></param>
     /// <param name="dwFlags"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void ExceptionUnwind ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [In] CorDebugExceptionUnwindCallbackType dwEventType, [In] UInt32 dwFlags);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 ExceptionUnwind ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [In] CorDebugExceptionUnwindCallbackType dwEventType, [In] UInt32 dwFlags);
 
     /// <summary>
     /// FunctionRemapComplete is fired whenever execution has completed switching over to a
@@ -231,7 +231,7 @@ namespace CorApi.ComInterop
     /// <param name="pThread"></param>
     /// <param name="pFunction"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void FunctionRemapComplete ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 FunctionRemapComplete ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugAppDomain pAppDomain, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugFunction pFunction);
 
     /// <summary>
     ///  Notification that an Managed Debug Assistant (MDA) was hit in the debuggee process.
@@ -258,6 +258,6 @@ namespace CorApi.ComInterop
     /// <param name="pThread"></param>
     /// <param name="pMDA"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void MDANotification ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugController pController, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugMDA pMDA);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 MDANotification ([MarshalAs (UnmanagedType.Interface)] [In] ICorDebugController pController, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugThread pThread, [MarshalAs (UnmanagedType.Interface)] [In] ICorDebugMDA pMDA);
   }
 }

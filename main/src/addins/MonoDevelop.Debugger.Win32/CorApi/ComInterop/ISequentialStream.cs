@@ -38,7 +38,7 @@ namespace CorApi.ComInterop
       /// <param name="cb"></param>
       /// <param name="pcbRead"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void RemoteRead (void *pv, [In] UInt32 cb, UInt32* pcbRead);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteRead (void *pv, [In] UInt32 cb, UInt32* pcbRead);
 
       /// <summary>
       ///     [local]
@@ -57,7 +57,7 @@ namespace CorApi.ComInterop
       /// <param name="cb"></param>
       /// <param name="pcbWritten"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void RemoteWrite ([In] void *pv, [In] UInt32 cb, UInt32* pcbWritten);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 RemoteWrite ([In] void *pv, [In] UInt32 cb, UInt32* pcbWritten);
     }
 
 }

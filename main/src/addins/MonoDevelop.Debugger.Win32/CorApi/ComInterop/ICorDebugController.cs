@@ -45,7 +45,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT Stop([in] DWORD dwTimeoutIgnored);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Stop ([In] UInt32 dwTimeoutIgnored);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Stop ([In] UInt32 dwTimeoutIgnored);
 
         /// <summary>
         /// Continue continues the process after a call to Stop.
@@ -74,7 +74,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT IsRunning([out] BOOL *pbRunning);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void IsRunning (Int32 *pbRunning);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsRunning (Int32 *pbRunning);
 
         /// <summary>
         /// HasQueuedCallbacks returns TRUE if there are currently managed
@@ -101,7 +101,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT HasQueuedCallbacks([in] ICorDebugThread *pThread, [out] BOOL *pbQueued);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 HasQueuedCallbacks ([MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pThread, Int32 *pbQueued);
 
         /// <summary>
         /// EnumerateThreads returns an enum of all managed threads active in the process.
@@ -136,7 +136,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT SetAllThreadsDebugState([in] CorDebugThreadState state, [in] ICorDebugThread *pExceptThisThread);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void SetAllThreadsDebugState ([In] CorDebugThreadState state,
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 SetAllThreadsDebugState ([In] CorDebugThreadState state,
             [MarshalAs (UnmanagedType.Interface), In] ICorDebugThread pExceptThisThread);
 
         /// <summary>
@@ -153,7 +153,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT Detach();
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Detach ();
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Detach ();
 
         /// <summary>
         /// Terminate terminates the process (with extreme prejudice, I might add).
@@ -168,7 +168,7 @@ namespace CorApi.ComInterop
         //
         // HRESULT Terminate([in] UINT exitCode);
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        void Terminate ([In] UInt32 exitCode);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 Terminate ([In] UInt32 exitCode);
 
       /// <summary>
       /// DEPRECATED
@@ -182,7 +182,7 @@ namespace CorApi.ComInterop
       //                          [out] ICorDebugErrorInfoEnum **pError);
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CanCommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
 
       /// <summary>
       /// DEPRECATED
@@ -196,6 +196,6 @@ namespace CorApi.ComInterop
       //                       [out] ICorDebugErrorInfoEnum **pError);
       [Obsolete ("DEPRECATED")]
       [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-      void CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
+      [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 CommitChanges ([In] UInt32 cSnapshots, /*ICorDebugEditAndContinueSnapshot*/void** pSnapshots, /*ICorDebugErrorInfoEnum*/void** pError);
     }
 }

@@ -165,7 +165,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppThread"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetThread ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetThread ([MarshalAs (UnmanagedType.Interface)] out ICorDebugThread ppThread);
 
     /// <summary>
     /// GetStackRange returns the address range of the stack segment for the
@@ -178,7 +178,7 @@ namespace CorApi.ComInterop
     /// <param name="pStart"></param>
     /// <param name="pEnd"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetStackRange ([ComAliasName ("CORDB_ADDRESS")] UInt64* pStart, [ComAliasName ("CORDB_ADDRESS")] UInt64* pEnd);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetStackRange ([ComAliasName ("CORDB_ADDRESS")] UInt64* pStart, [ComAliasName ("CORDB_ADDRESS")] UInt64* pEnd);
 
     /// <summary>
     /// NOT YET IMPLEMENTED
@@ -186,7 +186,7 @@ namespace CorApi.ComInterop
     /// <param name="ppContext"></param>
     [Obsolete ("NOT YET IMPLEMENTED")]
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetContext ([MarshalAs (UnmanagedType.Interface)] out ICorDebugContext ppContext);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetContext ([MarshalAs (UnmanagedType.Interface)] out ICorDebugContext ppContext);
 
     /// <summary>
     /// GetCaller returns a pointer to the chain which called this
@@ -197,7 +197,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppChain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCaller ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCaller ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
     /// <summary>
     /// GetCallee returns a pointer to the chain which this chain is
@@ -208,7 +208,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppChain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCallee ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCallee ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
     /// <summary>
     /// GetPrevious returns a pointer to the chain which was on this
@@ -216,7 +216,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppChain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetPrevious ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetPrevious ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
     /// <summary>
     /// GetNext returns a pointer to the chain which was pushed on this
@@ -224,7 +224,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppChain"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetNext ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetNext ([MarshalAs (UnmanagedType.Interface)] out ICorDebugChain ppChain);
 
     /// <summary>
     /// IsManaged returns whether or not the chain is running managed
@@ -232,7 +232,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pManaged"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void IsManaged (Int32* pManaged);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 IsManaged (Int32* pManaged);
 
     /// <summary>
     /// These chains represent the physical call stack for the thread.
@@ -257,7 +257,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppFrame"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetActiveFrame ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetActiveFrame ([MarshalAs (UnmanagedType.Interface)] out ICorDebugFrame ppFrame);
 
     /// <summary>
     /// GetRegisterSet returns the register set for the beginnning (the leafmost end)
@@ -265,13 +265,13 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="ppRegisters"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetRegisterSet ([MarshalAs (UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetRegisterSet ([MarshalAs (UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
 
     /// <summary>
     /// GetReason returns the reason for the genesis of this calling chain.
     /// </summary>
     /// <param name="pReason"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetReason (CorDebugChainReason* pReason);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetReason (CorDebugChainReason* pReason);
   }
 }

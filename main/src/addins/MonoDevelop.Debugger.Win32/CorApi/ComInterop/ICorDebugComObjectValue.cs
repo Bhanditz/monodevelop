@@ -60,7 +60,7 @@ namespace CorApi.ComInterop
     /// <param name="bIInspectableOnly"></param>
     /// <param name="ppInterfacesEnum"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCachedInterfaceTypes ([In] Int32 bIInspectableOnly, [MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppInterfacesEnum);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCachedInterfaceTypes ([In] Int32 bIInspectableOnly, [MarshalAs (UnmanagedType.Interface)] out ICorDebugTypeEnum ppInterfacesEnum);
 
     /// <summary>
     /// GetCachedInterfacePointers returns at most celt values of the
@@ -74,6 +74,6 @@ namespace CorApi.ComInterop
     /// <param name="pceltFetched"></param>
     /// <param name="ptrs"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    void GetCachedInterfacePointers ([In] Int32 bIInspectableOnly, [In] UInt32 celt, UInt32* pceltFetched, [ComAliasName ("CORDB_ADDRESS*")] UInt64* ptrs);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetCachedInterfacePointers ([In] Int32 bIInspectableOnly, [In] UInt32 celt, UInt32* pceltFetched, [ComAliasName ("CORDB_ADDRESS*")] UInt64* ptrs);
   }
 }
