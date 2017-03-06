@@ -1,4 +1,4 @@
-﻿namespace Microsoft.Samples.Debugging.CorDebug
+﻿namespace CorApi2.debug
 {
     /// <summary>
     /// Taken from https://github.com/crummel/dotnet_coreclr/blob/master/src/ToolBox/SOS/DacTableGen/diautil.cs

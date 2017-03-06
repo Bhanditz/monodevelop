@@ -4,10 +4,11 @@ using System.Threading;
 
 using CorApi.Pinvoke;
 
-using Microsoft.Samples.Debugging.CorDebug;
+using CorApi2.debug;
+
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Samples.Debugging.Extensions
+namespace CorApi2.Extensions
 {
 	public static unsafe class CorProcessExtensions
 	{

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
-using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.Tests.Infra;
 using Mono.Debugging.Client;
 using Should;

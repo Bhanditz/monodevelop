@@ -3,42 +3,24 @@
 // 
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
+
 using System;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Globalization;
 using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 
 using CorApi;
-
-using Microsoft.Samples.Debugging.CorDebug;
-
 using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.Extensions;
 
-namespace Microsoft.Samples.Debugging.CorMetadata
+using CorApi2.Extensions;
+
+namespace CorApi2.Metadata
 {
-    public class Instantiation
-    {
-        public static readonly Instantiation Empty = new Instantiation (new List<Type> ());
-
-        public static Instantiation Create (IList<Type> typeArgs)
-        {
-            return new Instantiation (typeArgs);
-        }
-
-        public IList<Type> TypeArgs { get; private set; }
-
-        Instantiation (IList<Type> typeArgs)
-        {
-            TypeArgs = typeArgs;
-        }
-    }
-
-    public sealed class MetadataType : Type
+	public sealed class MetadataType : Type
     {
         internal MetadataType(IMetadataImport importer,uint classToken)
         {
@@ -751,96 +733,11 @@ namespace Microsoft.Samples.Debugging.CorMetadata
     }
 
     // Sorts KeyValuePair<string,ulong>'s in increasing order by the value
-    class AscendingValueComparer<K, V> : IComparer<KeyValuePair<K,V>> where V:IComparable
-    {
-        public int Compare(KeyValuePair<K,V> p1, KeyValuePair<K, V> p2)
-        {
-            return p1.Value.CompareTo(p2.Value);
-        }
 
-        public bool Equals(KeyValuePair<K, V> p1, KeyValuePair<K, V> p2)
-        {
-            return Compare(p1,p2) == 0;
-        }
-
-        public int GetHashCode(KeyValuePair<K, V> p)
-        {
-            return p.Value.GetHashCode();
-        }
-    }
-
-
-    //////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////
     //
     // TypeDefEnum
     //
     //////////////////////////////////////////////////////////////////////////////////
-
-    class TypeDefEnum : IEnumerable, IEnumerator, IDisposable
-    {
-        public TypeDefEnum (CorMetadataImport corMeta)
-        {
-            m_corMeta = corMeta;
-        }
-
-        ~TypeDefEnum()
-        {
-            DestroyEnum();
-        }
-
-        public void Dispose()
-        {
-            DestroyEnum();
-            GC.SuppressFinalize(this);
-        }
-
-        //
-        // IEnumerable interface
-        //
-        public IEnumerator GetEnumerator ()
-        {
-            return this;
-        }
-
-        //
-        // IEnumerator interface
-        //
-        public bool MoveNext ()
-        {
-            uint token;
-            uint c;
-            
-            m_corMeta.m_importer.EnumTypeDefs(ref m_enum,out token,1, out c);
-            if (c==1) // 1 new element
-                m_type = m_corMeta.GetType(token);
-            else
-                m_type = null;
-            return m_type != null;
-        }
-
-        public void Reset ()
-        {
-            DestroyEnum();
-            m_type = null;
-        }
-
-        public Object Current
-        {
-            get 
-            {
-                return m_type;
-            }
-        }
-
-        protected void DestroyEnum()
-        {
-            m_corMeta.m_importer.CloseEnum(m_enum);
-            m_enum=new IntPtr();
-        }
-
-        private CorMetadataImport m_corMeta;
-        private IntPtr m_enum;                              
-        private Type m_type;
-    } 
 }
  

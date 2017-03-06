@@ -6,21 +6,6 @@ namespace CorApi2.Metadata
 {
     namespace Microsoft.Samples.Debugging.CorMetadata
     {
-        public class MethodGenericParameter : GenericParameter
-        {
-            public MethodGenericParameter (int index) : base (index)
-            {
-            }
-        }
-
-
-        public class TypeGenericParameter : GenericParameter
-        {
-            public TypeGenericParameter (int index) : base (index)
-            {
-            }
-        }
-
         public abstract class GenericParameter : Type
         {
             public int Index { get; private set; }

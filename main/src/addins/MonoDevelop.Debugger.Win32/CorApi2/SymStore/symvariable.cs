@@ -6,46 +6,14 @@
 
 
 // These interfaces serve as an extension to the BCL's SymbolStore interfaces.
-namespace Microsoft.Samples.Debugging.CorSymbolStore 
+
+using System;
+using System.Diagnostics.SymbolStore;
+using System.Text;
+
+namespace CorApi2.SymStore 
 {
-    using System.Diagnostics.SymbolStore;
-
     // Interface does not need to be marked with the serializable attribute
-    using System;
-	using System.Text;
-    using System.Runtime.InteropServices;
-    using System.Runtime.InteropServices.ComTypes;
-
-    [
-        ComImport,
-        Guid("9F60EEBE-2D9A-3F7C-BF58-80BC991C60BB"),
-        InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-        ComVisible(false)
-    ]
-    internal interface ISymUnmanagedVariable 
-    {
-        void GetName(int cchName,
-                        out int pcchName,
-                        [MarshalAs(UnmanagedType.LPWStr)] StringBuilder szName);
-
-        void GetAttributes(out int pRetVal);
-
-        void GetSignature(int cSig,
-                             out int pcSig,
-                             [In, Out, MarshalAs(UnmanagedType.LPArray, SizeParamIndex=0)] byte[] sig);
-
-        void GetAddressKind(out int  pRetVal);
-
-        void GetAddressField1(out int  pRetVal);
-
-        void GetAddressField2(out int  pRetVal);
-
-        void GetAddressField3(out int  pRetVal);
-
-        void GetStartOffset(out int  pRetVal);
-
-        void GetEndOffset(out int  pRetVal);
-    }    
 
     /// <include file='doc\ISymVariable.uex' path='docs/doc[@for="ISymbolVariable"]/*' />
 

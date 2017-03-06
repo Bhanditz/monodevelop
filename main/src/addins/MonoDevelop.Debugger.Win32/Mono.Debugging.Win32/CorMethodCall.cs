@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.ComInterop;
+
+using CorApi2.debug;
+
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 

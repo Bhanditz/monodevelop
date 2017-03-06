@@ -3,10 +3,11 @@
 // 
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
+
 using System;
 using System.Diagnostics;
 
-namespace Microsoft.Samples.Debugging.CorDebug
+namespace CorApi2.debug
 {
     /* This class is base class for all the wrapper classes we have.
      * We overload equivalance operators, so that we can figure out,

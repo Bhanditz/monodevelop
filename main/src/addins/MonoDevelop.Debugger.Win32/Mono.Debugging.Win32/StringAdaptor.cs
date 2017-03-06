@@ -24,7 +24,6 @@
 // THE SOFTWARE.
 // 
 
-using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32

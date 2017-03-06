@@ -3,20 +3,15 @@
 // 
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
+
 using System;
 using System.Reflection;
-using System.Collections;
-using System.Text;
-using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
-using System.Globalization;
-using System.Diagnostics;
+using System.Text;
 
 using CorApi;
 
-using Microsoft.Samples.Debugging.CorDebug;
-
-namespace Microsoft.Samples.Debugging.CorMetadata
+namespace CorApi2.Metadata
 {
     public sealed class MetadataParameterInfo : ParameterInfo
     {

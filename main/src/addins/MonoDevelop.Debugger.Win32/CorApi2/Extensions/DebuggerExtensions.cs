@@ -23,17 +23,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Runtime.InteropServices;
-using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.ComInterop;
 using CorApi.Pinvoke;
 
+using CorApi2.debug;
+
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Samples.Debugging.Extensions
+namespace CorApi2.Extensions
 {
 	[CLSCompliant (false)]
 	public static unsafe class DebuggerExtensions

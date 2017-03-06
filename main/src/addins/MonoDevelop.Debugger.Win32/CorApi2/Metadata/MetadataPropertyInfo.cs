@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Text;
 using System.Reflection;
+using System.Text;
 
 using CorApi;
 
-using Microsoft.Samples.Debugging.CorDebug;
+using CorApi2.Extensions;
 
-using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.Extensions;
-
-namespace Microsoft.Samples.Debugging.CorMetadata
+namespace CorApi2.Metadata
 {
 	public class MetadataPropertyInfo: PropertyInfo
 	{

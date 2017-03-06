@@ -4,7 +4,7 @@ using CorApi.Pinvoke;
 
 using Microsoft.Win32.SafeHandles;
 
-namespace Microsoft.Samples.Debugging.CorDebug
+namespace CorApi2.debug
 {
     public class ProcessSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
     {

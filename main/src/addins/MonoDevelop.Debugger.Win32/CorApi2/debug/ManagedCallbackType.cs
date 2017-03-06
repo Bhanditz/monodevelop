@@ -1,0 +1,37 @@
+namespace CorApi2.debug
+{
+    public enum ManagedCallbackType 
+    {
+        OnBreakpoint,
+        OnStepComplete,
+        OnBreak,
+        OnException,
+        OnEvalComplete,
+        OnEvalException,
+        OnCreateProcess,
+        OnProcessExit,
+        OnCreateThread,
+        OnThreadExit,
+        OnModuleLoad,
+        OnModuleUnload,
+        OnClassLoad,
+        OnClassUnload,
+        OnDebuggerError,
+        OnLogMessage,
+        OnLogSwitch,
+        OnCreateAppDomain,
+        OnAppDomainExit,
+        OnAssemblyLoad,
+        OnAssemblyUnload,
+        OnControlCTrap,
+        OnNameChange,
+        OnUpdateModuleSymbols,
+        OnFunctionRemapOpportunity,
+        OnFunctionRemapComplete,
+        OnBreakpointSetError,
+        OnException2,
+        OnExceptionUnwind2,
+        OnMDANotification,
+        OnExceptionInCallback,
+    }
+}

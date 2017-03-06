@@ -8,15 +8,18 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
-using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.CorMetadata;
-using Microsoft.Samples.Debugging.CorSymbolStore;
-using Microsoft.Samples.Debugging.Extensions;
+
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
+
+using CorApi2.debug;
+using CorApi2.Extensions;
+using CorApi2.Metadata;
+using CorApi2.SymStore;
 
 using ICorDebugEval = Microsoft.Samples.Debugging.CorDebug.ICorDebugEval;
 

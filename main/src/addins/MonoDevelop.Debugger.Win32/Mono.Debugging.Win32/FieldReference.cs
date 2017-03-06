@@ -27,7 +27,9 @@
 
 using System.Reflection;
 using System.Runtime.InteropServices;
-using Microsoft.Samples.Debugging.CorDebug;
+
+using CorApi2.debug;
+
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 

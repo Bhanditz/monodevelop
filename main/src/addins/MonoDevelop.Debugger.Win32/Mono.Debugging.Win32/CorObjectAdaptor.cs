@@ -32,20 +32,22 @@ using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
 using System.Text;
-using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
-using Microsoft.Samples.Debugging.CorDebug;
-using Microsoft.Samples.Debugging.CorMetadata;
+
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
 using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
-using Microsoft.Samples.Debugging.Extensions;
+
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 using CorApi.ComInterop;
+
+using CorApi2.Extensions;
+using CorApi2.Metadata;
+using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
 
 using ICorDebugArrayValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugArrayValue;
 using ICorDebugBoxValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugBoxValue;

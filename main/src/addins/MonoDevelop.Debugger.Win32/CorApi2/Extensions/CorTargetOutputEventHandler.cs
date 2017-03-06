@@ -1,6 +1,6 @@
 using System;
 
-namespace Microsoft.Samples.Debugging.Extensions
+namespace CorApi2.Extensions
 {
     public delegate void CorTargetOutputEventHandler (Object sender, CorTargetOutputEventArgs e);
 }

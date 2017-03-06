@@ -8,11 +8,10 @@ using System.Runtime.InteropServices;
 using CorApi;
 using CorApi.ComInterop;
 
+using CorApi2.Metadata;
 using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
 
-using Microsoft.Samples.Debugging.CorMetadata;
-
-namespace Microsoft.Samples.Debugging.Extensions
+namespace CorApi2.Extensions
 {
 	[CLSCompliant (false)]
 	public static class MetadataHelperFunctionsExtensions

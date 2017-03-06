@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
-using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.CorMetadata;
+
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 using System.Runtime.InteropServices;
+
+using CorApi2.Metadata;
 
 using ICorDebugChain = Microsoft.Samples.Debugging.CorDebug.ICorDebugChain;
 using ICorDebugFrame = Microsoft.Samples.Debugging.CorDebug.ICorDebugFrame;

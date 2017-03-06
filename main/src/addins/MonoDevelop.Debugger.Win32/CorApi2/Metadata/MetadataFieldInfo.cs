@@ -3,22 +3,21 @@
 // 
 //  Copyright (C) Microsoft Corporation.  All rights reserved.
 //---------------------------------------------------------------------
+
 using System;
-using System.Reflection;
 using System.Collections;
-using System.Text;
-using System.Runtime.InteropServices;
-using System.Globalization;
 using System.Diagnostics;
+using System.Globalization;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 
 using CorApi;
-
-using Microsoft.Samples.Debugging.CorDebug;
-
 using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.Extensions;
 
-namespace Microsoft.Samples.Debugging.CorMetadata
+using CorApi2.Extensions;
+
+namespace CorApi2.Metadata
 {
     public sealed class MetadataFieldInfo : FieldInfo
     {

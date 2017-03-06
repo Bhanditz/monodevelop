@@ -2,7 +2,6 @@
 
 using CorApi.ComInterop;
 
-using Microsoft.Samples.Debugging.CorDebug;
 using Mono.Debugging.Evaluation;
 using DC = Mono.Debugging.Client;
 

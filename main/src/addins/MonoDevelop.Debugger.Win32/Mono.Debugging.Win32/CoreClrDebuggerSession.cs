@@ -1,6 +1,8 @@
 using System;
 using CorApi.Pinvoke;
-using Microsoft.Samples.Debugging.CorDebug;
+
+using CorApi2.debug;
+
 using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32
