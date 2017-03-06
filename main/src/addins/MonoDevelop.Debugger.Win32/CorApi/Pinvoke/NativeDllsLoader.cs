@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     /// <summary>
     ///   Helps to load and work with native DLL modules.

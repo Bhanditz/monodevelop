@@ -11,11 +11,13 @@ using System.Globalization;
 using System.Collections;
 using System.Diagnostics;
 
-using Microsoft.Samples.Debugging.CorDebug; 
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
+using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Collections.Generic;
+
+using CorApi;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {

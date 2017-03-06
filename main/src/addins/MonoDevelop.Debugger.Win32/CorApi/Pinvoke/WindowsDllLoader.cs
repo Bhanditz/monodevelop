@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.IO;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     internal unsafe class WindowsDllLoader : IDllLoader
     {

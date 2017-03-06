@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     [CLSCompliant(false)]
     public static unsafe class Kernel32Dll

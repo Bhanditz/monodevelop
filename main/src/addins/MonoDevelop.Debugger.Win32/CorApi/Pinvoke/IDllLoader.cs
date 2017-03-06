@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     public interface IDllLoader
     {

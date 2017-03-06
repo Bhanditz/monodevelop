@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
 
+using CorApi;
+
 using Microsoft.Samples.Debugging.CorDebug;
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
+
 using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 

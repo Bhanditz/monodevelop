@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     [CLSCompliant(false)]
     [StructLayout(LayoutKind.Sequential)]

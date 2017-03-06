@@ -194,7 +194,9 @@
     <Compile Include="ComInterop\Helpers\TokenUtils.cs" />
     <Compile Include="ComInterop\ULARGE_INTEGER.cs" />
     <Compile Include="ComInterop\COR_ACTIVE_FUNCTION.cs" />
+    <Compile Include="IMetadataAssemblyImport.cs" />
     <Compile Include="IMetadataImport.cs" />
+    <Compile Include="IMetadataImport2.cs" />
     <Compile Include="Infra\Tracepoints.cs" />
     <Compile Include="Pinvoke\CoreClrShimUtil.cs" />
     <Compile Include="Pinvoke\DbgShimInterop.cs" />
@@ -205,6 +207,7 @@
     <Compile Include="Pinvoke\NativeDll.cs" />
     <Compile Include="Pinvoke\NativeDllsLoader.cs" />
     <Compile Include="Pinvoke\PlatformUtil.cs" />
+    <Compile Include="Pinvoke\PlatformUtilUnix.cs" />
     <Compile Include="Pinvoke\ProcessorArchitecture.cs" />
     <Compile Include="Pinvoke\ProcessorUtil.cs" />
     <Compile Include="Pinvoke\StringUtils.cs" />

@@ -7,7 +7,6 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using CorApi.ComInterop;
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
 
 namespace Microsoft.Samples.Debugging.CorDebug
 {

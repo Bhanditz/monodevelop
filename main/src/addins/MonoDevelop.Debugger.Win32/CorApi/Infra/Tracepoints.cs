@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Microsoft.Samples.Debugging.CorMetadata.NativeApi.Infra
+namespace CorApi.Infra
 {
     public static class Tracepoints
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     [CLSCompliant(false)]
     public enum ProcessorArchitecture : ushort

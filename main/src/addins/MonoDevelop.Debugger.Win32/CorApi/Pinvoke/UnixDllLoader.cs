@@ -2,7 +2,7 @@
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     internal class UnixDllLoader : IDllLoader
     {

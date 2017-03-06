@@ -7,8 +7,7 @@ using System.Threading;
 using System.Windows.Forms;
 
 using CorApi.ComInterop;
-
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi.Infra;
+using CorApi.Infra;
 
 using NUnit.Framework;
 

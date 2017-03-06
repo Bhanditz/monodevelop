@@ -17,10 +17,11 @@ using System.Globalization;
 using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Collections.Generic;
+
+using CorApi.Pinvoke;
+
 using Microsoft.Samples.Debugging.CorPublish.Metahost;
 using Microsoft.Win32.SafeHandles;
-
-using PinvokeKit;
 
 using IStream = CorApi.ComInterop.IStream;
 

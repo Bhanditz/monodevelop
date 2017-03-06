@@ -8,8 +8,6 @@ using CorApi.ComInterop;
 
 using JetBrains.Annotations;
 
-using PinvokeKit;
-
 namespace CorApi.Pinvoke
 {
     public unsafe static class CoreClrShimUtil

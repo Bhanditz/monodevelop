@@ -1,4 +1,4 @@
-﻿namespace PinvokeKit
+﻿namespace CorApi.Pinvoke
 {
     public enum HResults
     {

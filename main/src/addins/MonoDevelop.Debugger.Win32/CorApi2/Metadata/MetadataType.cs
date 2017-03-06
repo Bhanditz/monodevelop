@@ -12,8 +12,10 @@ using System.Runtime.InteropServices;
 using System.Globalization;
 using System.Diagnostics;
 
-using Microsoft.Samples.Debugging.CorDebug; 
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi; 
+using CorApi;
+
+using Microsoft.Samples.Debugging.CorDebug;
+
 using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 

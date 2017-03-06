@@ -30,10 +30,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
+
+using CorApi;
+
 using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
 using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.CorMetadata;
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi;
 
 namespace Microsoft.Samples.Debugging.Extensions
 {

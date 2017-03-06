@@ -12,8 +12,9 @@ using System.Runtime.Serialization;
 using System.Globalization;
 using System.Diagnostics;
 
-using Microsoft.Samples.Debugging.CorDebug; 
-using Microsoft.Samples.Debugging.CorMetadata.NativeApi; 
+using CorApi;
+
+using Microsoft.Samples.Debugging.CorDebug;
 
 namespace Microsoft.Samples.Debugging.CorMetadata
 {

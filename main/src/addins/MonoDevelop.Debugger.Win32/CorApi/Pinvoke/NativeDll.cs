@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 using CorApi.ComInterop;
 
-namespace PinvokeKit
+namespace CorApi.Pinvoke
 {
     /// <summary>
     /// Encapsulates a native DLL module. Use <see cref="NativeDllsLoader"/> to get instances of this class.

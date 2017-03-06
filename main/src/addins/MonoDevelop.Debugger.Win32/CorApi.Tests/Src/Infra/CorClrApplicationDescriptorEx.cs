@@ -1,9 +1,8 @@
 using System;
 using System.IO;
 
+using CorApi.Pinvoke;
 using CorApi.Tests.Infra;
-
-using PinvokeKit;
 
 namespace CorApi.Tests
 {

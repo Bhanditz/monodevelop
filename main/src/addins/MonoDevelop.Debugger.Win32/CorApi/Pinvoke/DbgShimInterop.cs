@@ -4,8 +4,6 @@ using System.Runtime.InteropServices;
 
 using JetBrains.Annotations;
 
-using PinvokeKit;
-
 namespace CorApi.Pinvoke
 {
     [CLSCompliant(false)]
