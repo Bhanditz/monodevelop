@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
+using CorApi.Pinvoke;
+
 using JetBrains.Annotations;
 
 namespace CorApi.ComInterop
@@ -59,6 +61,7 @@ namespace CorApi.ComInterop
             if(celt == 0)
                 return new TItem[] { };
             void** items = stackalloc void*[(int)celt];
+            MemoryUtil.ZeroMemory(items, (uint)sizeof(void*) * celt);
 
             // Fetch
             uint celtActual = 0;

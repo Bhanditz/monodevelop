@@ -13,23 +13,24 @@ namespace CorApi.ComInterop
 
             typeArguments = typeArguments ?? new ICorDebugType[] { };
             uint nTypeArgs = (uint)typeArguments.Length;
-            void** ppArgs = stackalloc void*[typeArguments.Length];
+            var typeargs = new void*[typeArguments.Length];
             try
             {
                 for(uint a = nTypeArgs; a-- > 0;)
-                    ppArgs[a] = Com.UnknownAddRef(typeArguments[a]);
+                    typeargs[a] = Com.UnknownAddRef(typeArguments[a]);
 
                 void* pType = null;
                 using(Com.UsingReference(&pType))
                 {
-                    Com.QueryInteface<ICorDebugClass2>(corclass).GetParameterizedType(elementType, nTypeArgs, ppArgs, &pType).AssertSucceeded("Could not get the parameterized type.");
+                    fixed(void** ppArgs = typeargs)
+                        Com.QueryInteface<ICorDebugClass2>(corclass).GetParameterizedType(elementType, nTypeArgs, ppArgs, &pType).AssertSucceeded("Could not get the parameterized type.");
                     return Com.QueryInteface<ICorDebugType>(pType);
                 }
             }
             finally
             {
-                for(uint a = nTypeArgs; a-- > 0;)
-                    Com.UnknownRelease(ppArgs[a]);
+                foreach(void* pArg in typeargs)
+                    Com.UnknownRelease(pArg);
             }
         }
     }

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+using CorApi.Pinvoke;
+
 using JetBrains.Annotations;
 
 namespace CorApi.ComInterop
@@ -20,8 +22,8 @@ namespace CorApi.ComInterop
                 return new CorActiveFunction[] { };
 
             COR_ACTIVE_FUNCTION* afunctions = stackalloc COR_ACTIVE_FUNCTION[(int)cFunctions];
+            MemoryUtil.ZeroMemory(afunctions, ((uint)sizeof(COR_ACTIVE_FUNCTION*)) * cFunctions);
             thread2.GetActiveFunctions(cFunctions, &cFunctions, afunctions).AssertSucceeded("Could not query for the list of active functions.");
-            ;
 
             try
             {
