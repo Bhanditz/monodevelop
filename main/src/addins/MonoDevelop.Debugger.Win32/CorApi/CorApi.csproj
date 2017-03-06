@@ -62,6 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComInterop\CorDebuggerVersion.cs" />
+    <Compile Include="ComInterop\CorDebugJITCompilerFlags.cs" />
+    <Compile Include="ComInterop\CorTokenType.cs" />
     <Compile Include="ComInterop\COR_DEBUG_IL_TO_NATIVE_MAP.cs" />
     <Compile Include="ComInterop\CodeChunkInfo.cs" />
     <Compile Include="ComInterop\CorDebugBlockingObject.cs" />
@@ -84,7 +87,7 @@
     <Compile Include="ComInterop\CorDebugUserState.cs" />
     <Compile Include="ComInterop\CorElementType.cs" />
     <Compile Include="ComInterop\COR_DEBUG_STEP_RANGE.cs" />
-    <Compile Include="ComInterop\Helpers\Com.cs" />
+    <Compile Include="ComInterop\Helpers\Common\Com.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResults2.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugAppDomainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugChainEx.cs" />
@@ -188,6 +191,7 @@
     <Compile Include="ComInterop\SECURITY_ATTRIBUTES.cs" />
     <Compile Include="ComInterop\STARTUPINFOW.cs" />
     <Compile Include="ComInterop\STREAM_SEEK.cs" />
+    <Compile Include="ComInterop\Helpers\TokenUtils.cs" />
     <Compile Include="ComInterop\ULARGE_INTEGER.cs" />
     <Compile Include="ComInterop\COR_ACTIVE_FUNCTION.cs" />
     <Compile Include="IMetadataImport.cs" />

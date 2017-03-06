@@ -449,7 +449,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         void InternalFireEvent(ManagedCallbackType callbackType,CorEventArgs e)
         {
             CorProcess owner;
-            CorController c = e.Controller;
+            ICorDebugController c = e.Controller;
             Debug.Assert(c!=null);
             if(c is CorProcess)
                 owner = (CorProcess)c ;
@@ -522,7 +522,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
     public class CorEventArgs : EventArgs
     {
-        private CorController m_controller;
+        private ICorDebugController m_controller;
 
         private bool m_continue;
 
@@ -531,13 +531,13 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
         private ICorDebugThread m_thread;
 
-        public CorEventArgs(CorController controller)
+        public CorEventArgs(ICorDebugController controller)
         {
             m_controller = controller;
             m_continue = true;
         }
 
-        public CorEventArgs(CorController controller, ManagedCallbackType callbackType)
+        public CorEventArgs(ICorDebugController controller, ManagedCallbackType callbackType)
         {
             m_controller = controller;
             m_continue = true;
@@ -545,7 +545,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         /** The Controller of the current event. */
-        public CorController Controller
+        public ICorDebugController Controller
         {
             get
             {
@@ -1334,13 +1334,13 @@ namespace Microsoft.Samples.Debugging.CorDebug
 
     public sealed class CorExceptionInCallbackEventArgs : CorEventArgs
     {
-        public CorExceptionInCallbackEventArgs(CorController controller, Exception exceptionThrown)
+        public CorExceptionInCallbackEventArgs(ICorDebugController controller, Exception exceptionThrown)
             : base(controller)
         {
             m_exceptionThrown = exceptionThrown;
         }
 
-        public CorExceptionInCallbackEventArgs(CorController controller, Exception exceptionThrown,
+        public CorExceptionInCallbackEventArgs(ICorDebugController controller, Exception exceptionThrown,
             ManagedCallbackType callbackType)
             : base(controller, callbackType)
         {
@@ -2105,7 +2105,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
         }
 
         // Get process from controller 
-        static private CorProcess GetProcessFromController(ICorDebugController pController)
+        static private CorProcess GetProcessFromController(CorApi.ComInterop.ICorDebugController pController)
         {
             CorProcess p;
             ICorDebugProcess p2 = pController as ICorDebugProcess;
@@ -2121,7 +2121,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
             return p;
         }
 
-        void ICorDebugManagedCallback2.MDANotification(ICorDebugController pController,
+        void ICorDebugManagedCallback2.MDANotification(CorApi.ComInterop.ICorDebugController pController,
                                                        CorApi.ComInterop.ICorDebugThread thread,
                                                        ICorDebugMDA pMDA)
         {

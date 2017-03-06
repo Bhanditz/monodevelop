@@ -62,8 +62,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CorPublish.cs" />
-    <Compile Include="debug\Constants.cs" />
-    <Compile Include="debug\Controller.cs" />
     <Compile Include="CorAPIAssemblyAttributes.cs" />
     <Compile Include="debug\CorException.cs" />
     <Compile Include="debug\Debugger.cs" />

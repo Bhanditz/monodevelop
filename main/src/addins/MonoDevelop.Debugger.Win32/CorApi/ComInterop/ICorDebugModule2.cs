@@ -115,14 +115,14 @@ namespace CorApi.ComInterop
     /// for the given module. Attempts to call it after this callback has been delivered or in a "faked"
     /// LoadModule callback for debugger attach will fail.
     /// </summary>
-    /// <param name="dwFlags"></param>
+    /// <param name="dwFlags"><see cref="CorDebugJITCompilerFlags"/></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void SetJITCompilerFlags ([In] UInt32 dwFlags);
 
     /// <summary>
     /// GetJITCompilerFlags gets the set of flags that control the JIT compiler for this module.
     /// </summary>
-    /// <param name="pdwFlags"></param>
+    /// <param name="pdwFlags"><see cref="CorDebugJITCompilerFlags"/></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
     void GetJITCompilerFlags (UInt32* pdwFlags);
 

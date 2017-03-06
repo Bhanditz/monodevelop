@@ -13,7 +13,7 @@ using CorApi.ComInterop;
 namespace Microsoft.Samples.Debugging.CorDebug
 {
     /** A process running some managed code. */
-    public sealed unsafe class CorProcess : CorController, IDisposable
+    public sealed unsafe class CorProcess : ICorDebugController, IDisposable
     {
         [CLSCompliant(false)]
         public static CorProcess GetCorProcess(ICorDebugProcess process)
@@ -150,7 +150,7 @@ namespace Microsoft.Samples.Debugging.CorDebug
                 ev.Set();
             }
             else
-                base.Continue(outOfBand);
+                m_controller.Continue (outOfBand ? 1 : 0);
         }
 
         // when process is first created wait till callbacks are enabled.
