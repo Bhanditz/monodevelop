@@ -90,7 +90,7 @@ namespace CorApi.ComInterop
         /// <summary>
         /// VALUETYPE &lt;class Token&gt;
         /// </summary>
-        [Obsolete]
+        [Obsolete("Please use ELEMENT_TYPE_VALUETYPE. ELEMENT_TYPE_VALUECLASS is deprecated.")]
         ELEMENT_TYPE_VALUETYPE      = 0x11,
         /// <summary>
         /// CLASS &lt;class Token&gt;
