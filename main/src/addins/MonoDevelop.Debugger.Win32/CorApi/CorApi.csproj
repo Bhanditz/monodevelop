@@ -64,6 +64,7 @@
   <ItemGroup>
     <Compile Include="ComInterop\CorDebuggerVersion.cs" />
     <Compile Include="ComInterop\CorDebugJITCompilerFlags.cs" />
+    <Compile Include="ComInterop\CorElementTypeZapSig.cs" />
     <Compile Include="ComInterop\CorTokenType.cs" />
     <Compile Include="ComInterop\COR_DEBUG_IL_TO_NATIVE_MAP.cs" />
     <Compile Include="ComInterop\CodeChunkInfo.cs" />
