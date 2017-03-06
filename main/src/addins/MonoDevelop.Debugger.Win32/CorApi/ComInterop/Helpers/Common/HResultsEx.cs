@@ -39,6 +39,16 @@ namespace CorApi.ComInterop
     }
 
     /// <summary>
+    /// Applies the <see cref="AssertSucceeded(int,string)"/>.
+    /// </summary>
+    /// <param name="hresult"></param>
+    [SourceTemplate]
+    public static void hr(this int hresult)
+    {
+      hresult.AssertSucceeded("$hresult$");
+    }
+
+    /// <summary>
     /// Checks the given <c>HRESULT</c>, and throws an exception if it's a failure one (<see cref="HResultHelpers.FAILED(int)"/>).
     /// The comment is used in case of the failure only.
     /// </summary>
