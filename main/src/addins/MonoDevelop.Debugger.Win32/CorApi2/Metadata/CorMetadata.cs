@@ -17,8 +17,6 @@ using CorApi.ComInterop;
 using Microsoft.Samples.Debugging.Extensions;
 using System.Collections.Generic;
 
-using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
-
 namespace Microsoft.Samples.Debugging.CorMetadata
 {
     public sealed class CorMetadataImport
@@ -468,7 +466,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
         private IMetadataImport m_importer;
         private string m_name;
-        private int m_classToken;
+        private uint m_classToken;
         private int m_methodToken;
         private MethodAttributes m_methodAttributes;
         // [Xamarin] Expression evaluator.

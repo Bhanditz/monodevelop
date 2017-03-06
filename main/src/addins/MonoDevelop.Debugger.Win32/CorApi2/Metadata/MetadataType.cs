@@ -38,7 +38,7 @@ namespace Microsoft.Samples.Debugging.CorMetadata
 
     public sealed class MetadataType : Type
     {
-        internal MetadataType(IMetadataImport importer,int classToken)
+        internal MetadataType(IMetadataImport importer,uint classToken)
         {
             Debug.Assert(importer!=null);
             m_importer = importer;
