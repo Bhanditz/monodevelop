@@ -46,7 +46,7 @@ namespace Mono.Debugging.Win32
 		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
 		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
 		readonly Dictionary<ICorDebugBreakpoint, BreakEventInfo> breakpoints = new Dictionary<ICorDebugBreakpoint, BreakEventInfo> ();
-		readonly Dictionary<long, CorHandleValue> handles = new Dictionary<long, CorHandleValue>();
+		readonly Dictionary<long, ICorDebugHandleValue> handles = new Dictionary<long, ICorDebugHandleValue>();
 
 		readonly BlockingCollection<Action> helperOperationsQueue = new BlockingCollection<Action>(new ConcurrentQueue<Action>());
 		readonly CancellationTokenSource helperOperationsCancellationTokenSource = new CancellationTokenSource ();
@@ -1087,11 +1087,11 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal CorHandleValue GetHandle (ICorDebugValue val)
+		internal ICorDebugHandleValue GetHandle (ICorDebugValue val)
 		{
-			CorHandleValue handleVal = null;
+			ICorDebugHandleValue handleVal = null;
 			if (!handles.TryGetValue (val.Address, out handleVal)) {
-				handleVal = (CorHandleValue)(val as ICorDebugHandleValue);
+				handleVal = (ICorDebugHandleValue)(val as CorApi.ComInterop.ICorDebugHandleValue);
 				if (handleVal == null)
 				{
 					// Create a handle
@@ -1621,8 +1621,22 @@ namespace Mono.Debugging.Win32
 		
 		void ClearHandles ( )
 		{
-			foreach (CorHandleValue handle in handles.Values) {
-				handle.Dispose ();
+			foreach (ICorDebugHandleValue handle in handles.Values) {
+				// The underlying ICorDebugHandle has a  Dispose() method which will free
+				// its resources (a GC handle). We call that now to free things sooner.
+				// If we don't call it now, it will still get freed at some random point after
+				// the final release (which the finalizer will call).
+				try
+				{
+					// This is just a best-effort to cleanup resources early.
+					// If it fails, just swallow and move on.
+					// May throw if handle was already disposed, or if process is not stopped.
+					handle.Dispose().AssertSucceeded("handle.Dispose()");    
+				}
+				catch
+				{
+					// swallow all
+				}
 			}
 			handles.Clear ();
 		}

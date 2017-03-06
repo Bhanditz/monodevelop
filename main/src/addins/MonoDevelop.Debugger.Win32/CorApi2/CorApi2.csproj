@@ -70,7 +70,6 @@
     <Compile Include="debug\PdbHResult.cs" />
     <Compile Include="debug\Process.cs" />
     <Compile Include="debug\ProcessSafeHandle.cs" />
-    <Compile Include="debug\Value.cs" />
     <Compile Include="debug\WrapperBase.cs" />
     <Compile Include="Extensions\CorProcessExtensions.cs" />
     <Compile Include="Extensions\CorTargetOutputEventHandler.cs" />

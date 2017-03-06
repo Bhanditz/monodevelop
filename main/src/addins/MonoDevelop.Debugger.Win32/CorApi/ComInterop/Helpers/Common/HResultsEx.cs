@@ -43,7 +43,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="hresult"></param>
     [SourceTemplate]
-    public static void hr(this int hresult)
+    public static void hr([Macro(Editable = 0)] this int hresult)
     {
       hresult.AssertSucceeded("$hresult$");
     }

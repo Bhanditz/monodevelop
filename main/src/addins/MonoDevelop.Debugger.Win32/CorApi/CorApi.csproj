@@ -98,6 +98,7 @@
     <Compile Include="ComInterop\Helpers\Common\HResults.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResultsEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugFrameEx.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugGenericValueEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugProcessEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugThreadEx.cs" />
     <Compile Include="ComInterop\Helpers\MscoreeHelpers.cs" />
