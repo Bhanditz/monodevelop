@@ -7,7 +7,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32
 {
-	public class CoreClrDebuggerSession : CorDebuggerSession
+	public unsafe class CoreClrDebuggerSession : CorDebuggerSession
 	{
 		private readonly DbgShimInterop dbgShimInterop;
 		static readonly TimeSpan RuntimeLoadTimeout = TimeSpan.FromSeconds (1);

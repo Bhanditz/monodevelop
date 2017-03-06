@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorAppDomainBaseEventArgs : CorEventArgs
+    public unsafe class CorAppDomainBaseEventArgs : CorEventArgs
     {
         public CorAppDomainBaseEventArgs(ICorDebugAppDomain ad)
             : base(ad)

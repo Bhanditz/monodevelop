@@ -9,7 +9,7 @@ using CorApi2.Extensions;
 
 namespace CorApi2.Metadata
 {
-	public class MetadataPropertyInfo: PropertyInfo
+	public unsafe class MetadataPropertyInfo: PropertyInfo
 	{
 		private IMetadataImport m_importer;
 		private uint m_propertyToken;

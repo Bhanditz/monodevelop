@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorEvalEventArgs : CorThreadEventArgs
+    public unsafe class CorEvalEventArgs : CorThreadEventArgs
     {
         ICorDebugEval m_eval;
 

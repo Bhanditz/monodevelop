@@ -4,7 +4,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorStepCompleteEventArgs : CorThreadEventArgs
+    public unsafe class CorStepCompleteEventArgs : CorThreadEventArgs
     {
         private ICorDebugStepper m_stepper;
         private CorDebugStepReason m_stepReason;

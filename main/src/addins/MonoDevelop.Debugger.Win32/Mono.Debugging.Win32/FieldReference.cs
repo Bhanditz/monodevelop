@@ -35,7 +35,7 @@ using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32
 {
-	public class FieldReference: ValueReference
+	public unsafe class FieldReference: ValueReference
 	{
 		readonly ICorDebugType type;
 		readonly FieldInfo field;

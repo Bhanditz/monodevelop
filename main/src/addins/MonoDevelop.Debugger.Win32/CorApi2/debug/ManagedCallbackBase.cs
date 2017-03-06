@@ -5,7 +5,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    abstract unsafe public class ManagedCallbackBase : ICorDebugManagedCallback, ICorDebugManagedCallback2
+    abstract unsafe public unsafe class ManagedCallbackBase : ICorDebugManagedCallback, ICorDebugManagedCallback2
     {
         // Derived class overrides this methdos 
         protected abstract void HandleEvent(ManagedCallbackType eventId, CorEventArgs args);

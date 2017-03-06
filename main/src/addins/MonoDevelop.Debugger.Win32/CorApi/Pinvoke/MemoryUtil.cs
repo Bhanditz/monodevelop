@@ -4,6 +4,8 @@ namespace CorApi.Pinvoke
 {
   public static class MemoryUtil
   {
+    public const int ByteBufferUnderlohSize = 81920;
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     public static unsafe void ZeroMemory(void* p, uint cb)
     {

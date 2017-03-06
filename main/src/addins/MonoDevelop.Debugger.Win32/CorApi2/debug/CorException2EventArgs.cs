@@ -4,7 +4,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorException2EventArgs : CorThreadEventArgs
+    public unsafe class CorException2EventArgs : CorThreadEventArgs
     {
 
         [CLSCompliant(false)]

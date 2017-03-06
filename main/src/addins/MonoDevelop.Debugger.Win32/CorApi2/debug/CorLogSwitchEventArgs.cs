@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorLogSwitchEventArgs : CorThreadEventArgs
+    public unsafe class CorLogSwitchEventArgs : CorThreadEventArgs
     {
         int m_level;
 

@@ -4,7 +4,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorEventArgs : EventArgs
+    public unsafe class CorEventArgs : EventArgs
     {
         private ICorDebugController m_controller;
 

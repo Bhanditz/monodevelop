@@ -60,7 +60,7 @@ using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
 
 namespace Mono.Debugging.Win32
 {
-	public class CorObjectAdaptor: ObjectValueAdaptor
+	public unsafe class CorObjectAdaptor: ObjectValueAdaptor
 	{
 		public override bool IsPrimitive (EvaluationContext ctx, object val)
 		{

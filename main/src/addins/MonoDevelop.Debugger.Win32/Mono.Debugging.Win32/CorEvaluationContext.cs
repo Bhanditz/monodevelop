@@ -7,7 +7,7 @@ using DC = Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32
 {
-	public class CorEvaluationContext: EvaluationContext
+	public unsafe class CorEvaluationContext: EvaluationContext
 	{
 		ICorDebugEval corEval;
 		ICorDebugFrame frame;

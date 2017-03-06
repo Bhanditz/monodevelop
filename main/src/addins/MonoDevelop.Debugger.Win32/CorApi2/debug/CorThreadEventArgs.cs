@@ -5,21 +5,20 @@ namespace CorApi2.debug
     public class CorThreadEventArgs : CorAppDomainBaseEventArgs
     {
         public CorThreadEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread)
-            : base(appDomain != null ? appDomain : thread.AppDomain)
+            : base(appDomain ?? GetThreadAppDomain(thread))
         {
             Thread = thread;
         }
 
-        public CorThreadEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
-            ManagedCallbackType callbackType)
-            : base(appDomain != null ? appDomain : thread.AppDomain, callbackType)
+        public CorThreadEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread, ManagedCallbackType callbackType)
+            : base(appDomain ?? GetThreadAppDomain(thread), callbackType)
         {
             Thread = thread;
         }
 
         public override string ToString()
         {
-            switch (CallbackType)
+            switch(CallbackType)
             {
             case ManagedCallbackType.OnBreak:
                 return "Break";
@@ -31,6 +30,13 @@ namespace CorApi2.debug
                 return "Name Changed";
             }
             return base.ToString();
+        }
+
+        private static ICorDebugAppDomain GetThreadAppDomain(ICorDebugThread thread)
+        {
+            ICorDebugAppDomain appdomain;
+            thread.GetAppDomain(out appdomain).AssertSucceeded("thread.GetAppDomain(out appdomain)");
+            return appdomain;
         }
     }
 }

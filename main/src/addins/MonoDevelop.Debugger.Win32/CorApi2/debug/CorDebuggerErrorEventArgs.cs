@@ -1,6 +1,6 @@
 namespace CorApi2.debug
 {
-    public class CorDebuggerErrorEventArgs : CorProcessEventArgs
+    public unsafe class CorDebuggerErrorEventArgs : CorProcessEventArgs
     {
         int m_hresult;
         int m_errorCode;

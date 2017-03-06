@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorBreakpointSetErrorEventArgs : CorThreadEventArgs
+    public unsafe class CorBreakpointSetErrorEventArgs : CorThreadEventArgs
     {
         public CorBreakpointSetErrorEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugThread thread,

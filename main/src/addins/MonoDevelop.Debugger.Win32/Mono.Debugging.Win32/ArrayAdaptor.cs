@@ -28,6 +28,8 @@
 using System;
 using System.Collections;
 
+using CorApi.ComInterop;
+
 using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32

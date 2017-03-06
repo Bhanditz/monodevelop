@@ -6,7 +6,7 @@ using Microsoft.Win32.SafeHandles;
 
 namespace CorApi2.debug
 {
-    public class ProcessSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
+    public unsafe class ProcessSafeHandle : SafeHandleZeroOrMinusOneIsInvalid
     {
         private ProcessSafeHandle()
             : base(true)

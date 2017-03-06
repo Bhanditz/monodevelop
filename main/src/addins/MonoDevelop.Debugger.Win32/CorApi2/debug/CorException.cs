@@ -4,7 +4,7 @@ using System.Runtime.Serialization;
 namespace CorApi2.debug
 {
     [Serializable] // TODO: is this used on our side?
-    public class CorException : Exception
+    public unsafe class CorException : Exception
     {
         /// <summary>
         /// Initializes a new instance of the CorException.

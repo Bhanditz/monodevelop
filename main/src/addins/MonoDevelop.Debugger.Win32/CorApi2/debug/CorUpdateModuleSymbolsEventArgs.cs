@@ -4,7 +4,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorUpdateModuleSymbolsEventArgs : CorModuleEventArgs
+    public unsafe class CorUpdateModuleSymbolsEventArgs : CorModuleEventArgs
     {
         IStream m_stream;
 

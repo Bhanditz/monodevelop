@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CorApi2.Metadata
 {
-    public class Instantiation
+    public unsafe class Instantiation
     {
         public static readonly Instantiation Empty = new Instantiation (new List<Type> ());
 

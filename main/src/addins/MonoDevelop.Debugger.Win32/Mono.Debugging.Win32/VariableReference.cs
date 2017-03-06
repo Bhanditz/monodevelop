@@ -30,7 +30,7 @@ using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32
 {
-	public class VariableReference: ValueReference
+	public unsafe class VariableReference: ValueReference
 	{
 		readonly CorValRef var;
 		readonly DC.ObjectValueFlags flags;

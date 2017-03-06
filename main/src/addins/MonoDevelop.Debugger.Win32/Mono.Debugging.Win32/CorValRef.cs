@@ -8,7 +8,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32
 {
-	public class CorValRef : CorValRef<ICorDebugValue>
+	public unsafe class CorValRef : CorValRef<ICorDebugValue>
 	{
 		public CorValRef (ICorDebugValue val) : base (val)
 		{
@@ -23,7 +23,7 @@ namespace Mono.Debugging.Win32
 		}
 	}
 
-	public class CorValRef<TValue> where TValue : ICorDebugValue
+	public unsafe class CorValRef<TValue> where TValue : ICorDebugValue
 	{
 		TValue val;
 		readonly ValueLoader loader;

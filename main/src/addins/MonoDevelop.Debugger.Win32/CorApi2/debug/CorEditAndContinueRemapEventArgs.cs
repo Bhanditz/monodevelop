@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorEditAndContinueRemapEventArgs : CorThreadEventArgs
+    public unsafe class CorEditAndContinueRemapEventArgs : CorThreadEventArgs
     {
         public CorEditAndContinueRemapEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugThread thread,

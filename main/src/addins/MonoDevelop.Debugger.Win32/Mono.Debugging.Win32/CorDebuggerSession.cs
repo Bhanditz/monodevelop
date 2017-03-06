@@ -21,11 +21,9 @@ using CorApi2.Extensions;
 using CorApi2.Metadata;
 using CorApi2.SymStore;
 
-using ICorDebugEval = Microsoft.Samples.Debugging.CorDebug.ICorDebugEval;
-
 namespace Mono.Debugging.Win32
 {
-	public class CorDebuggerSession: DebuggerSession
+	public unsafe class CorDebuggerSession: DebuggerSession
 	{
 		readonly char[] badPathChars;
 		readonly object debugLock = new object ();
@@ -604,7 +602,7 @@ namespace Mono.Debugging.Win32
 
 		void OnAssemblyUnload (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Unloaded Module '{0}'\n", e.Assembly.Name));
+			OnDebuggerOutput (false, string.Format ("Unloaded Module '{0}'\n", LpcwstrHelper.GetString((UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual) => e.Assembly.GetName(cchBuffer, pcchActual, pBuffer), "Could not get the assembly name.")));
 			e.Continue = true;
 		}
 
@@ -807,7 +805,7 @@ namespace Mono.Debugging.Win32
 
 		void OnAssemblyLoad (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", e.Assembly.Name));
+			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", () => LpcwstrHelper.GetString((UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual) => e.Assembly.GetName(cchBuffer, pcchActual, pBuffer), "Could not get the assembly name.")));
 			e.Continue = true;
 		}
 		

@@ -28,7 +28,7 @@ using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32
 {
-	public class StringAdaptor: IStringAdaptor
+	public unsafe class StringAdaptor: IStringAdaptor
 	{
 		readonly CorEvaluationContext ctx;
 		readonly ICorDebugStringValue str;

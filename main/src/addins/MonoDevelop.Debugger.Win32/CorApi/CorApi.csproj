@@ -90,6 +90,7 @@
     <Compile Include="ComInterop\COR_DEBUG_STEP_RANGE.cs" />
     <Compile Include="ComInterop\Helpers\Common\Com.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResults2.cs" />
+    <Compile Include="ComInterop\Helpers\Common\LpcwstrHelper.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugAppDomainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugChainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugClassEx.cs" />

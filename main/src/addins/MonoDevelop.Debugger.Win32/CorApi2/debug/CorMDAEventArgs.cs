@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorMDAEventArgs : CorProcessEventArgs
+    public unsafe class CorMDAEventArgs : CorProcessEventArgs
     {
         // Thread may be null.
         public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, CorProcess proc)

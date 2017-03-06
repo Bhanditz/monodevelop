@@ -1,6 +1,6 @@
 namespace CorApi2.debug
 {
-    public class CorProcessEventArgs : CorEventArgs
+    public unsafe class CorProcessEventArgs : CorEventArgs
     {
         public CorProcessEventArgs(CorProcess process)
             : base(process)

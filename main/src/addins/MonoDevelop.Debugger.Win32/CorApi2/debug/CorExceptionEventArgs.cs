@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorExceptionEventArgs : CorThreadEventArgs
+    public unsafe class CorExceptionEventArgs : CorThreadEventArgs
     {
         bool m_unhandled;
 

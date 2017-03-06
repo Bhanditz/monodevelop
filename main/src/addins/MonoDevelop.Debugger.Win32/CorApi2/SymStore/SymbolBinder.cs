@@ -16,7 +16,7 @@ namespace CorApi2.SymStore
 {
     /// <include file='doc\symbinder.uex' path='docs/doc[@for="SymbolBinder"]/*' />
 
-    public class SymbolBinder: ISymbolBinder1, ISymbolBinder2
+    public unsafe class SymbolBinder: ISymbolBinder1, ISymbolBinder2
     {
         ISymUnmanagedBinder m_binder;
 

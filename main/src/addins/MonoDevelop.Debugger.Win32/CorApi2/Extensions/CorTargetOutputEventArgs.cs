@@ -30,7 +30,7 @@ using System;
 namespace CorApi2.Extensions
 {
 	// [Xamarin] Output redirection.
-	public class CorTargetOutputEventArgs: EventArgs
+	public unsafe class CorTargetOutputEventArgs: EventArgs
 	{
 		public CorTargetOutputEventArgs (string text, bool isStdError)
 		{

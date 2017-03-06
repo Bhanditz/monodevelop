@@ -2,7 +2,7 @@ using CorApi.ComInterop;
 
 namespace CorApi2.debug
 {
-    public class CorAppDomainEventArgs : CorProcessEventArgs
+    public unsafe class CorAppDomainEventArgs : CorProcessEventArgs
     {
         private ICorDebugAppDomain m_ad;
 
@@ -33,9 +33,9 @@ namespace CorApi2.debug
             switch (CallbackType)
             {
             case ManagedCallbackType.OnCreateAppDomain:
-                return "AppDomain Created: " + m_ad.Name;
+                return "AppDomain Created: " + LpcwstrHelper.GetString((a, b, c) => m_ad.GetName(a, c, b), "Could not get appdomain name.");
             case ManagedCallbackType.OnAppDomainExit:
-                return "AppDomain Exited: " + m_ad.Name;
+                return "AppDomain Exited: " + LpcwstrHelper.GetString((a, b, c) => m_ad.GetName(a, c, b), "Could not get appdomain name.");
             }
             return base.ToString();
         }
