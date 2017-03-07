@@ -483,7 +483,7 @@ namespace CorApi2.debug
             {
                 m_outer = outer;
             }
-            protected override void HandleEvent(ManagedCallbackType eventId, CorEventArgs args)
+            protected override int HandleEvent(ManagedCallbackType eventId, CorEventArgs args)
             {
                 m_outer.InternalFireEvent(eventId, args);
             }
