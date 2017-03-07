@@ -60,6 +60,6 @@ namespace CorApi2.Metadata
 
         public override int GetHashCode() { return value.GetHashCode();}
 
-        private uint value;
+        private readonly uint value;
     }
 }

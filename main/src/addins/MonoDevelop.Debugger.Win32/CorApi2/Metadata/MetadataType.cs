@@ -716,12 +716,12 @@ namespace CorApi2.Metadata
         }
 
         // member variables
-        private string m_name;
-        private IMetadataImport m_importer;
-        private uint m_typeToken;
-        private bool m_isEnum;
-        private bool m_isFlagsEnum;
-        private CorElementType m_enumUnderlyingType;
+        private readonly string m_name;
+        private readonly IMetadataImport m_importer;
+        private readonly uint m_typeToken;
+        private readonly bool m_isEnum;
+        private readonly bool m_isFlagsEnum;
+        private readonly CorElementType m_enumUnderlyingType;
         private List<KeyValuePair<string,ulong>> m_enumValues;
 		// [Xamarin] Expression evaluator.
 		private object[] m_customAttributes;

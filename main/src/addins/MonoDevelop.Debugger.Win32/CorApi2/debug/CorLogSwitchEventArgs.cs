@@ -4,13 +4,13 @@ namespace CorApi2.debug
 {
     public unsafe class CorLogSwitchEventArgs : CorThreadEventArgs
     {
-        int m_level;
+        readonly int m_level;
 
-        int m_reason;
+        readonly int m_reason;
 
-        string m_logSwitchName;
+        readonly string m_logSwitchName;
 
-        string m_parentName;
+        readonly string m_parentName;
 
         public CorLogSwitchEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
             int level, int reason, string logSwitchName, string parentName)

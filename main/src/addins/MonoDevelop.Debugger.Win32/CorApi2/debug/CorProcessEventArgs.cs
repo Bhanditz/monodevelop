@@ -1,25 +1,21 @@
+using CorApi.ComInterop;
+
 namespace CorApi2.debug
 {
     public unsafe class CorProcessEventArgs : CorEventArgs
     {
-        public CorProcessEventArgs(CorProcess process)
+        public CorProcessEventArgs(ICorDebugProcess process)
             : base(process)
         {
         }
 
-        public CorProcessEventArgs(CorProcess process, ManagedCallbackType callbackType)
+        public CorProcessEventArgs(ICorDebugProcess process, ManagedCallbackType callbackType)
             : base(process, callbackType)
         {
         }
 
         /** The process that generated the event. */
-        public CorProcess Process
-        {
-            get
-            {
-                return (CorProcess)Controller;
-            }
-        }
+        public ICorDebugProcess Process => (ICorDebugProcess)Controller;
 
         public override string ToString()
         {

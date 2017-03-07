@@ -14,14 +14,21 @@ namespace CorApi2.SymStore
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct ImageDebugDirectory {
-        int     Characteristics;
-        int     TimeDateStamp;
-        short   MajorVersion;
-        short   MinorVersion;
-        int     Type;
-        int     SizeOfData;
-        int     AddressOfRawData;
-        int     PointerToRawData;
+        readonly int     Characteristics;
+
+        readonly int     TimeDateStamp;
+
+        readonly short   MajorVersion;
+
+        readonly short   MinorVersion;
+
+        readonly int     Type;
+
+        readonly int     SizeOfData;
+
+        readonly int     AddressOfRawData;
+
+        readonly int     PointerToRawData;
 
         public override string ToString()
         {

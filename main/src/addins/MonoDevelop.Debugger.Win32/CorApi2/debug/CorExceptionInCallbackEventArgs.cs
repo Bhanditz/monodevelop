@@ -36,6 +36,6 @@ namespace CorApi2.debug
             return base.ToString();
         }
 
-        private Exception m_exceptionThrown;
+        private readonly Exception m_exceptionThrown;
     }
 }

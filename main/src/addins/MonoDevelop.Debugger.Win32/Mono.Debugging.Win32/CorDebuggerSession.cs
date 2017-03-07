@@ -602,7 +602,7 @@ namespace Mono.Debugging.Win32
 
 		void OnAssemblyUnload (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Unloaded Module '{0}'\n", LpcwstrHelper.GetString((UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual) => e.Assembly.GetName(cchBuffer, pcchActual, pBuffer), "Could not get the assembly name.")));
+			OnDebuggerOutput (false, string.Format ("Unloaded Module '{0}'\n", LpcwstrHelper.GetString(e.Assembly.GetName, "Could not get the assembly name.")));
 			e.Continue = true;
 		}
 
@@ -805,7 +805,7 @@ namespace Mono.Debugging.Win32
 
 		void OnAssemblyLoad (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", () => LpcwstrHelper.GetString((UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual) => e.Assembly.GetName(cchBuffer, pcchActual, pBuffer), "Could not get the assembly name.")));
+			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", LpcwstrHelper.GetString(e.Assembly.GetName, "Could not get the assembly name.")));
 			e.Continue = true;
 		}
 		

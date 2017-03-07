@@ -6,7 +6,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorUpdateModuleSymbolsEventArgs : CorModuleEventArgs
     {
-        IStream m_stream;
+        readonly IStream m_stream;
 
         [CLSCompliant(false)]
         public CorUpdateModuleSymbolsEventArgs(ICorDebugAppDomain appDomain,

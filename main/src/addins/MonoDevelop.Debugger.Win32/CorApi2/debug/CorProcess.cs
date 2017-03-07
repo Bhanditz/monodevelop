@@ -88,7 +88,7 @@ namespace CorApi2.debug
             };
         }
 
-        private static Hashtable m_instances = new Hashtable();
+        private static readonly Hashtable m_instances = new Hashtable();
 
         private ICorDebugProcess _p ()
         {

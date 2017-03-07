@@ -18,7 +18,8 @@ namespace CorApi2.SymStore
     [StructLayout(LayoutKind.Sequential)]
     public struct SymbolLineDelta
     {
-        SymbolToken mdMethod;
-        int delta;
+        readonly SymbolToken mdMethod;
+
+        readonly int delta;
     };
 }

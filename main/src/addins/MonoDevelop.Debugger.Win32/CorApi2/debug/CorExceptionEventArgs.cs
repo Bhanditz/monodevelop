@@ -4,7 +4,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorExceptionEventArgs : CorThreadEventArgs
     {
-        bool m_unhandled;
+        readonly bool m_unhandled;
 
         public CorExceptionEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugThread thread,

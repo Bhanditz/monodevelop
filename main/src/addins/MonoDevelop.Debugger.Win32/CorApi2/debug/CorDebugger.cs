@@ -155,7 +155,7 @@ namespace CorApi2.debug
             Debug.Assert(m_debugger!=null);
             ICorDebug d= m_debugger;
             m_debugger = null;
-            d.Terminate ();
+            d.Terminate ().AssertSucceeded("Could not close the debugger.");
         }
 
         /**
@@ -487,7 +487,7 @@ namespace CorApi2.debug
             {
                 m_outer.InternalFireEvent(eventId, args);
             }
-            private CorDebugger m_outer;
+            private readonly CorDebugger m_outer;
         }
 
          

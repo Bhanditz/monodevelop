@@ -50,7 +50,7 @@ namespace CorApi2.debug
             return base.ToString();
         }
 
-        private ICorDebugBreakpoint m_breakpoint;
-        private int m_errorCode;
+        private readonly ICorDebugBreakpoint m_breakpoint;
+        private readonly int m_errorCode;
     }
 }

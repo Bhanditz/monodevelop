@@ -6,12 +6,12 @@ namespace CorApi2.debug
 {
     public unsafe class CorEventArgs : EventArgs
     {
-        private ICorDebugController m_controller;
+        private readonly ICorDebugController m_controller;
 
         private bool m_continue;
 
 
-        private ManagedCallbackType m_callbackType;
+        private readonly ManagedCallbackType m_callbackType;
 
         private ICorDebugThread m_thread;
 

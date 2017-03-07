@@ -4,15 +4,15 @@ namespace CorApi2.debug
 {
     public unsafe class CorAppDomainEventArgs : CorProcessEventArgs
     {
-        private ICorDebugAppDomain m_ad;
+        private readonly ICorDebugAppDomain m_ad;
 
-        public CorAppDomainEventArgs(CorProcess process, ICorDebugAppDomain ad)
+        public CorAppDomainEventArgs(ICorDebugProcess process, ICorDebugAppDomain ad)
             : base(process)
         {
             m_ad = ad;
         }
 
-        public CorAppDomainEventArgs(CorProcess process, ICorDebugAppDomain ad,
+        public CorAppDomainEventArgs(ICorDebugProcess process, ICorDebugAppDomain ad,
             ManagedCallbackType callbackType)
             : base(process, callbackType)
         {
@@ -33,9 +33,9 @@ namespace CorApi2.debug
             switch (CallbackType)
             {
             case ManagedCallbackType.OnCreateAppDomain:
-                return "AppDomain Created: " + LpcwstrHelper.GetString((a, b, c) => m_ad.GetName(a, c, b), "Could not get appdomain name.");
+                return "AppDomain Created: " + LpcwstrHelper.GetString(m_ad.GetName, "Could not get appdomain name.");
             case ManagedCallbackType.OnAppDomainExit:
-                return "AppDomain Exited: " + LpcwstrHelper.GetString((a, b, c) => m_ad.GetName(a, c, b), "Could not get appdomain name.");
+                return "AppDomain Exited: " + LpcwstrHelper.GetString(m_ad.GetName, "Could not get appdomain name.");
             }
             return base.ToString();
         }

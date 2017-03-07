@@ -6,7 +6,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorAssemblyEventArgs : CorAppDomainBaseEventArgs
     {
-        private ICorDebugAssembly m_assembly;
+        private readonly ICorDebugAssembly m_assembly;
         public CorAssemblyEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugAssembly assembly)
             : base(appDomain)
@@ -35,9 +35,9 @@ namespace CorApi2.debug
             switch (CallbackType)
             {
             case ManagedCallbackType.OnAssemblyLoad:
-                return "Assembly loaded: " + LpcwstrHelper.GetString((UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual) => m_assembly.GetName(cchBuffer, pcchActual, pBuffer), "Could not get the assembly name.");
+                return "Assembly loaded: " + LpcwstrHelper.GetString(m_assembly.GetName, "Could not get the assembly name.");
             case ManagedCallbackType.OnAssemblyUnload:
-                return "Assembly unloaded: " + LpcwstrHelper.GetString((UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual) => m_assembly.GetName(cchBuffer, pcchActual, pBuffer), "Could not get the assembly name.");
+                return "Assembly unloaded: " + LpcwstrHelper.GetString(m_assembly.GetName, "Could not get the assembly name.");
             }
             return base.ToString();
         }

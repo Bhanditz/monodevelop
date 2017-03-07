@@ -80,9 +80,12 @@ namespace CorApi2.debug
             return base.ToString();
         }
 
-        ICorDebugFrame m_frame;
-        int m_offset;
-        CorDebugExceptionCallbackType m_eventType;
-        int m_flags;
+        readonly ICorDebugFrame m_frame;
+
+        readonly int m_offset;
+
+        readonly CorDebugExceptionCallbackType m_eventType;
+
+        readonly int m_flags;
     }
 }

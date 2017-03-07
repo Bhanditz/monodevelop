@@ -14,6 +14,13 @@ namespace CorApi.ComInterop
         private static UInt16[] _buffer;
 
         [NotNull]
+        [SuppressMessage("ReSharper", "RedundantDelegateCreation")]
+        public static string GetString([NotNull] this GetLpcwstrDelegate2 func, [NotNull] string faultmsg)
+        {
+            return GetString(new GetLpcwstrDelegate((x, y, z) => func(x, z, y)), faultmsg);
+        }
+
+        [NotNull]
         public static string GetString([NotNull] GetLpcwstrDelegate func, [NotNull] string faultmsg)
         {
             if(func == null)
@@ -59,5 +66,7 @@ namespace CorApi.ComInterop
         }
 
         public delegate Int32 GetLpcwstrDelegate(UInt32 cchBuffer, UInt16*pBuffer, UInt32*pcchActual);
+
+        public delegate Int32 GetLpcwstrDelegate2(UInt32 cchBuffer, UInt32*pcchActual, UInt16*pBuffer);
     }
 }

@@ -41,7 +41,7 @@ namespace CorApi2.debug
             }
         }
 
-        private ICorDebugFunction m_managedFunction;
-        private int m_accurate;
+        private readonly ICorDebugFunction m_managedFunction;
+        private readonly int m_accurate;
     }
 }

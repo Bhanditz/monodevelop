@@ -82,7 +82,7 @@ namespace CorApi2.debug
             return !(operand==operand2);
         }
 
-        private Object m_comObject;
+        private readonly Object m_comObject;
     }
     
 } /* namespace */

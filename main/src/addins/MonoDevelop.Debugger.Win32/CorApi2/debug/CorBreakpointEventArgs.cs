@@ -4,7 +4,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorBreakpointEventArgs : CorThreadEventArgs
     {
-        private ICorDebugBreakpoint m_break;
+        private readonly ICorDebugBreakpoint m_break;
 
         public CorBreakpointEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugThread thread,

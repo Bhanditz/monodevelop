@@ -15,7 +15,7 @@ namespace CorApi2.SymStore
 {
     internal class SymMethod : ISymbolMethod, ISymbolEnCMethod
     {
-        ISymUnmanagedMethod m_unmanagedMethod;
+        readonly ISymUnmanagedMethod m_unmanagedMethod;
 
         public SymMethod(ISymUnmanagedMethod unmanagedMethod)
         {

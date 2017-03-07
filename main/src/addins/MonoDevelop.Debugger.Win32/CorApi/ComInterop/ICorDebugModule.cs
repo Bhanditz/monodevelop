@@ -210,7 +210,7 @@ namespace CorApi.ComInterop
     /// <param name="pcchName"></param>
     /// <param name="szName"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetName ([In] UInt32 cchName, out UInt32 pcchName, [ComAliasName ("WCHAR[]")] UInt16* szName);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetName ([In] UInt32 cchName, UInt32 *pcchName, [ComAliasName ("WCHAR[]")] UInt16* szName);
 
     /// <summary>
     /// EnableJITDebugging controls whether the jitter preserves

@@ -252,13 +252,13 @@ namespace CorApi2.Metadata
             }
         }
 
-        private IMetadataImport m_importer;
-        private uint m_fieldToken;
+        private readonly IMetadataImport m_importer;
+        private readonly uint m_fieldToken;
         private MetadataType m_declaringType;
 
-        private string m_name;
-        private FieldAttributes m_fieldAttributes;
-        private Object m_value;
+        private readonly string m_name;
+        private readonly FieldAttributes m_fieldAttributes;
+        private readonly Object m_value;
 		// [Xamarin] Expression evaluator.
 		private object[] m_customAttributes;
     }

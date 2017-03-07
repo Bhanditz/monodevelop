@@ -1,11 +1,14 @@
+using CorApi.ComInterop;
+
 namespace CorApi2.debug
 {
     public unsafe class CorDebuggerErrorEventArgs : CorProcessEventArgs
     {
-        int m_hresult;
-        int m_errorCode;
+        readonly int m_hresult;
 
-        public CorDebuggerErrorEventArgs(CorProcess process, int hresult,
+        readonly int m_errorCode;
+
+        public CorDebuggerErrorEventArgs(ICorDebugProcess process, int hresult,
             int errorCode)
             : base(process)
         {
@@ -13,7 +16,7 @@ namespace CorApi2.debug
             m_errorCode = errorCode;
         }
 
-        public CorDebuggerErrorEventArgs(CorProcess process, int hresult,
+        public CorDebuggerErrorEventArgs(ICorDebugProcess process, int hresult,
             int errorCode, ManagedCallbackType callbackType)
             : base(process, callbackType)
         {

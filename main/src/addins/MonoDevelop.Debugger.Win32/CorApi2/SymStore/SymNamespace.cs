@@ -17,7 +17,7 @@ namespace CorApi2.SymStore
 
     internal class SymNamespace : ISymbolNamespace
     {
-        ISymUnmanagedNamespace m_unmanagedNamespace;
+        readonly ISymUnmanagedNamespace m_unmanagedNamespace;
         
         internal SymNamespace(ISymUnmanagedNamespace nameSpace)
         {

@@ -15,7 +15,7 @@ namespace CorApi2.SymStore
 
     internal class SymScope : ISymbolScope, ISymbolScope2
     {
-        ISymUnmanagedScope m_target;
+        readonly ISymUnmanagedScope m_target;
 
         internal SymScope(ISymUnmanagedScope target)
         {

@@ -93,7 +93,7 @@ namespace CorApi2.Metadata
             }
         }*/
 
-        static uint[] g_tkCorEncodeToken ={(uint)MetadataTokenType.TypeDef, (uint)MetadataTokenType.TypeRef, (uint)MetadataTokenType.TypeSpec, (uint)MetadataTokenType.BaseType};
+        static readonly uint[] g_tkCorEncodeToken ={(uint)MetadataTokenType.TypeDef, (uint)MetadataTokenType.TypeRef, (uint)MetadataTokenType.TypeSpec, (uint)MetadataTokenType.BaseType};
 
         // uncompress a token
         internal static uint CorSigUncompressToken(   // return the token.    

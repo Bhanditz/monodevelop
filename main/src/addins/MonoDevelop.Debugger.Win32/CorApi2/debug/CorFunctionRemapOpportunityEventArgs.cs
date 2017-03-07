@@ -64,7 +64,10 @@ namespace CorApi2.debug
             return base.ToString();
         }
 
-        private ICorDebugFunction m_oldFunction, m_newFunction;
-        private int m_oldILoffset;
+        private readonly ICorDebugFunction m_oldFunction;
+
+        private readonly ICorDebugFunction m_newFunction;
+
+        private readonly int m_oldILoffset;
     }
 }

@@ -16,7 +16,7 @@ namespace CorApi2.SymStore
 
     internal class SymConstant : ISymbolConstant
     {
-        ISymUnmanagedConstant m_target;
+        readonly ISymUnmanagedConstant m_target;
         
         public SymConstant(ISymUnmanagedConstant target)
         {

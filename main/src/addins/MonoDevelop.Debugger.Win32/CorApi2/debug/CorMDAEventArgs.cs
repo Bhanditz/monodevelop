@@ -1,3 +1,5 @@
+using System;
+
 using CorApi.ComInterop;
 
 namespace CorApi2.debug
@@ -5,7 +7,7 @@ namespace CorApi2.debug
     public unsafe class CorMDAEventArgs : CorProcessEventArgs
     {
         // Thread may be null.
-        public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, CorProcess proc)
+        public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, ICorDebugProcess proc)
             : base(proc)
         {
             m_mda = mda;
@@ -13,7 +15,7 @@ namespace CorApi2.debug
             //m_proc = proc;
         }
 
-        public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, CorProcess proc,
+        public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, ICorDebugProcess proc,
             ManagedCallbackType callbackType)
             : base(proc, callbackType)
         {
@@ -22,7 +24,7 @@ namespace CorApi2.debug
             //m_proc = proc;
         }
 
-        ICorDebugMDA m_mda;
+        readonly ICorDebugMDA m_mda;
         public ICorDebugMDA MDA { get { return m_mda; } }
 
         public override string ToString()
@@ -30,13 +32,13 @@ namespace CorApi2.debug
             if (CallbackType == ManagedCallbackType.OnMDANotification)
             {
                 return "MDANotification" + "\n" +
-                    "Name=" + m_mda.Name + "\n" +
-                    "XML=" + m_mda.XML;
+                    "Name=" + LpcwstrHelper.GetString(m_mda.GetName, "MDA Name.") + "\n" +
+                    "XML=" + LpcwstrHelper.GetString(m_mda.GetXML, "MDA XML");
             }
             return base.ToString();
         }
 
-        //CorProcess m_proc;
-        //CorProcess Process { get { return m_proc; } }
+        //ICorDebugProcess m_proc;
+        //ICorDebugProcess Process { get { return m_proc; } }
     }
 }

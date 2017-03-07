@@ -213,15 +213,15 @@ namespace CorApi2.Metadata
             }
         }
 
-        private IMetadataImport m_importer;
-        private string m_name;
-        private uint m_classToken;
-        private uint m_methodToken;
-        private MethodAttributes m_methodAttributes;
+        private readonly IMetadataImport m_importer;
+        private readonly string m_name;
+        private readonly uint m_classToken;
+        private readonly uint m_methodToken;
+        private readonly MethodAttributes m_methodAttributes;
         // [Xamarin] Expression evaluator.
-        private List<Type> m_argTypes;
-        private Type m_retType;
+        private readonly List<Type> m_argTypes;
+        private readonly Type m_retType;
         private object[] m_customAttributes;
-        private int m_sentinelIndex;
+        private readonly int m_sentinelIndex;
     }
 }

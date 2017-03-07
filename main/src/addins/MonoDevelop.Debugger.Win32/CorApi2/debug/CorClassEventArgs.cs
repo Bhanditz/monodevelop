@@ -4,7 +4,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorClassEventArgs : CorAppDomainBaseEventArgs
     {
-        ICorDebugClass m_class;
+        readonly ICorDebugClass m_class;
 
         public CorClassEventArgs(ICorDebugAppDomain appDomain, ICorDebugClass managedClass)
             : base(appDomain)

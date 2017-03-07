@@ -16,7 +16,7 @@ namespace CorApi2.SymStore
 
     internal class SymDocumentWriter: ISymbolDocumentWriter
     {
-        ISymUnmanagedDocumentWriter m_unmanagedDocumentWriter;
+        readonly ISymUnmanagedDocumentWriter m_unmanagedDocumentWriter;
         
         public SymDocumentWriter(ISymUnmanagedDocumentWriter unmanagedDocumentWriter)
         {

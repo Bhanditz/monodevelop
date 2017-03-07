@@ -6,8 +6,8 @@ namespace CorApi2.debug
 {
     public unsafe class CorStepCompleteEventArgs : CorThreadEventArgs
     {
-        private ICorDebugStepper m_stepper;
-        private CorDebugStepReason m_stepReason;
+        private readonly ICorDebugStepper m_stepper;
+        private readonly CorDebugStepReason m_stepReason;
 
         [CLSCompliant(false)]
         public CorStepCompleteEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,

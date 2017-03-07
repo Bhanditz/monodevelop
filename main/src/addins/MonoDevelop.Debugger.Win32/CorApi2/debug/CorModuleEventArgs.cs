@@ -4,7 +4,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorModuleEventArgs : CorAppDomainBaseEventArgs
     {
-        ICorDebugModule m_managedModule;
+        readonly ICorDebugModule m_managedModule;
 
         public CorModuleEventArgs(ICorDebugAppDomain appDomain, ICorDebugModule managedModule)
             : base(appDomain)
@@ -32,9 +32,9 @@ namespace CorApi2.debug
             switch (CallbackType)
             {
             case ManagedCallbackType.OnModuleLoad:
-                return "Module loaded: " + m_managedModule.Name;
+                return "Module loaded: " + LpcwstrHelper.GetString(m_managedModule.GetName, "Could not get the managed module name.");
             case ManagedCallbackType.OnModuleUnload:
-                return "Module unloaded: " + m_managedModule.Name;
+                return "Module unloaded: " + LpcwstrHelper.GetString(m_managedModule.GetName, "Could not get the managed module name.");
             }
             return base.ToString();
         }

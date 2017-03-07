@@ -55,7 +55,8 @@ namespace CorApi2.debug
             return base.ToString();
         }
 
-        CorDebugExceptionUnwindCallbackType m_eventType;
-        int m_flags;
+        readonly CorDebugExceptionUnwindCallbackType m_eventType;
+
+        readonly int m_flags;
     }
 }

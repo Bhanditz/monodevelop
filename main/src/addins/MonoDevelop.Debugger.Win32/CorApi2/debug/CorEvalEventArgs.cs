@@ -4,7 +4,7 @@ namespace CorApi2.debug
 {
     public unsafe class CorEvalEventArgs : CorThreadEventArgs
     {
-        ICorDebugEval m_eval;
+        readonly ICorDebugEval m_eval;
 
         public CorEvalEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
             ICorDebugEval eval)

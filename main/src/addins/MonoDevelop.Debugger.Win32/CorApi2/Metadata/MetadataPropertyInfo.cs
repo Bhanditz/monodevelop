@@ -11,16 +11,17 @@ namespace CorApi2.Metadata
 {
 	public unsafe class MetadataPropertyInfo: PropertyInfo
 	{
-		private IMetadataImport m_importer;
-		private uint m_propertyToken;
-		private MetadataType m_declaringType;
+		private readonly IMetadataImport m_importer;
+		private readonly uint m_propertyToken;
+		private readonly MetadataType m_declaringType;
 		private object[] m_customAttributes;
 
-		private string m_name;
-		private PropertyAttributes m_propAttributes;
+		private readonly string m_name;
+		private readonly PropertyAttributes m_propAttributes;
 
-		uint m_mdSetter;
-		uint m_mdGetter;
+		readonly uint m_mdSetter;
+
+		readonly uint m_mdGetter;
 
 		MetadataMethodInfo m_setter;
 		MetadataMethodInfo m_getter;

@@ -65,7 +65,7 @@ namespace CorApi2.Metadata
             m_enum=new IntPtr();
         }
 
-        private CorMetadataImport m_corMeta;
+        private readonly CorMetadataImport m_corMeta;
         private IntPtr m_enum;                              
         private Type m_type;
     }
