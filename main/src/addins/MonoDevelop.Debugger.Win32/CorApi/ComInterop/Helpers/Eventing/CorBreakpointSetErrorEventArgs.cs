@@ -1,6 +1,4 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorBreakpointSetErrorEventArgs : CorThreadEventArgs
     {
@@ -10,8 +8,8 @@ namespace CorApi2.debug
             int errorCode)
             : base(appDomain, thread)
         {
-            m_breakpoint = breakpoint;
-            m_errorCode = errorCode;
+            Breakpoint = breakpoint;
+            ErrorCode = errorCode;
         }
 
         public CorBreakpointSetErrorEventArgs(ICorDebugAppDomain appDomain,
@@ -21,25 +19,13 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_breakpoint = breakpoint;
-            m_errorCode = errorCode;
+            Breakpoint = breakpoint;
+            ErrorCode = errorCode;
         }
 
-        public ICorDebugBreakpoint Breakpoint
-        {
-            get
-            {
-                return m_breakpoint;
-            }
-        }
+        public ICorDebugBreakpoint Breakpoint { get; }
 
-        public int ErrorCode
-        {
-            get
-            {
-                return m_errorCode;
-            }
-        }
+        public int ErrorCode { get; }
 
         public override string ToString()
         {
@@ -49,8 +35,5 @@ namespace CorApi2.debug
             }
             return base.ToString();
         }
-
-        private readonly ICorDebugBreakpoint m_breakpoint;
-        private readonly int m_errorCode;
     }
 }

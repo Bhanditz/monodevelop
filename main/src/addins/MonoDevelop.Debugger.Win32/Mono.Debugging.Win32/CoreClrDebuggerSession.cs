@@ -1,5 +1,6 @@
 using System;
 
+using CorApi.ComInterop.Eventing;
 using CorApi.Pinvoke;
 
 using Mono.Debugging.Client;
@@ -12,8 +13,8 @@ namespace Mono.Debugging.Win32
 
 		private readonly DbgShimInterop dbgShimInterop;
 
-		public CoreClrDebuggerSession(char[] badPathChars, string dbgShimPath)
-			: base(badPathChars)
+		public CoreClrDebuggerSession(char[] badPathChars, string dbgShimPath, InternalErrorDelegate onerror)
+			: base(badPathChars, onerror)
 		{
 			dbgShimInterop = new DbgShimInterop(dbgShimPath);
 		}

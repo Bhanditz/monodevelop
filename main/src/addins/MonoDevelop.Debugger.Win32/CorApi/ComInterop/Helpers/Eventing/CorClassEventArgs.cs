@@ -1,40 +1,30 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorClassEventArgs : CorAppDomainBaseEventArgs
     {
-        readonly ICorDebugClass m_class;
-
         public CorClassEventArgs(ICorDebugAppDomain appDomain, ICorDebugClass managedClass)
             : base(appDomain)
         {
-            m_class = managedClass;
+            Class = managedClass;
         }
 
         public CorClassEventArgs(ICorDebugAppDomain appDomain, ICorDebugClass managedClass,
             ManagedCallbackType callbackType)
             : base(appDomain, callbackType)
         {
-            m_class = managedClass;
+            Class = managedClass;
         }
 
-        public ICorDebugClass Class
-        {
-            get
-            {
-                return m_class;
-            }
-        }
+        public ICorDebugClass Class { get; }
 
         public override string ToString()
         {
             switch (CallbackType)
             {
             case ManagedCallbackType.OnClassLoad:
-                return "Class loaded: " + m_class;
+                return "Class loaded: " + Class;
             case ManagedCallbackType.OnClassUnload:
-                return "Class unloaded: " + m_class;
+                return "Class unloaded: " + Class;
             }
             return base.ToString();
         }

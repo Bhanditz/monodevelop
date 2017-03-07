@@ -62,7 +62,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComInterop\Helpers\Eventing\InternalErrorDelegate.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\ManagedCallbackEventSink.cs" />
     <Compile Include="ComInterop\Helpers\Common\Assertion.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorAppDomainBaseEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorAppDomainEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorAssemblyEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorBreakpointEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorBreakpointSetErrorEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorClassEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorDebuggerErrorEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorEditAndContinueRemapEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorEvalEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorException2EventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorExceptionEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorExceptionUnwind2EventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorFunctionRemapCompleteEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorFunctionRemapOpportunityEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorLogMessageEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorLogSwitchEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorMDAEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorModuleEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorProcessEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorStepCompleteEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorThreadEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\CorUpdateModuleSymbolsEventArgs.cs" />
+    <Compile Include="ComInterop\Helpers\Eventing\ManagedCallbackType.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugEx.cs" />
     <Compile Include="ComInterop\IEnumUnknown.cs" />
     <Compile Include="ComInterop\CorDebuggerVersion.cs" />

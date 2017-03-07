@@ -1,6 +1,4 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public sealed class CorFunctionRemapOpportunityEventArgs : CorThreadEventArgs
     {
@@ -12,9 +10,9 @@ namespace CorApi2.debug
         )
             : base(appDomain, thread)
         {
-            m_oldFunction = oldFunction;
-            m_newFunction = newFunction;
-            m_oldILoffset = oldILoffset;
+            OldFunction = oldFunction;
+            NewFunction = newFunction;
+            OldILOffset = oldILoffset;
         }
 
         public CorFunctionRemapOpportunityEventArgs(ICorDebugAppDomain appDomain,
@@ -26,34 +24,16 @@ namespace CorApi2.debug
         )
             : base(appDomain, thread, callbackType)
         {
-            m_oldFunction = oldFunction;
-            m_newFunction = newFunction;
-            m_oldILoffset = oldILoffset;
+            OldFunction = oldFunction;
+            NewFunction = newFunction;
+            OldILOffset = oldILoffset;
         }
 
-        public ICorDebugFunction OldFunction
-        {
-            get
-            {
-                return m_oldFunction;
-            }
-        }
+        public ICorDebugFunction OldFunction { get; }
 
-        public ICorDebugFunction NewFunction
-        {
-            get
-            {
-                return m_newFunction;
-            }
-        }
+        public ICorDebugFunction NewFunction { get; }
 
-        public int OldILOffset
-        {
-            get
-            {
-                return m_oldILoffset;
-            }
-        }
+        public int OldILOffset { get; }
 
         public override string ToString()
         {
@@ -63,11 +43,5 @@ namespace CorApi2.debug
             }
             return base.ToString();
         }
-
-        private readonly ICorDebugFunction m_oldFunction;
-
-        private readonly ICorDebugFunction m_newFunction;
-
-        private readonly int m_oldILoffset;
     }
 }

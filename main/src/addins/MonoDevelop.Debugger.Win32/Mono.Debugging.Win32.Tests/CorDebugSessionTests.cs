@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,9 +19,10 @@ namespace Mono.Debugging.Win32.Tests
         {
             CorDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
             try
             {
-                session = new CorDebuggerSession(new char[] { });
+                session = new CorDebuggerSession(new char[] { }, ex => exceptions.Add(ex));
                 session.Run(app.GetStartInfoForSleep(TimeSpan.FromSeconds(5)), new DebuggerSessionOptions());
 
                 // Wait when until Thread.Sleep started
@@ -32,6 +34,9 @@ namespace Mono.Debugging.Win32.Tests
                 var modules = session.GetAllModules().ToList();
                 appDomains.Count.ShouldEqual(1);
                 modules.Count.ShouldEqual(2);
+
+                if(exceptions.Any())
+                    throw new AggregateException(exceptions);
             }
             finally
             {
@@ -48,9 +53,10 @@ namespace Mono.Debugging.Win32.Tests
         {
             CorDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
             try
             {
-                session = new CorDebuggerSession(new char[] { });
+                session = new CorDebuggerSession(new char[] { }, ex => exceptions.Add(ex));
                 var sessionStartGuard = new ManualResetEvent(false);
                 session.TargetInterrupted += (s1, a1) =>
                 {
@@ -64,6 +70,9 @@ namespace Mono.Debugging.Win32.Tests
                 session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                 sessionStartGuard.WaitOne(TimeSpan.FromSeconds(10)).ShouldBeTrue("Session wasn't start");
                 session.StopAndWait(TimeSpan.FromSeconds(10));
+
+                if(exceptions.Any())
+                    throw new AggregateException(exceptions);
             }
             finally
             {
@@ -80,9 +89,10 @@ namespace Mono.Debugging.Win32.Tests
         {
             CorDebuggerSession session = null;
             var app = Constants.Net45ConsoleApp;
+            ConcurrentBag<Exception> exceptions = new ConcurrentBag<Exception>();
             try
             {
-                session = new CorDebuggerSession(new char[] { });
+                session = new CorDebuggerSession(new char[] { }, ex => exceptions.Add(ex));
                 var breakPointHittedGuard = new ManualResetEvent(false);
                 session.TargetInterrupted += (s1, a1) =>
                 {
@@ -121,6 +131,9 @@ namespace Mono.Debugging.Win32.Tests
                 session.Run(app.GetStartInfoForDebuggerBreak(), new DebuggerSessionOptions());
                 breakPointHittedGuard.WaitOne(TimeSpan.FromSeconds(20)).ShouldBeTrue("Breakpoint wasn't hit");
                 session.StopAndWait(TimeSpan.FromSeconds(10));
+
+                if(exceptions.Any())
+                    throw new AggregateException(exceptions);
             }
             finally
             {

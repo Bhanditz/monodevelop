@@ -1,17 +1,13 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorBreakpointEventArgs : CorThreadEventArgs
     {
-        private readonly ICorDebugBreakpoint m_break;
-
         public CorBreakpointEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugThread thread,
             ICorDebugBreakpoint managedBreakpoint)
             : base(appDomain, thread)
         {
-            m_break = managedBreakpoint;
+            Breakpoint = managedBreakpoint;
         }
 
         public CorBreakpointEventArgs(ICorDebugAppDomain appDomain,
@@ -20,17 +16,11 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_break = managedBreakpoint;
+            Breakpoint = managedBreakpoint;
         }
 
         /** The breakpoint involved. */
-        public ICorDebugBreakpoint Breakpoint
-        {
-            get
-            {
-                return m_break;
-            }
-        }
+        public ICorDebugBreakpoint Breakpoint { get; }
 
         public override string ToString()
         {

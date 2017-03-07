@@ -3,6 +3,7 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 using CorApi.ComInterop;
+using CorApi.ComInterop.Eventing;
 
 using CorApi2.debug;
 

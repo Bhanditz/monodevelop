@@ -1,8 +1,6 @@
 using System;
 
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorExceptionUnwind2EventArgs : CorThreadEventArgs
     {
@@ -13,8 +11,8 @@ namespace CorApi2.debug
             int flags)
             : base(appDomain, thread)
         {
-            m_eventType = eventType;
-            m_flags = flags;
+            EventType = eventType;
+            Flags = flags;
         }
 
         [CLSCompliant(false)]
@@ -24,39 +22,23 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_eventType = eventType;
-            m_flags = flags;
+            EventType = eventType;
+            Flags = flags;
         }
 
         [CLSCompliant(false)]
-        public CorDebugExceptionUnwindCallbackType EventType
-        {
-            get
-            {
-                return m_eventType;
-            }
-        }
+        public CorDebugExceptionUnwindCallbackType EventType { get; }
 
-        public int Flags
-        {
-            get
-            {
-                return m_flags;
-            }
-        }
+        public int Flags { get; }
 
         public override string ToString()
         {
             if (CallbackType == ManagedCallbackType.OnExceptionUnwind2)
             {
                 return "Exception unwind\n" +
-                    "EventType: " + m_eventType;
+                    "EventType: " + EventType;
             }
             return base.ToString();
         }
-
-        readonly CorDebugExceptionUnwindCallbackType m_eventType;
-
-        readonly int m_flags;
     }
 }

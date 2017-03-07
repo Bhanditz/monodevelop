@@ -1,6 +1,4 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public sealed class CorFunctionRemapCompleteEventArgs : CorThreadEventArgs
     {
@@ -10,7 +8,7 @@ namespace CorApi2.debug
         )
             : base(appDomain, thread)
         {
-            m_managedFunction = managedFunction;
+            Function = managedFunction;
         }
 
         public CorFunctionRemapCompleteEventArgs(ICorDebugAppDomain appDomain,
@@ -20,17 +18,9 @@ namespace CorApi2.debug
         )
             : base(appDomain, thread, callbackType)
         {
-            m_managedFunction = managedFunction;
+            Function = managedFunction;
         }
 
-        public ICorDebugFunction Function
-        {
-            get
-            {
-                return m_managedFunction;
-            }
-        }
-
-        private readonly ICorDebugFunction m_managedFunction;
+        public ICorDebugFunction Function { get; }
     }
 }

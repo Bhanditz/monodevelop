@@ -1,12 +1,28 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 
-using CorApi.ComInterop;
+using JetBrains.Annotations;
 
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
-    public abstract unsafe class ManagedCallbackBase : ICorDebugManagedCallback, ICorDebugManagedCallback2
+    public sealed unsafe class ManagedCallbackEventSink : ICorDebugManagedCallback, ICorDebugManagedCallback2
     {
+        [NotNull]
+        private readonly InternalErrorDelegate OnError;
+
+        [NotNull]
+        private readonly HandleEventDelegate OnEvent;
+
+        public ManagedCallbackEventSink([NotNull] HandleEventDelegate handleevent, [NotNull] InternalErrorDelegate onerror)
+        {
+            if(handleevent == null)
+                throw new ArgumentNullException(nameof(handleevent));
+            if(onerror == null)
+                throw new ArgumentNullException(nameof(onerror));
+            OnEvent = handleevent;
+            OnError = onerror;
+        }
+
         int ICorDebugManagedCallback.Break(ICorDebugAppDomain appDomain, ICorDebugThread thread)
         {
             return HandleEvent(ManagedCallbackType.OnBreak, new CorThreadEventArgs(appDomain, thread, ManagedCallbackType.OnBreak));
@@ -125,10 +141,28 @@ namespace CorApi2.debug
             return HandleEvent(ManagedCallbackType.OnFunctionRemapOpportunity, new CorFunctionRemapOpportunityEventArgs(appDomain, thread, oldFunction, newFunction, (int)oldILoffset, ManagedCallbackType.OnFunctionRemapOpportunity));
         }
 
-        // Get process from controller 
-
-        // Derived class overrides this methdos 
-        protected abstract int HandleEvent(ManagedCallbackType eventId, CorEventArgs args);
+        private int HandleEvent(ManagedCallbackType eventId, [NotNull] CorEventArgs args)
+        {
+            try
+            {
+                return ((int)OnEvent(eventId, args));
+            }
+            catch(Exception ex)
+            {
+                try
+                {
+                    // The handler should return desired failure/result codes as HResults
+                    // Exceptions are unexpected, would be trapped and given out to the debugger as an OK core
+                    OnError(ex);
+                    return ((int)HResults.S_OK);
+                }
+                catch
+                {
+                    // Error in error handling is ignored
+                    return ((int)HResults.S_OK);
+                }
+            }
+        }
 
         int ICorDebugManagedCallback.LoadAssembly(ICorDebugAppDomain appDomain, ICorDebugAssembly assembly)
         {
@@ -206,5 +240,7 @@ namespace CorApi2.debug
         {
             return HandleEvent(ManagedCallbackType.OnUpdateModuleSymbols, new CorUpdateModuleSymbolsEventArgs(appDomain, managedModule, stream, ManagedCallbackType.OnUpdateModuleSymbols));
         }
+
+        public delegate HResults HandleEventDelegate(ManagedCallbackType eventId, [NotNull] CorEventArgs args);
     }
 }

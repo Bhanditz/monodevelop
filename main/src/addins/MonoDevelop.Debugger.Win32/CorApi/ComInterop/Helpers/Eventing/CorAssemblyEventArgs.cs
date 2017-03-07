@@ -1,43 +1,34 @@
-using System;
-
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorAssemblyEventArgs : CorAppDomainBaseEventArgs
     {
-        private readonly ICorDebugAssembly m_assembly;
         public CorAssemblyEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugAssembly assembly)
             : base(appDomain)
         {
-            m_assembly = assembly;
+            Assembly = assembly;
         }
 
         public CorAssemblyEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugAssembly assembly, ManagedCallbackType callbackType)
             : base(appDomain, callbackType)
         {
-            m_assembly = assembly;
+            Assembly = assembly;
         }
 
-        /** The Assembly of interest. */
-        public ICorDebugAssembly Assembly
-        {
-            get
-            {
-                return m_assembly;
-            }
-        }
+        /// <summary>
+        /// The Assembly of interest.
+        /// </summary>
+        public ICorDebugAssembly Assembly { get; }
 
         public override string ToString()
         {
             switch (CallbackType)
             {
             case ManagedCallbackType.OnAssemblyLoad:
-                return "Assembly loaded: " + LpcwstrHelper.GetString(m_assembly.GetName, "Could not get the assembly name.");
+                return "Assembly loaded: " + LpcwstrHelper.GetString(Assembly.GetName, "Could not get the assembly name.");
             case ManagedCallbackType.OnAssemblyUnload:
-                return "Assembly unloaded: " + LpcwstrHelper.GetString(m_assembly.GetName, "Could not get the assembly name.");
+                return "Assembly unloaded: " + LpcwstrHelper.GetString(Assembly.GetName, "Could not get the assembly name.");
             }
             return base.ToString();
         }

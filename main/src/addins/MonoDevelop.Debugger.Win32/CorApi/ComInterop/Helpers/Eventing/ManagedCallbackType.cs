@@ -1,4 +1,4 @@
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public enum ManagedCallbackType 
     {

@@ -1,8 +1,6 @@
 using System;
 
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorException2EventArgs : CorThreadEventArgs
     {
@@ -16,10 +14,10 @@ namespace CorApi2.debug
             int flags)
             : base(appDomain, thread)
         {
-            m_frame = frame;
-            m_offset = offset;
-            m_eventType = eventType;
-            m_flags = flags;
+            Frame = frame;
+            Offset = offset;
+            EventType = eventType;
+            Flags = flags;
         }
 
         [CLSCompliant(false)]
@@ -32,44 +30,20 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_frame = frame;
-            m_offset = offset;
-            m_eventType = eventType;
-            m_flags = flags;
+            Frame = frame;
+            Offset = offset;
+            EventType = eventType;
+            Flags = flags;
         }
 
-        public ICorDebugFrame Frame
-        {
-            get
-            {
-                return m_frame;
-            }
-        }
+        public ICorDebugFrame Frame { get; }
 
-        public int Offset
-        {
-            get
-            {
-                return m_offset;
-            }
-        }
+        public int Offset { get; }
 
         [CLSCompliant(false)]
-        public CorDebugExceptionCallbackType EventType
-        {
-            get
-            {
-                return m_eventType;
-            }
-        }
+        public CorDebugExceptionCallbackType EventType { get; }
 
-        public int Flags
-        {
-            get
-            {
-                return m_flags;
-            }
-        }
+        public int Flags { get; }
 
         public override string ToString()
         {
@@ -79,13 +53,5 @@ namespace CorApi2.debug
             }
             return base.ToString();
         }
-
-        readonly ICorDebugFrame m_frame;
-
-        readonly int m_offset;
-
-        readonly CorDebugExceptionCallbackType m_eventType;
-
-        readonly int m_flags;
     }
 }

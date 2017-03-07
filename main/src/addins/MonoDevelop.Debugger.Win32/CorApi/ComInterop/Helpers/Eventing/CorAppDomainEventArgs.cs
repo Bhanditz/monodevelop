@@ -1,41 +1,31 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorAppDomainEventArgs : CorProcessEventArgs
     {
-        private readonly ICorDebugAppDomain m_ad;
-
         public CorAppDomainEventArgs(ICorDebugProcess process, ICorDebugAppDomain ad)
             : base(process)
         {
-            m_ad = ad;
+            AppDomain = ad;
         }
 
         public CorAppDomainEventArgs(ICorDebugProcess process, ICorDebugAppDomain ad,
             ManagedCallbackType callbackType)
             : base(process, callbackType)
         {
-            m_ad = ad;
+            AppDomain = ad;
         }
 
         /** The AppDomain that generated the event. */
-        public ICorDebugAppDomain AppDomain
-        {
-            get
-            {
-                return m_ad;
-            }
-        }
+        public ICorDebugAppDomain AppDomain { get; }
 
         public override string ToString()
         {
             switch (CallbackType)
             {
             case ManagedCallbackType.OnCreateAppDomain:
-                return "AppDomain Created: " + LpcwstrHelper.GetString(m_ad.GetName, "Could not get appdomain name.");
+                return "AppDomain Created: " + LpcwstrHelper.GetString(AppDomain.GetName, "Could not get appdomain name.");
             case ManagedCallbackType.OnAppDomainExit:
-                return "AppDomain Exited: " + LpcwstrHelper.GetString(m_ad.GetName, "Could not get appdomain name.");
+                return "AppDomain Exited: " + LpcwstrHelper.GetString(AppDomain.GetName, "Could not get appdomain name.");
             }
             return base.ToString();
         }

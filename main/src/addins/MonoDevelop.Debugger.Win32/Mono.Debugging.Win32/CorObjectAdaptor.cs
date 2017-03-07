@@ -36,8 +36,6 @@ using System.Text;
 using Mono.Debugging.Backend;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
-using CorDebugMappingResult = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorDebugMappingResult;
-using CorElementType = Microsoft.Samples.Debugging.CorDebug.NativeApi.CorElementType;
 
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -48,15 +46,6 @@ using CorApi.ComInterop;
 using CorApi2.Extensions;
 using CorApi2.Metadata;
 using CorApi2.Metadata.Microsoft.Samples.Debugging.CorMetadata;
-
-using ICorDebugArrayValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugArrayValue;
-using ICorDebugBoxValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugBoxValue;
-using ICorDebugGenericValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugGenericValue;
-using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
-using ICorDebugObjectValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugObjectValue;
-using ICorDebugReferenceValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugReferenceValue;
-using ICorDebugStringValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugStringValue;
-using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
 
 namespace Mono.Debugging.Win32
 {

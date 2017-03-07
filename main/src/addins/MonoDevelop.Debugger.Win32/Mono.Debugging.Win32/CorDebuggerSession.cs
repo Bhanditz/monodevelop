@@ -16,6 +16,7 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 
+using CorApi.ComInterop.Eventing;
 using CorApi.Pinvoke;
 
 using CorApi2.debug;
@@ -27,6 +28,8 @@ using JetBrains.Annotations;
 
 using Microsoft.Win32.SafeHandles;
 
+using HResults = CorApi.ComInterop.HResults;
+
 namespace Mono.Debugging.Win32
 {
 	public unsafe class CorDebuggerSession: DebuggerSession // TODO: make sure we call Terminate on the debugger
@@ -36,7 +39,7 @@ namespace Mono.Debugging.Win32
 		readonly object terminateLock = new object ();
 
 		protected ICorDebug _dbg;
-		protected ICorDebugProcess _process;
+		protected CorApi.ComInterop.ICorDebugProcess _process;
 		ICorDebugThread activeThread;
 		ICorDebugStepper stepper;
 		bool terminated;
@@ -60,7 +63,9 @@ namespace Mono.Debugging.Win32
 		readonly BlockingCollection<Action> helperOperationsQueue = new BlockingCollection<Action>(new ConcurrentQueue<Action>());
 		readonly CancellationTokenSource helperOperationsCancellationTokenSource = new CancellationTokenSource ();
 
-		public CorObjectAdaptor ObjectAdapter = new CorObjectAdaptor();
+		public readonly CorObjectAdaptor ObjectAdapter = new CorObjectAdaptor();
+
+		private readonly InternalErrorDelegate _onerror;
 
 		class AppDomainInfo
 		{
@@ -82,9 +87,12 @@ namespace Mono.Debugging.Win32
 			public CorMetadataImport Importer;
 		}
 
-		public CorDebuggerSession(char[] badPathChars)
+		public CorDebuggerSession(char[] badPathChars, [NotNull] InternalErrorDelegate onerror)
 		{
+			if(onerror == null)
+				throw new ArgumentNullException(nameof(onerror));
 			this.badPathChars = badPathChars;
+			_onerror = onerror;
 			ObjectAdapter.BusyStateChanged += (sender, e) => SetBusyState (e);
 			var cancellationToken = helperOperationsCancellationTokenSource.Token;
 			new Thread (() => {
@@ -121,7 +129,7 @@ namespace Mono.Debugging.Win32
 
 		public ICustomCorSymbolReaderFactory CustomSymbolReaderFactory { get; set; }
 
-		internal CorProcess Process
+		internal ICorDebugProcess Process
 		{
 			get
 			{
@@ -248,24 +256,114 @@ namespace Mono.Debugging.Win32
 				SetICorDebug(CorDebugFactory.CreateFromDebuggeeVersion(dversion));
 				CorProcessWithOutputRedirection processWithOutput = CorDebugCreateProcess (_dbg, startInfo.Command, cmdLine, dir, env, flags);
 				SetICorDebugProcess(processWithOutput.Process);
-				// TODO: output redirection?
+				processWithOutput.OutputRedirection.RegisterStdOutput(OnStdOutput);
 			});
 			OnStarted ();
 		}
 
 		/// <summary>
-		/// Assigns the newly-created <see cref="ICorDebug"/>, without even Initialize called.
+		/// Assigns the newly-created <see cref="ICorDebug" />, without even Initialize called.
 		/// </summary>
-		protected void SetICorDebug([NotNull] ICorDebug iCorDebug)
+		protected void SetICorDebug([NotNull] ICorDebug cordbg)
 		{
-			if(iCorDebug == null)
-				throw new ArgumentNullException(nameof(iCorDebug));
+			if(cordbg == null)
+				throw new ArgumentNullException(nameof(cordbg));
 			if(_dbg != null)
 				throw new InvalidOperationException("The ICorDebug has already been set.");
 
-			_dbg = iCorDebug;
-			_dbg.Initialize().AssertSucceeded("Could not initialize the newly-created ICorDebug.");
-			// TODO: SetManagedHandler
+			_dbg = cordbg;
+			cordbg.Initialize().AssertSucceeded("Could not initialize the newly-created ICorDebug.");
+
+			// Set managed handler for events
+			ManagedCallbackEventSink.HandleEventDelegate onEvent = (eventid, args) =>
+			{
+				// Exceptions are trapped by the event sink class
+				switch(eventid)
+				{
+				case ManagedCallbackType.OnCreateProcess:
+					OnCreateProcess(this, ((CorProcessEventArgs)args));
+					break;
+				case ManagedCallbackType.OnCreateAppDomain:
+					OnCreateAppDomain(this, (CorAppDomainEventArgs)args);
+					break;
+				case ManagedCallbackType.OnAppDomainExit:
+					OnAppDomainExit(this, ((CorAppDomainEventArgs)args));
+					break;
+				case ManagedCallbackType.OnAssemblyLoad:
+					OnAssemblyLoad(this, (CorAssemblyEventArgs)args);
+					break;
+				case ManagedCallbackType.OnAssemblyUnload:
+					OnAssemblyUnload(this, ((CorAssemblyEventArgs)args));
+					break;
+				case ManagedCallbackType.OnCreateThread:
+					OnCreateThread(this, ((CorThreadEventArgs)args));
+					break;
+				case ManagedCallbackType.OnThreadExit:
+					OnThreadExit(this, ((CorThreadEventArgs)args));
+					break;
+				case ManagedCallbackType.OnModuleLoad:
+					OnModuleLoad(this, ((CorModuleEventArgs)args));
+					break;
+				case ManagedCallbackType.OnModuleUnload:
+					OnModuleUnload(this, ((CorModuleEventArgs)args));
+					break;
+				case ManagedCallbackType.OnProcessExit:
+					OnProcessExit(this, ((CorProcessEventArgs)args));
+					break;
+				case ManagedCallbackType.OnUpdateModuleSymbols:
+					OnUpdateModuleSymbols(this, ((CorUpdateModuleSymbolsEventArgs)args));
+					break;
+				case ManagedCallbackType.OnDebuggerError:
+					OnDebuggerError(this, ((CorDebuggerErrorEventArgs)args));
+					break;
+				case ManagedCallbackType.OnBreakpoint:
+					OnBreakpoint(this, ((CorBreakpointEventArgs)args));
+					break;
+				case ManagedCallbackType.OnStepComplete:
+					OnStepComplete(this, ((CorStepCompleteEventArgs)args));
+					break;
+				case ManagedCallbackType.OnBreak:
+					OnBreak(this, ((CorThreadEventArgs)args));
+					break;
+				case ManagedCallbackType.OnNameChange:
+					OnNameChange(this, ((CorThreadEventArgs)args));
+					break;
+				case ManagedCallbackType.OnEvalComplete:
+					OnEvalComplete(this, ((CorEvalEventArgs)args));
+					break;
+				case ManagedCallbackType.OnEvalException:
+					OnEvalException(this, ((CorEvalEventArgs)args));
+					break;
+				case ManagedCallbackType.OnLogMessage:
+					OnLogMessage(this, ((CorLogMessageEventArgs)args));
+					break;
+				case ManagedCallbackType.OnException2:
+					OnException2(this, ((CorException2EventArgs)args));
+					break;
+				}
+				return HResults.S_OK; //TODO: propagate return values where applicable in events
+			};
+			cordbg.SetManagedHandler(new ManagedCallbackEventSink(onEvent, _onerror)).AssertSucceeded("Could not advise sinking of the managed ICorDebug events.");
+
+			// TODO: autocontinue from prev impl
+			/**
+			 * Helper for invoking events.  Checks to make sure that handlers
+			 * are hooked up to a handler before the handler is invoked.
+			 *
+			 * We want to allow maximum flexibility by our callers.  As such,
+			 * we don't require that they call <code>e.Controller.Continue</code>,
+			 * nor do we require that this class call it.  <b>Someone</b> needs
+			 * to call it, however.
+			 *
+			 * Consequently, if an exception is thrown and the process is stopped,
+			 * the process is continued automatically.
+			 */
+			if(e.Continue)
+			{
+				e.Controller.Continue(false);
+			}
+			// end TODO
+
 		}
 
 		protected void CorDebugAttachPid(uint pid)
@@ -287,9 +385,8 @@ namespace Mono.Debugging.Win32
 			_process.GetID(&pid).AssertSucceeded("Could not get the PID of the newly-created process.");
 			_processId = pid;
 
-			SetICorDebugProcess_Events (_process);
-
-			_process.Continue (false);
+			_cordbgevents.NotNull("CorDebugEvents must have been set up with the main debugger interface.").Resume();
+			_process.Continue(0).AssertSucceeded("Could not continue the initially stopped process.");
 		}
 
 		/// <summary>
@@ -315,7 +412,7 @@ namespace Mono.Debugging.Win32
 			CorDebugProcessOutputRedirection.SetupOutputRedirection (si, ref flags, out outReadPipe, out errorReadPipe, out closehandles);
 			string env = Kernel32Dll.Helpers.GetEnvString(environment);
 
-			ICorDebugProcess corprocess;
+			CorApi.ComInterop.ICorDebugProcess corprocess;
 
 			//constrained execution region (Cer)
 			System.Runtime.CompilerServices.RuntimeHelpers.PrepareConstrainedRegions();
@@ -372,32 +469,6 @@ namespace Mono.Debugging.Win32
 			foreach (KeyValuePair<string, string> var in startInfo.EnvironmentVariables)
 				env[var.Key] = var.Value;
 			return env;
-		}
-
-		protected void SetICorDebugProcess_Events (CorProcess corProcess)
-		{
-			_processId = corProcess.Id;
-			corProcess.OnCreateProcess += OnCreateProcess;
-			corProcess.OnCreateAppDomain += OnCreateAppDomain;
-			corProcess.OnAppDomainExit += OnAppDomainExit;
-			corProcess.OnAssemblyLoad += OnAssemblyLoad;
-			corProcess.OnAssemblyUnload += OnAssemblyUnload;
-			corProcess.OnCreateThread += OnCreateThread;
-			corProcess.OnThreadExit += OnThreadExit;
-			corProcess.OnModuleLoad += OnModuleLoad;
-			corProcess.OnModuleUnload += OnModuleUnload;
-			corProcess.OnProcessExit += OnProcessExit;
-			corProcess.OnUpdateModuleSymbols += OnUpdateModuleSymbols;
-			corProcess.OnDebuggerError += OnDebuggerError;
-			corProcess.OnBreakpoint += OnBreakpoint;
-			corProcess.OnStepComplete += OnStepComplete;
-			corProcess.OnBreak += OnBreak;
-			corProcess.OnNameChange += OnNameChange;
-			corProcess.OnEvalComplete += OnEvalComplete;
-			corProcess.OnEvalException += OnEvalException;
-			corProcess.OnLogMessage += OnLogMessage;
-			corProcess.OnException2 += OnException2;
-			corProcess.RegisterStdOutput (OnStdOutput);
 		}
 
 		void OnStdOutput (object sender, CorTargetOutputEventArgs e)
@@ -1709,7 +1780,7 @@ namespace Mono.Debugging.Win32
 
 		internal void ClearEvalStatus ( )
 		{
-			foreach (CorProcess p in _dbg.Processes) {
+			foreach (ICorDebugProcess p in _dbg.Processes) {
 				if (p.Id == _processId) {
 					_process = p;
 					break;
@@ -1739,7 +1810,7 @@ namespace Mono.Debugging.Win32
 			handles.Clear ();
 		}
 
-		ProcessInfo GetProcess (CorProcess proc)
+		ProcessInfo GetProcess (ICorDebugProcess proc)
 		{
 			ProcessInfo info;
 			lock (processes) {
@@ -1948,7 +2019,7 @@ namespace Mono.Debugging.Win32
 
 		public struct CorProcessWithOutputRedirection
 		{
-			public ICorDebugProcess Process;
+			public CorApi.ComInterop.ICorDebugProcess Process;
 			public CorDebugProcessOutputRedirection OutputRedirection;
 		}
 	}

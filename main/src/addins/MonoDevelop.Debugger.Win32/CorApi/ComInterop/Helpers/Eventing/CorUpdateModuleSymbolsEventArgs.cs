@@ -1,20 +1,16 @@
 using System;
 
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorUpdateModuleSymbolsEventArgs : CorModuleEventArgs
     {
-        readonly IStream m_stream;
-
         [CLSCompliant(false)]
         public CorUpdateModuleSymbolsEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugModule managedModule,
             IStream stream)
             : base(appDomain, managedModule)
         {
-            m_stream = stream;
+            Stream = stream;
         }
 
         [CLSCompliant(false)]
@@ -24,17 +20,11 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, managedModule, callbackType)
         {
-            m_stream = stream;
+            Stream = stream;
         }
 
         [CLSCompliant(false)]
-        public IStream Stream
-        {
-            get
-            {
-                return m_stream;
-            }
-        }
+        public IStream Stream { get; }
 
         public override string ToString()
         {

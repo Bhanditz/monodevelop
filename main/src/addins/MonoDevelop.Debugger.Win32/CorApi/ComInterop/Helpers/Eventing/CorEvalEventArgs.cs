@@ -1,33 +1,23 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorEvalEventArgs : CorThreadEventArgs
     {
-        readonly ICorDebugEval m_eval;
-
         public CorEvalEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
             ICorDebugEval eval)
             : base(appDomain, thread)
         {
-            m_eval = eval;
+            Eval = eval;
         }
 
         public CorEvalEventArgs(ICorDebugAppDomain appDomain, ICorDebugThread thread,
             ICorDebugEval eval, ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_eval = eval;
+            Eval = eval;
         }
 
         /** The object being evaluated. */
-        public ICorDebugEval Eval
-        {
-            get
-            {
-                return m_eval;
-            }
-        }
+        public ICorDebugEval Eval { get; }
 
         public override string ToString()
         {

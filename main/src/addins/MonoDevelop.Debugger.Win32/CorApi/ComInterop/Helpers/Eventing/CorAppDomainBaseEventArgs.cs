@@ -1,6 +1,4 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorAppDomainBaseEventArgs : CorEventArgs
     {

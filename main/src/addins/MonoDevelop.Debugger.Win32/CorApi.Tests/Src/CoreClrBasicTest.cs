@@ -19,15 +19,14 @@ namespace CorApi.Tests
         {
             ApplicationDescriptor app = Constants.NetCoreApp10ConsoleAppPdb;
 
-            uint pid;
-            ICorDebug cordbg = CoreClrShimUtil.CreateICorDebugForCommand(new DbgShimInterop(app.GetDbgShimPath()), app.GetCommandlineForSleep(TimeSpan.FromSeconds(10)), app.WorkingDirectory, new Dictionary<string, string>(), TimeSpan.FromSeconds(10), out pid);
-            pid.ShouldBeGreaterThan(0u);
-            cordbg.ShouldNotBeNull();
+            CoreClrShimUtil.CorDebugAndPid started = CoreClrShimUtil.CreateICorDebugForCommand(new DbgShimInterop(app.GetDbgShimPath()), app.GetCommandlineForSleep(TimeSpan.FromSeconds(10)), app.WorkingDirectory, new Dictionary<string, string>(), TimeSpan.FromSeconds(10));
+            started.Pid.ShouldBeGreaterThan(0u);
+            started.ICorDebug.ShouldNotBeNull();
 
-            CheckBaseCorDbg(cordbg, cdbg =>
+            CheckBaseCorDbg(started.ICorDebug, cdbg =>
             {
                 ICorDebugProcess process;
-                cdbg.DebugActiveProcess(pid, 0, out process);
+                cdbg.DebugActiveProcess(started.Pid, 0, out process);
                 return process;
             });
         }

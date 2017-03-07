@@ -12,6 +12,8 @@ using CorApi2.debug;
 
 using Microsoft.Win32.SafeHandles;
 
+using ICorDebugProcess = CorApi.ComInterop.ICorDebugProcess;
+
 namespace CorApi2.Extensions
 {
 	public unsafe class CorDebugProcessOutputRedirection

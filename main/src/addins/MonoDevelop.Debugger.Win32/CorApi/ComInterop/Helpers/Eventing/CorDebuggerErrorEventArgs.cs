@@ -1,44 +1,26 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorDebuggerErrorEventArgs : CorProcessEventArgs
     {
-        readonly int m_hresult;
-
-        readonly int m_errorCode;
-
         public CorDebuggerErrorEventArgs(ICorDebugProcess process, int hresult,
             int errorCode)
             : base(process)
         {
-            m_hresult = hresult;
-            m_errorCode = errorCode;
+            HResult = hresult;
+            ErrorCode = errorCode;
         }
 
         public CorDebuggerErrorEventArgs(ICorDebugProcess process, int hresult,
             int errorCode, ManagedCallbackType callbackType)
             : base(process, callbackType)
         {
-            m_hresult = hresult;
-            m_errorCode = errorCode;
+            HResult = hresult;
+            ErrorCode = errorCode;
         }
 
-        public int HResult
-        {
-            get
-            {
-                return m_hresult;
-            }
-        }
+        public int HResult { get; }
 
-        public int ErrorCode
-        {
-            get
-            {
-                return m_errorCode;
-            }
-        }
+        public int ErrorCode { get; }
 
         public override string ToString()
         {

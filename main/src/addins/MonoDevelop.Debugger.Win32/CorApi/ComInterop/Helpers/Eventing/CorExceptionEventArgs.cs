@@ -1,17 +1,13 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
-    public unsafe class CorExceptionEventArgs : CorThreadEventArgs
+    public class CorExceptionEventArgs : CorThreadEventArgs
     {
-        readonly bool m_unhandled;
-
         public CorExceptionEventArgs(ICorDebugAppDomain appDomain,
             ICorDebugThread thread,
             bool unhandled)
             : base(appDomain, thread)
         {
-            m_unhandled = unhandled;
+            Unhandled = unhandled;
         }
 
         public CorExceptionEventArgs(ICorDebugAppDomain appDomain,
@@ -20,16 +16,10 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_unhandled = unhandled;
+            Unhandled = unhandled;
         }
 
         /** Has the exception been handled yet? */
-        public bool Unhandled
-        {
-            get
-            {
-                return m_unhandled;
-            }
-        }
+        public bool Unhandled { get; }
     }
 }

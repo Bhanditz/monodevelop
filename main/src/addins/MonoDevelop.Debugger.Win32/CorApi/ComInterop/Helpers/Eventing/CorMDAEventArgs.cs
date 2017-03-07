@@ -1,8 +1,4 @@
-using System;
-
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorMDAEventArgs : CorProcessEventArgs
     {
@@ -10,7 +6,7 @@ namespace CorApi2.debug
         public CorMDAEventArgs(ICorDebugMDA mda, ICorDebugThread thread, ICorDebugProcess proc)
             : base(proc)
         {
-            m_mda = mda;
+            MDA = mda;
             Thread = thread;
             //m_proc = proc;
         }
@@ -19,21 +15,20 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(proc, callbackType)
         {
-            m_mda = mda;
+            MDA = mda;
             Thread = thread;
             //m_proc = proc;
         }
 
-        readonly ICorDebugMDA m_mda;
-        public ICorDebugMDA MDA { get { return m_mda; } }
+        public ICorDebugMDA MDA { get; }
 
         public override string ToString()
         {
             if (CallbackType == ManagedCallbackType.OnMDANotification)
             {
                 return "MDANotification" + "\n" +
-                    "Name=" + LpcwstrHelper.GetString(m_mda.GetName, "MDA Name.") + "\n" +
-                    "XML=" + LpcwstrHelper.GetString(m_mda.GetXML, "MDA XML");
+                    "Name=" + LpcwstrHelper.GetString(MDA.GetName, "MDA Name.") + "\n" +
+                    "XML=" + LpcwstrHelper.GetString(MDA.GetXML, "MDA XML");
             }
             return base.ToString();
         }

@@ -1,6 +1,4 @@
-using CorApi.ComInterop;
-
-namespace CorApi2.debug
+namespace CorApi.ComInterop.Eventing
 {
     public unsafe class CorEditAndContinueRemapEventArgs : CorThreadEventArgs
     {
@@ -10,7 +8,7 @@ namespace CorApi2.debug
             int accurate)
             : base(appDomain, thread)
         {
-            m_managedFunction = managedFunction;
+            Function = managedFunction;
             m_accurate = accurate;
         }
 
@@ -21,17 +19,11 @@ namespace CorApi2.debug
             ManagedCallbackType callbackType)
             : base(appDomain, thread, callbackType)
         {
-            m_managedFunction = managedFunction;
+            Function = managedFunction;
             m_accurate = accurate;
         }
 
-        public ICorDebugFunction Function
-        {
-            get
-            {
-                return m_managedFunction;
-            }
-        }
+        public ICorDebugFunction Function { get; }
 
         public bool IsAccurate
         {
@@ -41,7 +33,6 @@ namespace CorApi2.debug
             }
         }
 
-        private readonly ICorDebugFunction m_managedFunction;
         private readonly int m_accurate;
     }
 }
