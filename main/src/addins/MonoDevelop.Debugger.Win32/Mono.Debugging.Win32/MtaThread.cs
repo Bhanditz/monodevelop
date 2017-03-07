@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 
 namespace Mono.Debugging.Win32
@@ -53,6 +54,7 @@ namespace Mono.Debugging.Win32
 				throw workError;
 		}
 
+		[HandleProcessCorruptedStateExceptions]
 		static void MtaRunner ()
 		{
 			try {

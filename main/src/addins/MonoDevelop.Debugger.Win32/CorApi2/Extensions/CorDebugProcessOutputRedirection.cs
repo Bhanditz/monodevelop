@@ -1,31 +1,9 @@
-//
-// DebuggerExtensions.cs
-//
-// Author:
-//       Therzok <teromario@yahoo.com>
-//
-// Copyright (c) 2013 Xamarin Inc.
-//
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-//
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-//
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
-
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.ExceptionServices;
+using System.Text;
+using System.Threading;
 
 using CorApi.ComInterop;
 using CorApi.Pinvoke;
@@ -36,13 +14,85 @@ using Microsoft.Win32.SafeHandles;
 
 namespace CorApi2.Extensions
 {
-	[CLSCompliant (false)]
-	public static unsafe class DebuggerExtensions
+	public unsafe class CorDebugProcessOutputRedirection
 	{
+		private readonly ICorDebugProcess _process;
+
+		/// <inheritdoc />
+		public CorDebugProcessOutputRedirection(ICorDebugProcess process)
+		{
+			_process = process;
+		}
+
+		public void TearDownOutputRedirection (SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe, Action closehandles)
+		{
+			if (outReadPipe != null) {
+				// Close pipe handles (do not continue to modify the parent).
+				// You need to make sure that no handles to the write end of the
+				// output pipe are maintained in this process or else the pipe will
+				// not close when the child process exits and the ReadFile will hang.
+				closehandles();
+
+				TrackStdOutput (outReadPipe, errorReadPipe);
+			}
+		}
+
+		void TrackStdOutput (SafeFileHandle outputPipe, SafeFileHandle errorPipe)
+		{
+			var outputReader = new Thread (delegate () {
+				ReadOutput (outputPipe, false);
+			});
+			outputReader.Name = "Debugger output reader";
+			outputReader.IsBackground = true;
+			outputReader.Start ();
+
+			var errorReader = new Thread (delegate () {
+				ReadOutput (errorPipe, true);
+			});
+			errorReader.Name = "Debugger error reader";
+			errorReader.IsBackground = true;
+			errorReader.Start ();
+		}
+
+		[HandleProcessCorruptedStateExceptions]
+		private void ReadOutput(SafeFileHandle pipe, bool isStdError)
+		{
+			var buffer = new byte[256];
+
+			try
+			{
+				while(true)
+				{
+					uint nBytesRead;
+					fixed(byte* pBuffer = buffer)
+					{
+						if((Kernel32Dll.ReadFile(((void*)pipe.DangerousGetHandle()), pBuffer, (uint)buffer.Length, &nBytesRead, null) == 0) || (nBytesRead == 0))
+							break; // pipe done - normal exit path.
+					}
+
+					string s = Encoding.Default.GetString(buffer, 0, (int)nBytesRead);
+					List<CorTargetOutputEventHandler> list = _events;
+					foreach(CorTargetOutputEventHandler del in list)
+						del(_process, new CorTargetOutputEventArgs(s, isStdError));
+				}
+			}
+			catch
+			{
+				// ignored
+			}
+		}
+
+		public void RegisterStdOutput (CorTargetOutputEventHandler handler)
+		{
+			_events.Add (handler);
+		}
+
 		// [Xamarin] Output redirection.
+		readonly List<CorTargetOutputEventHandler> _events = new List<CorTargetOutputEventHandler>();
+
 		public const int CREATE_REDIRECT_STD = 0x40000000;
 
-		static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipeSafeHandle, out SafeFileHandle errorReadPipeSafeHandle, out Action closehandles)
+		public static void CreateHandles (STARTUPINFOW si, out SafeFileHandle outReadPipeSafeHandle, out SafeFileHandle errorReadPipeSafeHandle, out Action closehandles)
 		{
 			closehandles = () => { };
 
@@ -91,7 +141,7 @@ namespace CorApi2.Extensions
 			closehandles += errorWritePipeSafeHandle.Close;
 		}
 
-		internal static void SetupOutputRedirection (STARTUPINFOW si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe, out Action closehandles)
+		public static void SetupOutputRedirection (STARTUPINFOW si, ref int flags, out SafeFileHandle outReadPipe, out SafeFileHandle errorReadPipe, out Action closehandles)
 		{
 			if ((flags & CREATE_REDIRECT_STD) != 0) {
 				CreateHandles (si, out outReadPipe, out errorReadPipe, out closehandles);
@@ -106,21 +156,5 @@ namespace CorApi2.Extensions
 				closehandles = () => { };
 			}
 		}
-
-		internal static void TearDownOutputRedirection (SafeFileHandle outReadPipe, SafeFileHandle errorReadPipe, CorProcess ret, Action closehandles)
-		{
-			if (outReadPipe != null) {
-				// Close pipe handles (do not continue to modify the parent).
-				// You need to make sure that no handles to the write end of the
-				// output pipe are maintained in this process or else the pipe will
-				// not close when the child process exits and the ReadFile will hang.
-				closehandles();
-
-				ret.TrackStdOutput (outReadPipe, errorReadPipe);
-			}
-		}
-
-
 	}
 }
-

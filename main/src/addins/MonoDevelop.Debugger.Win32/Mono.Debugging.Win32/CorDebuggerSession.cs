@@ -16,28 +16,34 @@ using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 using System.Linq;
 
+using CorApi.Pinvoke;
+
 using CorApi2.debug;
 using CorApi2.Extensions;
 using CorApi2.Metadata;
 using CorApi2.SymStore;
 
+using JetBrains.Annotations;
+
+using Microsoft.Win32.SafeHandles;
+
 namespace Mono.Debugging.Win32
 {
-	public unsafe class CorDebuggerSession: DebuggerSession
+	public unsafe class CorDebuggerSession: DebuggerSession // TODO: make sure we call Terminate on the debugger
 	{
 		readonly char[] badPathChars;
 		readonly object debugLock = new object ();
 		readonly object terminateLock = new object ();
 
-		protected CorDebugger dbg;
-		protected CorProcess process;
+		protected ICorDebug _dbg;
+		protected ICorDebugProcess _process;
 		ICorDebugThread activeThread;
 		ICorDebugStepper stepper;
 		bool terminated;
 		bool evaluating;
 		bool autoStepInto;
 		bool stepInsideDebuggerHidden=false;
-		protected int processId;
+		protected uint _processId;
 		protected bool attaching = false;
 
 		static int evaluationTimestamp;
@@ -119,7 +125,7 @@ namespace Mono.Debugging.Win32
 		{
 			get
 			{
-				return process;
+				return _process;
 			}
 		}
 
@@ -191,16 +197,16 @@ namespace Mono.Debugging.Win32
 
 				terminated = true;
 
-				if (process != null) {
+				if (_process != null) {
 					// Process already running. Stop it. In the ProcessExited event the
 					// debugger engine will be terminated
 					try {
-						process.Stop (0);
+						_process.Stop (0);
 						if (attaching) {
-							process.Detach ();
+							_process.Detach ();
 						}
 						else {
-							process.Terminate (1);
+							_process.Terminate (1);
 						}
 					}
 					catch (COMException e) {
@@ -226,26 +232,121 @@ namespace Mono.Debugging.Win32
 				int flags = 0;
 				if (!startInfo.UseExternalConsole) {
 					flags = (int)CreationFlags.CREATE_NO_WINDOW;
-						flags |= DebuggerExtensions.CREATE_REDIRECT_STD;
+						flags |= CorDebugProcessOutputRedirection.CREATE_REDIRECT_STD;
 				}
 
 				// Create the debugger
 
 				string dversion;
 				try {
-					dversion = CorDebugger.GetDebuggerVersionFromFile (startInfo.Command);
+					dversion = CorDebugFactory.GetDebuggerVersionFromFile (startInfo.Command); // TODO: log warning
 				}
 				catch {
-					dversion = CorDebugger.GetDefaultDebuggerVersion ();
+					dversion = CorDebugFactory.GetDefaultDebuggerVersion ();
 				}
-				dbg = new CorDebugger (dversion);
-				process = dbg.CreateProcess (startInfo.Command, cmdLine, dir, env, flags);
-				processId = process.Id;
-				SetupProcess (process);
-				process.Continue (false);
+
+				SetICorDebug(CorDebugFactory.CreateFromDebuggeeVersion(dversion));
+				CorProcessWithOutputRedirection processWithOutput = CorDebugCreateProcess (_dbg, startInfo.Command, cmdLine, dir, env, flags);
+				SetICorDebugProcess(processWithOutput.Process);
+				// TODO: output redirection?
 			});
 			OnStarted ();
 		}
+
+		/// <summary>
+		/// Assigns the newly-created <see cref="ICorDebug"/>, without even Initialize called.
+		/// </summary>
+		protected void SetICorDebug([NotNull] ICorDebug iCorDebug)
+		{
+			if(iCorDebug == null)
+				throw new ArgumentNullException(nameof(iCorDebug));
+			if(_dbg != null)
+				throw new InvalidOperationException("The ICorDebug has already been set.");
+
+			_dbg = iCorDebug;
+			_dbg.Initialize().AssertSucceeded("Could not initialize the newly-created ICorDebug.");
+			// TODO: SetManagedHandler
+		}
+
+		protected void CorDebugAttachPid(uint pid)
+		{
+			ICorDebugProcess process;
+			_dbg.DebugActiveProcess(pid, 0, out process).AssertSucceeded($"Could not make the ICorDebug start debugging the process {pid:N0}.");
+			SetICorDebugProcess(process);
+		}
+
+		protected void SetICorDebugProcess([NotNull] ICorDebugProcess process)
+		{
+			if(process == null)
+				throw new ArgumentNullException(nameof(process));
+			if(_process != null)
+				throw new InvalidOperationException("The ICorDebugProcess has already been set.");
+
+			_process = process;
+			uint pid;
+			_process.GetID(&pid).AssertSucceeded("Could not get the PID of the newly-created process.");
+			_processId = pid;
+
+			SetICorDebugProcess_Events (_process);
+
+			_process.Continue (false);
+		}
+
+		/// <summary>
+		/// Launch a process under the control of the debugger.
+		/// 
+		/// Parameters are the same as the Win32 CreateProcess call.
+		/// </summary>
+		public static CorProcessWithOutputRedirection CorDebugCreateProcess (ICorDebug mDebugger, String applicationName,
+			String commandLine,
+			String currentDirectory = ".",
+			IDictionary<string,string> environment = null,
+			int    flags = 0)
+		{
+			CorApi.ComInterop.PROCESS_INFORMATION pi = new CorApi.ComInterop.PROCESS_INFORMATION ();
+
+			STARTUPINFOW si = new STARTUPINFOW ();
+			si.cb = (uint) Marshal.SizeOf(si);
+
+			// initialize safe handles 
+			// [Xamarin] ASP.NET Debugging and output redirection.
+			SafeFileHandle outReadPipe, errorReadPipe;
+			Action closehandles;
+			CorDebugProcessOutputRedirection.SetupOutputRedirection (si, ref flags, out outReadPipe, out errorReadPipe, out closehandles);
+			string env = Kernel32Dll.Helpers.GetEnvString(environment);
+
+			ICorDebugProcess corprocess;
+
+			//constrained execution region (Cer)
+			System.Runtime.CompilerServices.RuntimeHelpers.PrepareConstrainedRegions();
+			try 
+			{
+			} 
+			finally
+			{
+				corprocess =  mDebugger.CreateProcess(applicationName,
+					commandLine, 
+					default(SECURITY_ATTRIBUTES),
+					default(SECURITY_ATTRIBUTES),
+					true,   // inherit handles
+					flags,  // creation flags
+					env,      // environment
+					currentDirectory,
+					si,     // startup info
+					ref pi, // process information
+					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS);
+				if(pi.hProcess != null)
+					Kernel32Dll.CloseHandle(pi.hProcess);
+				if(pi.hThread != null)
+					Kernel32Dll.CloseHandle(pi.hThread);
+			}
+
+			var outputredirection = new CorDebugProcessOutputRedirection(corprocess);
+			outputredirection.TearDownOutputRedirection (outReadPipe, errorReadPipe, closehandles);
+
+			return new CorProcessWithOutputRedirection() {Process = corprocess, OutputRedirection = outputredirection};
+		}
+
 
 		protected static string PrepareWorkingDirectory (DebuggerStartInfo startInfo)
 		{
@@ -273,9 +374,9 @@ namespace Mono.Debugging.Win32
 			return env;
 		}
 
-		protected void SetupProcess (CorProcess corProcess)
+		protected void SetICorDebugProcess_Events (CorProcess corProcess)
 		{
-			processId = corProcess.Id;
+			_processId = corProcess.Id;
 			corProcess.OnCreateProcess += OnCreateProcess;
 			corProcess.OnCreateAppDomain += OnCreateAppDomain;
 			corProcess.OnAppDomainExit += OnAppDomainExit;
@@ -344,7 +445,7 @@ namespace Mono.Debugging.Win32
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetInterrupted);
-			args.Process = GetProcess (process);
+			args.Process = GetProcess (_process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 			OnTargetEvent (args);
@@ -457,7 +558,7 @@ namespace Mono.Debugging.Win32
 			e.Continue = false;
 			SetActiveThread (e.Thread);
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetStopped);
-			args.Process = GetProcess (process);
+			args.Process = GetProcess (_process);
 			args.Thread = GetThread (e.Thread);
 			args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 			OnTargetEvent (args);
@@ -513,7 +614,7 @@ namespace Mono.Debugging.Win32
 				autoStepInto = false;
 				SetActiveThread (e.Thread);
 				var args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint) {
-					Process = GetProcess (process),
+					Process = GetProcess (_process),
 					Thread = GetThread (e.Thread),
 					Backtrace = new Backtrace (new CorBacktrace (e.Thread, this)),
 					BreakEvent = breakEvent
@@ -583,15 +684,15 @@ namespace Mono.Debugging.Win32
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetExited);
 
 			// If the main thread stopped, terminate the debugger session
-			if (e.Process.Id == process.Id) {
+			if (e.Process.Id == _process.Id) {
 				lock (terminateLock) {
-					process.Dispose ();
-					process = null;
+					_process.Dispose ();
+					_process = null;
 					ThreadPool.QueueUserWorkItem (delegate
 					{
 						// The Terminate call will fail if called in the event handler
-						dbg.Terminate ();
-						dbg = null;
+						_dbg.Terminate ();
+						_dbg = null;
 						GC.Collect ();
 					});
 				}
@@ -784,19 +885,18 @@ namespace Mono.Debugging.Win32
 			OnDebuggerOutput (false, string.Format("Unloaded application domain '{0} (id {1})'\n", e.AppDomain.Name, appDomainId));
 		}
 
-
-		void OnCreateProcess (object sender, CorProcessEventArgs e)
+		private void OnCreateProcess(object sender, CorProcessEventArgs e)
 		{
 			// Required to avoid the jit to get rid of variables too early
 			// not allowed in attach mode
-			try {
-				e.Process.DesiredNGENCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
-			} catch (Exception ex) {
-				DebuggerLoggingService.LogMessage (string.Format ("Unable to set e.Process.DesiredNGENCompilerFlags, possibly because the process was attached: {0}", ex.Message));
-			}
-			e.Process.EnableLogMessages (true);
+			int hr = Com.QueryInteface<ICorDebugProcess2>(e.Process).SetDesiredNGENCompilerFlags(((uint)CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION));
+			Exception exErrJit = HResultHelpers.GetExceptionIfFailed(hr, "Unable to set e.Process.DesiredNGENCompilerFlags, possibly because the process was attached.");
+			if(exErrJit != null)
+				DebuggerLoggingService.LogMessage(exErrJit.Message);
+			e.Process.EnableLogMessages(1).AssertSucceeded("Could not enable log messages on the process.");
 			e.Continue = true;
 		}
+
 		void OnCreateThread (object sender, CorThreadEventArgs e)
 		{
 			OnDebuggerOutput (false, string.Format ("Started Thread {0}\n", e.Thread.Id));
@@ -845,7 +945,7 @@ namespace Mono.Debugging.Win32
 				autoStepInto = false;
 				SetActiveThread (e.Thread);
 				
-				args.Process = GetProcess (process);
+				args.Process = GetProcess (_process);
 				args.Thread = GetThread (e.Thread);
 				args.Backtrace = new Backtrace (new CorBacktrace (e.Thread, this));
 				OnTargetEvent (args);	
@@ -894,13 +994,11 @@ namespace Mono.Debugging.Win32
 			attaching = true;
 			MtaThread.Run(delegate
 			{
-				var version = CorDebugger.GetProcessLoadedRuntimes((int)procId);
-				if (!version.Any())
+				List<string> versions = CorDebugFactory.GetProcessLoadedRuntimes((uint)procId);
+				if(!versions.Any())
 					throw new InvalidOperationException(string.Format("Process {0} doesn't have .NET loaded runtimes", procId));
-				dbg = new CorDebugger(version.Last());
-				process = dbg.DebugActiveProcess((int)procId, false);
-				SetupProcess(process);
-				process.Continue(false);
+				SetICorDebug(CorDebugFactory.CreateFromDebuggeeVersion(versions.Last()));
+				CorDebugAttachPid((uint)procId);
 			});
 			OnStarted();
 		}
@@ -908,21 +1006,18 @@ namespace Mono.Debugging.Win32
 		protected override void OnAttachToProcess(ProcessInfo processInfo)
 		{
 			var clrProcessInfo = processInfo as ClrProcessInfo;
-			var version = clrProcessInfo != null ? clrProcessInfo.Runtime : null;
+			string version = clrProcessInfo != null ? clrProcessInfo.Runtime : null;
 
 			attaching = true;
 			MtaThread.Run(delegate
 			{
-				var versions = CorDebugger.GetProcessLoadedRuntimes((int)processInfo.Id);
-				if (!versions.Any())
+				List<string> versions = CorDebugFactory.GetProcessLoadedRuntimes((uint)processInfo.Id);
+				if(!versions.Any())
 					throw new InvalidOperationException(string.Format("Process {0} doesn't have .NET loaded runtimes", processInfo.Id));
-
-				if (version == null || !versions.Contains (version))
-					version = versions.Last ();
-				dbg = new CorDebugger(version);
-				process = dbg.DebugActiveProcess((int)processInfo.Id, false);
-				SetupProcess(process);
-				process.Continue(false);
+				if(version == null || !versions.Contains(version))
+					version = versions.Last();
+				SetICorDebug(CorDebugFactory.CreateFromDebuggeeVersion(version));
+				CorDebugAttachPid((uint)processInfo.Id);
 			});
 			OnStarted();
 		}
@@ -933,8 +1028,8 @@ namespace Mono.Debugging.Win32
 			{
 				ClearEvalStatus ();
 				ClearHandles ();
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-				process.Continue (false);
+				_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+				_process.Continue (false);
 			});
 		}
 
@@ -979,22 +1074,22 @@ namespace Mono.Debugging.Win32
 				if (stepper != null) {
 					stepper.StepOut ();
 					ClearEvalStatus ();
-					process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-					process.Continue (false);
+					_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+					_process.Continue (false);
 				}
 			});
 		}
 
 		protected override ProcessInfo[] OnGetProcesses ( )
 		{
-			return MtaThread.Run (() => new ProcessInfo[] { GetProcess (process) });
+			return MtaThread.Run (() => new ProcessInfo[] { GetProcess (_process) });
 		}
 
 		protected override Backtrace OnGetThreadBacktrace (long processId, long threadId)
 		{
 			return MtaThread.Run (delegate
 			{
-				foreach (ICorDebugThread t in process.Threads) {
+				foreach (ICorDebugThread t in _process.Threads) {
 					if (t.Id == threadId) {
 						return new Backtrace (new CorBacktrace (t, this));
 					}
@@ -1008,7 +1103,7 @@ namespace Mono.Debugging.Win32
 			return MtaThread.Run (delegate
 			{
 				List<ThreadInfo> list = new List<ThreadInfo> ();
-				foreach (ICorDebugThread t in process.Threads)
+				foreach (ICorDebugThread t in _process.Threads)
 					list.Add (GetThread (t));
 				return list.ToArray ();
 			});
@@ -1359,8 +1454,8 @@ namespace Mono.Debugging.Win32
 					stepper.StepRange (into, ranges.ToArray ());
 
 					ClearEvalStatus ();
-					process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-					process.Continue (false);
+					_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+					_process.Continue (false);
 				}
 			} catch (Exception e) {
 				DebuggerLoggingService.LogError ("Exception on Step()", e);
@@ -1374,7 +1469,7 @@ namespace Mono.Debugging.Win32
 			else
 				stepper.Step (into);
 			ClearEvalStatus ();
-			process.Continue (false);
+			_process.Continue (false);
 		}
 
 		protected override void OnRemoveBreakEvent (BreakEventInfo bi)
@@ -1408,7 +1503,7 @@ namespace Mono.Debugging.Win32
 				if (stepper != null && stepper.IsActive ())
 					stepper.Deactivate ();
 				stepper = null;
-				foreach (ICorDebugThread t in process.Threads) {
+				foreach (ICorDebugThread t in _process.Threads) {
 					if (t.Id == threadId) {
 						SetActiveThread (t);
 						break;
@@ -1449,14 +1544,14 @@ namespace Mono.Debugging.Win32
 
 			MtaThread.Run (delegate
 			{
-				process.Stop (0);
+				_process.Stop (0);
 				OnStopped ();
 				ICorDebugThread currentThread = null;
-				foreach (ICorDebugThread t in process.Threads) {
+				foreach (ICorDebugThread t in _process.Threads) {
 					currentThread = t;
 					break;
 				}
-				args.Process = GetProcess (process);
+				args.Process = GetProcess (_process);
 				args.Thread = GetThread (currentThread);
 				args.Backtrace = new Backtrace (new CorBacktrace (currentThread, this));
 			});
@@ -1535,15 +1630,15 @@ namespace Mono.Debugging.Win32
 				doneEvent.Set ();
 				eargs.Continue = false;
 			};
-			process.OnEvalComplete += completeHandler;
-			process.OnEvalException += exceptionHandler;
+			_process.OnEvalComplete += completeHandler;
+			_process.OnEvalException += exceptionHandler;
 
 			try {
 				createCall (eval);
-				process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
+				_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
 				OnStartEvaluating ();
 				ClearEvalStatus ();
-				process.Continue (false);
+				_process.Continue (false);
 
 				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
 					return result;
@@ -1561,8 +1656,8 @@ namespace Mono.Debugging.Win32
 				throw;
 			}
 			finally {
-				process.OnEvalComplete -= completeHandler;
-				process.OnEvalException -= exceptionHandler;
+				_process.OnEvalComplete -= completeHandler;
+				_process.OnEvalException -= exceptionHandler;
 				OnEndEvaluating ();
 			}
 		}
@@ -1614,9 +1709,9 @@ namespace Mono.Debugging.Win32
 
 		internal void ClearEvalStatus ( )
 		{
-			foreach (CorProcess p in dbg.Processes) {
-				if (p.Id == processId) {
-					process = p;
+			foreach (CorProcess p in _dbg.Processes) {
+				if (p.Id == _processId) {
+					_process = p;
 					break;
 				}
 			}
@@ -1686,7 +1781,7 @@ namespace Mono.Debugging.Win32
 		{
 			try {
 				WaitUntilStopped ();
-				foreach (ICorDebugThread t in process.Threads)
+				foreach (ICorDebugThread t in _process.Threads)
 					if (t.Id == id)
 						return t;
 				throw new InvalidOperationException ("Invalid thread id " + id);
@@ -1849,6 +1944,12 @@ namespace Mono.Debugging.Win32
 					throw new NotSupportedException ();
 				}
 			});
+		}
+
+		public struct CorProcessWithOutputRedirection
+		{
+			public ICorDebugProcess Process;
+			public CorDebugProcessOutputRedirection OutputRedirection;
 		}
 	}
 

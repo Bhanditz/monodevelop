@@ -10,10 +10,10 @@ using JetBrains.Annotations;
 
 namespace CorApi.Pinvoke
 {
-    public unsafe static class CoreClrShimUtil
+    public static unsafe class CoreClrShimUtil
     {
         [CLSCompliant(false)]
-        public static ICorDebug CreateICorDebugForCommand(DbgShimInterop dbgShimInterop, string command, string workingDir, IDictionary<string, string> env, TimeSpan runtimeLoadTimeout, out uint procId)
+        public static CorDebugAndPid CreateICorDebugForCommand(DbgShimInterop dbgShimInterop, string command, string workingDir, IDictionary<string, string> env, TimeSpan runtimeLoadTimeout)
         {
             string sEnv = Kernel32Dll.Helpers.GetEnvString(env);
             void* hResume;
@@ -24,24 +24,24 @@ namespace CorApi.Pinvoke
             fixed(char* pchEnv = sEnv ?? "")
                 dbgShimInterop.CreateProcessForLaunch((ushort*)pchCommand, 1, (sEnv != null ? pchEnv : null), (ushort*)pchworkingDir, &processId, &hResume).AssertSucceeded("Failed call CreateProcessForLaunch.");
 
+            ComInterop.HResults hrCloseHandle;
+            ICorDebug cordbg;
             try
             {
-                procId = processId;
-                return CreateICorDebugImpl(dbgShimInterop, processId, runtimeLoadTimeout, hResume);
+                cordbg = CreateICorDebugImpl(dbgShimInterop, processId, runtimeLoadTimeout, hResume);
             }
             finally
             {
-                if(hResume!=null)
-                {
-                    int hrCloseHandle = dbgShimInterop.CloseResumeHandle(hResume); // Don't want to throw on HRESULT here because if another exception is in progress we'd suppress it with our less important one
-                }
+                hrCloseHandle = hResume != null ? ((ComInterop.HResults)dbgShimInterop.CloseResumeHandle(hResume)) : ComInterop.HResults.S_OK; // Don't want to throw on HRESULT here because if another exception is in progress we'd suppress it with our less important one
             }
+            hrCloseHandle.Assert("dbgShimInterop.CloseResumeHandle");
+            return new CorDebugAndPid() {ICorDebug = cordbg, Pid = processId};
         }
 
         [CLSCompliant(false)]
-        public static ICorDebug CreateICorDebugForProcess (DbgShimInterop dbgShimInterop, uint processId, TimeSpan runtimeLoadTimeout)
+        public static ICorDebug CreateICorDebugForProcess(DbgShimInterop dbgShimInterop, uint processId, TimeSpan runtimeLoadTimeout)
         {
-            return CreateICorDebugImpl (dbgShimInterop, processId, runtimeLoadTimeout, null);
+            return CreateICorDebugImpl(dbgShimInterop, processId, runtimeLoadTimeout, null);
         }
 
         private static ICorDebug CreateICorDebugImpl(DbgShimInterop dbgShimInterop, uint processId, TimeSpan runtimeLoadTimeout, void* resumeHandle)
@@ -50,11 +50,12 @@ namespace CorApi.Pinvoke
             ICorDebug corDebug = null;
             Exception callbackException = null;
             void* token;
-            DbgShimInterop.PSTARTUP_CALLBACK callback = (pCordb, parameter, hrLoad) => CreateICorDebugImpl_Callback/*extracted func to catch natives*/(hrLoad, pCordb, waiter, ref corDebug, ref callbackException);
+            DbgShimInterop.PSTARTUP_CALLBACK callback = (pCordb, parameter, hrLoad) => CreateICorDebugImpl_Callback /*extracted func to catch natives*/(hrLoad, pCordb, waiter, ref corDebug, ref callbackException);
             IntPtr callbackPtr = Marshal.GetFunctionPointerForDelegate(callback);
 
             dbgShimInterop.RegisterForRuntimeStartup(processId, callbackPtr, null, &token).AssertSucceeded("RegisterForRuntimeStartup.");
 
+            ComInterop.HResults hrUnregister;
             try
             {
                 if(resumeHandle != null)
@@ -66,7 +67,7 @@ namespace CorApi.Pinvoke
             finally
             {
                 // Release the callback
-                int hrUnregister = dbgShimInterop.UnregisterForRuntimeStartup(token);
+                hrUnregister = (ComInterop.HResults)dbgShimInterop.UnregisterForRuntimeStartup(token);
                 // NOTE: do not want to check the HRESULT here because if an exception is in progress we do not want to overwrite it with another exception which is less important
                 // This keeps valid the callbackPtr pointer up until the native side keeps it, ie until we call unregister, which might happen at any moment if we abandon waiting by timeout
                 // If the callback is in progress, this would wait for the callback to complete, note in case we're aborting by timeout (however, we do not expect the callback to get stuck)
@@ -74,6 +75,7 @@ namespace CorApi.Pinvoke
             }
             if(Volatile.Read(ref callbackException) != null)
                 throw Volatile.Read(ref callbackException);
+            hrUnregister.Assert("dbgShimInterop.UnregisterForRuntimeStartup");
             return Volatile.Read(ref corDebug);
         }
 
@@ -93,6 +95,13 @@ namespace CorApi.Pinvoke
             {
                 waiter.Set();
             }
+        }
+
+        public struct CorDebugAndPid
+        {
+            public ICorDebug ICorDebug;
+
+            public uint Pid;
         }
     }
 }

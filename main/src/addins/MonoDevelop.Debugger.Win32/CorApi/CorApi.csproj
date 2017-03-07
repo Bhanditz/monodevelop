@@ -62,6 +62,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComInterop\Helpers\Common\Assertion.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugEx.cs" />
+    <Compile Include="ComInterop\IEnumUnknown.cs" />
     <Compile Include="ComInterop\CorDebuggerVersion.cs" />
     <Compile Include="ComInterop\CorDebugJITCompilerFlags.cs" />
     <Compile Include="ComInterop\CorElementTypeZapSig.cs" />
@@ -91,6 +94,7 @@
     <Compile Include="ComInterop\Helpers\Common\Com.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResults2.cs" />
     <Compile Include="ComInterop\Helpers\Common\LpcwstrHelper.cs" />
+    <Compile Include="ComInterop\Helpers\CorDebugFactory.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugAppDomainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugChainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugClassEx.cs" />
@@ -104,6 +108,8 @@
     <Compile Include="ComInterop\Helpers\ICorDebugProcessEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugThreadEx.cs" />
     <Compile Include="ComInterop\Helpers\MscoreeHelpers.cs" />
+    <Compile Include="ComInterop\ICLRMetaHost.cs" />
+    <Compile Include="ComInterop\ICLRRuntimeInfo.cs" />
     <Compile Include="ComInterop\ICorDebug.cs" />
     <Compile Include="ComInterop\ICorDebugAppDomain.cs" />
     <Compile Include="ComInterop\ICorDebugAppDomain2.cs" />

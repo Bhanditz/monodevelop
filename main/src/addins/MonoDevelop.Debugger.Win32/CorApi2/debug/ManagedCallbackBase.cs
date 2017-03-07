@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 
 using CorApi.ComInterop;
@@ -25,6 +26,7 @@ namespace CorApi2.debug
         {
             //  Not Implemented
             Debug.Assert(false);
+            return ((int)HResults.E_NOTIMPL);
         }
 
         int ICorDebugManagedCallback.ControlCTrap(ICorDebugProcess process)
@@ -41,6 +43,7 @@ namespace CorApi2.debug
         {
             // Not Implemented
             Debug.Assert(false);
+            return ((int)HResults.E_NOTIMPL);
         }
 
         int ICorDebugManagedCallback.CreateProcess(ICorDebugProcess process)
@@ -62,11 +65,13 @@ namespace CorApi2.debug
         {
             // Not Implemented
             Debug.Assert(false);
+            return ((int)HResults.E_NOTIMPL);
         }
 
         int ICorDebugManagedCallback.EditAndContinueRemap(ICorDebugAppDomain appDomain, ICorDebugThread thread, ICorDebugFunction managedFunction, int isAccurate)
         {
             Debug.Assert(false); //OBSOLETE callback
+            return ((int)HResults.E_NOTIMPL);
         }
         /* pass false if ``unhandled'' is 0 -- mapping TRUE to true, etc. */
 
@@ -121,19 +126,6 @@ namespace CorApi2.debug
         }
 
         // Get process from controller 
-        private static CorProcess GetProcessFromController(ICorDebugController pController)
-        {
-            CorProcess p;
-            var p2 = pController as ICorDebugProcess;
-            if(p2 != null)
-                p = CorProcess.GetCorProcess(p2);
-            else
-            {
-                var a2 = (ICorDebugAppDomain)pController;
-                p = new ICorDebugAppDomain(a2).Process;
-            }
-            return p;
-        }
 
         // Derived class overrides this methdos 
         protected abstract int HandleEvent(ManagedCallbackType eventId, CorEventArgs args);
@@ -165,9 +157,24 @@ namespace CorApi2.debug
 
         int ICorDebugManagedCallback2.MDANotification(ICorDebugController pController, ICorDebugThread thread, ICorDebugMDA pMDA)
         {
-            CorProcess p = GetProcessFromController(pController);
-
-            return HandleEvent(ManagedCallbackType.OnMDANotification, new CorMDAEventArgs(pMDA, thread, p, ManagedCallbackType.OnMDANotification));
+            ICorDebugProcess corprocess;
+            try
+            {
+                corprocess = pController as ICorDebugProcess;
+                if(corprocess == null)
+                {
+                    var corad = pController as ICorDebugAppDomain;
+                    corad?.GetProcess(out corprocess).AssertSucceeded("Cannot get the appdomain process.");
+                }
+                if(corprocess == null)
+                    throw new InvalidOperationException("Don't know how to retrieve the process out of the given base debug controller.");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex); // TODO: report exception
+                return 0;
+            }
+            return HandleEvent(ManagedCallbackType.OnMDANotification, new CorMDAEventArgs(pMDA, thread, corprocess, ManagedCallbackType.OnMDANotification));
         }
 
         int ICorDebugManagedCallback.NameChange(ICorDebugAppDomain appDomain, ICorDebugThread thread)

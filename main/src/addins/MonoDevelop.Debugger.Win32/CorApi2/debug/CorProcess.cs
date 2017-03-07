@@ -97,46 +97,8 @@ namespace CorApi2.debug
 
 
 
-        /** The OS ID of the process. */
-        public int Id
-        {
-            get
-            {
-                uint id = 0;
-                _p().GetID (out id);
-                return (int) id;
-            }
-        }
         
-
-        /** enable/disable sending of log messages to the debugger for logging. */
-        public void EnableLogMessages (bool value)
-        {
-            _p().EnableLogMessages (value ? 1 : 0);
-        }
-
-
-        /** These flags set things like TrackJitInfo, PreventOptimization, IgnorePDBs, and EnableEnC */
-        /**  Any combination of bits in this DWORD flag enum is ok, but if its not a valid set, you may get an error */
-        public CorDebugJITCompilerFlags DesiredNGENCompilerFlags
-        {
-            get
-            {
-                uint retval = 0;
-                ((ICorDebugProcess2)_p()).GetDesiredNGENCompilerFlags(out retval);
-                return (CorDebugJITCompilerFlags)retval;
-            }
-            set
-            {
-                ((ICorDebugProcess2)_p()).SetDesiredNGENCompilerFlags((uint)value);
-            }
-        }
         
-        public override void Stop (int timeout)
-        {
-            _p().Stop ((uint)timeout);
-        }
-
         public override void Continue (bool outOfBand)
         {
             if( !outOfBand &&                               // OOB event can arrive anytime (we just ignore them).
