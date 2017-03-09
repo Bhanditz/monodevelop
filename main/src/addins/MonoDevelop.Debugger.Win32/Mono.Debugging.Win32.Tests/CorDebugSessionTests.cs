@@ -104,10 +104,11 @@ namespace Mono.Debugging.Win32.Tests
                     {
                         if (Path.GetFileName(docFile) != "Program.cs")
                             continue;
+                        string docFileActualPath = Path.Combine(app.WorkingDirectory,"..","..","..", "Shared", "Program.cs");
                         const string breakpointLineMessage = "//ShouldCorrectlyStopOnCustomBreakpoint: insert breakpoint here";
                         var breakpointLine = -1;
                         var currentLineNumber = 0;
-                        foreach (var line in File.ReadLines(docFile)) {
+                        foreach (var line in File.ReadLines(docFileActualPath)) {
                             currentLineNumber++;
                             if (line.Contains (breakpointLineMessage)) {
                                 breakpointLine = currentLineNumber;
