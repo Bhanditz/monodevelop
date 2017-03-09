@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -169,8 +170,19 @@ namespace CorApi.Tests
 
                 TestProcess(process);
 
+                var stopTimeGuard = new ManualResetEvent(false);
+
+                callback.OnExit += proc =>
+                {
+                    stopTimeGuard.Set();
+                };
                 process.Stop(0).AssertSucceeded("process.Stop(0)");
                 process.Terminate(42).AssertSucceeded("process.Terminate(42)");
+
+                stopTimeGuard.WaitOne(TimeSpan.FromSeconds(5)).ShouldBeTrue("Process not stopped");
+
+                cordbg.Terminate().AssertSucceeded("cordbg.Terminate()");
+
                 //                cordbg.Terminate();
                 /*
                           session = new CorDebuggerSession(new char[] { });
@@ -319,7 +331,16 @@ namespace CorApi.Tests
             /// <inheritdoc />
             int ICorDebugManagedCallback.ExitProcess(ICorDebugProcess pProcess)
             {
-                return 0; // TODO_IMPL();
+                try
+                {
+                    Console.Error.WriteLine("EP!");
+                    OnExit(pProcess);
+                }
+                catch(Exception ex)
+                {
+                    Exceptions.Add(ex);
+                }
+                return (int)HResults.S_OK;
             }
 
             /// <inheritdoc />
@@ -383,6 +404,7 @@ namespace CorApi.Tests
             }
 
             public event Action<ICorDebugProcess> OnProcess = o => { };
+            public event Action<ICorDebugProcess> OnExit = o => { };
 
             /// <inheritdoc />
             int ICorDebugManagedCallback.StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
