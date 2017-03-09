@@ -9,7 +9,7 @@ namespace CorApi.Tests
     internal static class CorClrApplicationDescriptorEx
     {
         private static readonly string DotNetCoreRootPath = PlatformUtil.IsRunningUnderWindows ? Path.Combine(Constants.TestDataFolder, "Tools", "NetCore", /*"v1.0.3_win"*/"v1.0.5_win_mfdebug")+"\\": @"/usr/share/dotnet/";
-        private static readonly string PlatformVersion = "1.0.5";
+        private static readonly string PlatformVersion = PlatformUtil.IsRunningUnderWindows ? "1.0.5" : "1.0.3";
 
         public static string GetCommandlineForDebuggerBreak(this ApplicationDescriptor app)
         {
