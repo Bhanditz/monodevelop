@@ -33,7 +33,8 @@ namespace CorApi.ComInterop
             fixed(char* pCommandLine = commandLine)
             fixed(char* pCurrentDirectory = currentDirectory)
             fixed(char* pEnv = environment)
-                cordebug.CreateProcess((ushort*)pApplicationName, (ushort*)pCommandLine, &processAttributes, &threadAttributes, inheritHandles ? 1 : 0, (uint)creationFlags, pEnv, (ushort*)pCurrentDirectory, &startupInfo, &processInformation, debuggingFlags, out proc);
+            fixed(PROCESS_INFORMATION* ppi = &processInformation)
+                cordebug.CreateProcess((ushort*)pApplicationName, (ushort*)pCommandLine, &processAttributes, &threadAttributes, inheritHandles ? 1 : 0, (uint)creationFlags, pEnv, (ushort*)pCurrentDirectory, &startupInfo, ppi, debuggingFlags, out proc);
 
             return proc;
         }

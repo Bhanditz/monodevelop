@@ -46,8 +46,11 @@ namespace CorApi.ComInterop
             Debug.Assert(!string.IsNullOrEmpty(pathToExe));
             if(string.IsNullOrEmpty(pathToExe))
                 throw new ArgumentException("Value cannot be null or empty.", "pathToExe");
-            fixed(char* pchPathCopy = pathToExe.ToCharArray() /*declared as a mutable string, so shan't pass the original*/)
-                return LpcwstrHelper.GetString((x, y, z) => MscoreeDll.GetRequestedRuntimeVersion((ushort*)pchPathCopy, y, x, z), $"Could not get the requested runtime version from an executable file “{pathToExe}”.");
+            return LpcwstrHelper.GetString((x, y, z) =>
+            {
+                fixed(char* pchPathCopy = pathToExe.ToCharArray() /*declared as a mutable string, so shan't pass the original*/)
+                    return MscoreeDll.GetRequestedRuntimeVersion((ushort*)pchPathCopy, y, x, z);
+            }, $"Could not get the requested runtime version from an executable file “{pathToExe}”.");
         }
 
         [NotNull]
