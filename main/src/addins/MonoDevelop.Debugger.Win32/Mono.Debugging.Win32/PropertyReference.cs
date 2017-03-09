@@ -25,16 +25,12 @@
 //
 //
 
+using System;
 using System.Reflection;
 using Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
 using CorApi.ComInterop;
-
-using ICorDebugFunction = Microsoft.Samples.Debugging.CorDebug.ICorDebugFunction;
-using ICorDebugModule = Microsoft.Samples.Debugging.CorDebug.ICorDebugModule;
-using ICorDebugType = Microsoft.Samples.Debugging.CorDebug.ICorDebugType;
-using ICorDebugValue = Microsoft.Samples.Debugging.CorDebug.ICorDebugValue;
 
 namespace Mono.Debugging.Win32
 {
@@ -54,26 +50,30 @@ namespace Mono.Debugging.Win32
 		{
 		}
 
-		public PropertyReference (EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, ICorDebugType declaringType, CorValRef[] index)
-			: base (ctx)
+		public PropertyReference(EvaluationContext ctx, PropertyInfo prop, CorValRef thisobj, ICorDebugType declaringType, CorValRef[] index)
+			: base(ctx)
 		{
 			this.prop = prop;
 			this.declaringType = declaringType;
-			if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
-			    declaringType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
-				this.module = ((ICorDebugType)((CorEvaluationContext)ctx).Adapter.GetType (ctx, "System.Object")).Class.Module;
-			} else {
-				this.module = declaringType.Class.Module;
+			if(declaringType.Type() == CorElementType.ELEMENT_TYPE_ARRAY || declaringType.Type() == CorElementType.ELEMENT_TYPE_SZARRAY)
+			{
+				ICorDebugClass @class;
+				((ICorDebugType)((CorEvaluationContext)ctx).Adapter.GetType(ctx, "System.Object")).GetClass(out @class).AssertSucceeded("((ICorDebugType)((CorEvaluationContext)ctx).Adapter.GetType (ctx, \"System.Object\")).GetClass(out @class)");
+				@class.GetModule(out module).AssertSucceeded("@class.GetModule(out module)");
+			}
+			else
+			{
+				ICorDebugClass @class;
+				declaringType.GetClass(out @class).AssertSucceeded("declaringType.GetClass(out @class)");
+				@class.GetModule(out module).AssertSucceeded("@class.GetModule(out module)");
 			}
 			this.index = index;
-			if (!prop.GetGetMethod (true).IsStatic)
+			if(!prop.GetGetMethod(true).IsStatic)
 				this.thisobj = thisobj;
 
-			flags = GetFlags (prop);
+			flags = GetFlags(prop);
 
-			loader = delegate {
-				return ((CorValRef)Value).Val;
-			};
+			loader = () => ((CorValRef)Value).Val;
 		}
 		
 		public override object Type {
@@ -108,19 +108,21 @@ namespace Mono.Debugging.Win32
 					args = new ICorDebugValue[0];
 
 				MethodInfo mi = prop.GetGetMethod (true);
-				ICorDebugFunction func = module.GetFunctionFromToken (mi.MetadataToken);
-				ICorDebugValue val = null;
-				if (declaringType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
-				    declaringType.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+				ICorDebugFunction func;
+				module.GetFunctionFromToken (((uint)mi.MetadataToken), out func).AssertSucceeded("module.GetFunctionFromToken (((uint)mi.MetadataToken), out func)");
+				ICorDebugValue val;
+				if (declaringType.Type() == CorElementType.ELEMENT_TYPE_ARRAY ||
+				    declaringType.Type() == CorElementType.ELEMENT_TYPE_SZARRAY) {
 					val = ctx.RuntimeInvoke (func, new ICorDebugType[0], thisobj != null ? thisobj.Val : null, args);
 				} else {
-					val = ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
+					val = ctx.RuntimeInvoke (func, declaringType.TypeParameters(), thisobj != null ? thisobj.Val : null, args);
 				}
 				return cachedValue = new CorValRef (val, loader);
 			}
 			set {
 				CorEvaluationContext ctx = (CorEvaluationContext)Context;
-				ICorDebugFunction func = module.GetFunctionFromToken (prop.GetSetMethod (true).MetadataToken);
+				ICorDebugFunction func;
+				module.GetFunctionFromToken (((uint)prop.GetSetMethod (true).MetadataToken), out func).AssertSucceeded("module.GetFunctionFromToken (((uint)prop.GetSetMethod (true).MetadataToken), out func)");
 				CorValRef val = (CorValRef) value;
 				ICorDebugValue[] args;
 				ParameterInfo[] metArgs = prop.GetSetMethod (true).GetParameters ();
@@ -134,7 +136,7 @@ namespace Mono.Debugging.Win32
 					}
 				}
 				args[args.Length - 1] = ctx.Adapter.GetBoxedArg (ctx, val, metArgs[metArgs.Length - 1].ParameterType).Val;
-				ctx.RuntimeInvoke (func, declaringType.TypeParameters, thisobj != null ? thisobj.Val : null, args);
+				ctx.RuntimeInvoke (func, declaringType.TypeParameters(), thisobj != null ? thisobj.Val : null, args);
 			}
 		}
 		

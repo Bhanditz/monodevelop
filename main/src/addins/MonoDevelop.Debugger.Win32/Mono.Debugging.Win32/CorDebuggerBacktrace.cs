@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data.SqlTypes;
+using System.Diagnostics;
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
 
@@ -11,12 +14,14 @@ using System.Runtime.InteropServices;
 
 using CorApi2.Metadata;
 
+using StackFrame = Mono.Debugging.Client.StackFrame;
+
 namespace Mono.Debugging.Win32
 {
-	class CorBacktrace: BaseBacktrace
+	unsafe class CorBacktrace: BaseBacktrace
 	{
 		ICorDebugThread thread;
-		readonly int threadId;
+		readonly uint threadId;
 		readonly CorDebuggerSession session;
 		List<ICorDebugFrame> frames;
 		int evalTimestamp;
@@ -25,41 +30,52 @@ namespace Mono.Debugging.Win32
 		{
 			this.session = session;
 			this.thread = thread;
-			threadId = thread.Id;
+			uint dwThreadId = 0;
+			thread.GetID(&dwThreadId).AssertSucceeded("thread.GetID(&dwThreadId)");
+			threadId = dwThreadId;
 			frames = new List<ICorDebugFrame> (GetFrames (thread));
 			evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
 		}
 
-		internal static IEnumerable<ICorDebugFrame> GetFrames (ICorDebugThread thread)
+		internal static IEnumerable<ICorDebugFrame> GetFrames(ICorDebugThread thread)
 		{
-			var corFrames = new List<ICorDebugFrame> ();
-			try {
-				foreach (ICorDebugChain chain in thread.Chains) {
-					if (!chain.IsManaged)
+			var corFrames = new List<ICorDebugFrame>();
+			try
+			{
+				foreach(ICorDebugChain chain in thread.GetChains())
+				{
+					int isManaged = 0;
+					chain.IsManaged(&isManaged).AssertSucceeded("chain.IsManaged(&isManaged)");
+					if(!(isManaged != 0))
 						continue;
-					try {
-						var chainFrames = chain.Frames;
+					try
+					{
+						IList<ICorDebugFrame> chainFrames = chain.GetFrames();
 
-						foreach (ICorDebugFrame frame in chainFrames)
-							corFrames.Add (frame);
+						foreach(ICorDebugFrame frame in chainFrames)
+							corFrames.Add(frame);
 					}
-					catch (COMException e) {
-						DebuggerLoggingService.LogMessage ("Failed to enumerate frames of chain: {0}", e.Message);
+					catch(COMException e)
+					{
+						DebuggerLoggingService.LogMessage("Failed to enumerate frames of chain: {0}", e.Message);
 					}
 				}
-
 			}
-			catch (COMException e) {
-				DebuggerLoggingService.LogMessage ("Failed to enumerate chains of thread: {0}", e.Message);
+			catch(COMException e)
+			{
+				DebuggerLoggingService.LogMessage("Failed to enumerate chains of thread: {0}", e.Message);
 			}
 			return corFrames;
 		}
 
-		internal List<ICorDebugFrame> FrameList {
-			get {
-				if (evalTimestamp != CorDebuggerSession.EvaluationTimestamp) {
-					thread = session.GetThread (threadId);
-					frames = new List<ICorDebugFrame> (GetFrames (thread));
+		internal List<ICorDebugFrame> FrameList
+		{
+			get
+			{
+				if(evalTimestamp != CorDebuggerSession.EvaluationTimestamp)
+				{
+					thread = session.GetThread(((int)threadId));
+					frames = new List<ICorDebugFrame>(GetFrames(thread));
 					evalTimestamp = CorDebuggerSession.EvaluationTimestamp;
 				}
 				return frames;
@@ -101,11 +117,15 @@ namespace Mono.Debugging.Win32
 		{
 			ICorDebugFunction framefunction;
 			frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
-			ISymbolReader reader = session.GetReaderForModule (framefunction.Module);
+			ICorDebugModule module;
+			framefunction.GetModule(out module).AssertSucceeded("framefunction.GetModule(out module)");;
+			ISymbolReader reader = session.GetReaderForModule (module);
 			if (reader == null)
 				return null;
 
-			ISymbolMethod met = reader.GetMethod (new SymbolToken (framefunction.Token));
+			uint mdMethodDef = 0;
+			framefunction.GetToken(&mdMethodDef).AssertSucceeded("framefunction.GetToken(&mdMethodDef)");
+			ISymbolMethod met = reader.GetMethod (new SymbolToken (((int)mdMethodDef)));
 			if (met == null)
 				return null;
 
@@ -113,9 +133,9 @@ namespace Mono.Debugging.Win32
 			if (SequenceCount <= 0)
 				return null;
 
-			CorDebugMappingResult mappingResult;
-			uint ip;
-			frame.GetIP (out ip, out mappingResult);
+			CorDebugMappingResult mappingResult = 0;
+			uint ip = 0;
+			Com.QueryInteface<ICorDebugILFrame>(frame).GetIP(&ip, &mappingResult).AssertSucceeded("Com.QueryInteface<ICorDebugILFrame>(frame).GetIP(&ip, &mappingResult)");
 			if (mappingResult == CorDebugMappingResult.MAPPING_NO_INFO || mappingResult == CorDebugMappingResult.MAPPING_UNMAPPED_ADDRESS)
 				return null;
 
@@ -193,7 +213,7 @@ namespace Mono.Debugging.Win32
 			return null;
 		}
 
-		internal static StackFrame CreateFrame (CorDebuggerSession session, ICorDebugFrame frame)
+		internal static StackFrame CreateFrame(CorDebuggerSession session, ICorDebugFrame frame)
 		{
 			uint address = 0;
 			string addressSpace = "";
@@ -208,28 +228,36 @@ namespace Mono.Debugging.Win32
 			string type = "";
 			bool hasDebugInfo = false;
 			bool hidden = false;
-			bool external = true;
+			bool external;
 
-			if (frame.FrameType == ICorDebugFrameEx.CorFrameType.ILFrame) {
+			ICorDebugFrameEx.CorFrameType frametype = frame.GetFrameType();
+			if(frametype == ICorDebugFrameEx.CorFrameType.ILFrame)
+			{
 				ICorDebugFunction framefunction;
 				frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
-				if (framefunction != null) {
-					module = framefunction.Module.Name;
-					CorMetadataImport importer = new CorMetadataImport (framefunction.Module);
-					MethodInfo mi = importer.GetMethodInfo (framefunction.Token);
-					var declaringType = mi.DeclaringType;
-					if (declaringType != null) {
+				if(framefunction != null)
+				{
+					ICorDebugModule functionmodule;
+					framefunction.GetModule(out functionmodule).AssertSucceeded("framefunction.GetModule(out functionmodule)");
+					module = LpcwstrHelper.GetString(functionmodule.GetName, "Could not get the Frame Function Module Name.");
+					var importer = new CorMetadataImport(functionmodule);
+					uint mdMethodDef;
+					framefunction.GetToken(&mdMethodDef).AssertSucceeded("framefunction.GetToken(&mdMethodDef)");
+					MethodInfo mi = importer.GetMethodInfo(mdMethodDef);
+					Type declaringType = mi.DeclaringType;
+					if(declaringType != null)
+					{
 						method = declaringType.FullName + "." + mi.Name;
 						type = declaringType.FullName;
 					}
-					else {
+					else
 						method = mi.Name;
-					}
 
 					addressSpace = mi.Name;
-					
-					var sp = GetSequencePoint (session, frame);
-					if (sp != null) {
+
+					SequencePoint sp = GetSequencePoint(session, frame);
+					if(sp != null)
+					{
 						line = sp.StartLine;
 						column = sp.StartColumn;
 						endLine = sp.EndLine;
@@ -238,28 +266,36 @@ namespace Mono.Debugging.Win32
 						address = (uint)sp.Offset;
 					}
 
-					if (session.IsExternalCode (file)) {
+					if(session.IsExternalCode(file))
 						external = true;
-					} else {
-						if (session.Options.ProjectAssembliesOnly) {
-							external = mi.GetCustomAttributes (true).Any (v => 
-								v is System.Diagnostics.DebuggerHiddenAttribute ||
-							v is System.Diagnostics.DebuggerNonUserCodeAttribute);
-						} else {
-							external = mi.GetCustomAttributes (true).Any (v => 
-								v is System.Diagnostics.DebuggerHiddenAttribute);
-						}
+					else
+					{
+						if(session.Options.ProjectAssembliesOnly)
+							external = mi.GetCustomAttributes(true).Any(v => v is DebuggerHiddenAttribute || v is DebuggerNonUserCodeAttribute);
+						else
+							external = mi.GetCustomAttributes(true).Any(v => v is DebuggerHiddenAttribute);
 					}
-					hidden = mi.GetCustomAttributes (true).Any (v => v is System.Diagnostics.DebuggerHiddenAttribute);
+					hidden = mi.GetCustomAttributes(true).Any(v => v is DebuggerHiddenAttribute);
 				}
+				else
+					external = true;
 				lang = "Managed";
 				hasDebugInfo = true;
-			} else if (frame.FrameType == CorFrameType.NativeFrame) {
-				frame.GetNativeIP (out address);
+			}
+			else if(frametype == ICorDebugFrameEx.CorFrameType.NativeFrame)
+			{
+				external = true;
+				Com.QueryInteface<ICorDebugNativeFrame>(frame).GetIP(&address).AssertSucceeded("Com.QueryInteface<ICorDebugNativeFrame>(frame).GetIP(&address)");
 				method = "[Native frame]";
 				lang = "Native";
-			} else if (frame.FrameType == CorFrameType.InternalFrame) {
-				switch (frame.InternalFrameType) {
+			}
+			else if(frametype == ICorDebugFrameEx.CorFrameType.InternalFrame)
+			{
+				external = true;
+				CorDebugInternalFrameType intframetype = 0;
+				Com.QueryInteface<ICorDebugInternalFrame>(frame).GetFrameType(&intframetype).AssertSucceeded("Com.QueryInteface<ICorDebugInternalFrame>(frame).GetFrameType(&intframetype)");
+				switch(intframetype)
+				{
 				case CorDebugInternalFrameType.STUBFRAME_M2U:
 					method = "[Managed to Native Transition]";
 					break;
@@ -277,9 +313,11 @@ namespace Mono.Debugging.Win32
 					break;
 				}
 			}
+			else
+				external = true;
 
-			var loc = new SourceLocation (method, file, line, column, endLine, endColumn);
-			return new StackFrame (address, addressSpace, loc, lang, external, hasDebugInfo, hidden, module, type);
+			var loc = new SourceLocation(method, file, line, column, endLine, endColumn);
+			return new StackFrame(address, addressSpace, loc, lang, external, hasDebugInfo, hidden, module, type);
 		}
 
 		#endregion
