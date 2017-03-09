@@ -1069,9 +1069,12 @@ namespace Mono.Debugging.Win32
 
 			ICorDebugClass cls;
 			framefunction.GetClass(out cls).AssertSucceeded("framefunction.GetClass(out cls)");;
-			List<ICorDebugType> tpars = new List<ICorDebugType> ();
-			foreach (ICorDebugType t in ctx.Frame.TypeParameters)
-				tpars.Add (t);
+			var ilframe = ctx.Frame as ICorDebugILFrame2;
+			if(ilframe == null)
+				throw new InvalidOperationException("Should have been an IL Frame at this point.");
+			ICorDebugTypeEnum enumTypeParams;
+			ilframe.EnumerateTypeParameters(out enumTypeParams).AssertSucceeded("ilframe.EnumerateTypeParameters(out enumTypeParams)");
+			IList<ICorDebugType> tpars = enumTypeParams.ToList<ICorDebugTypeEnum, ICorDebugType>((corenum, celt, values, fetched) => corenum.Next(celt, values, fetched));
 			return cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, tpars.ToArray ());
 		}
 
@@ -1622,7 +1625,7 @@ namespace Mono.Debugging.Win32
 					CorElementType eltype = 0;
 					result.GetType(&eltype).AssertSucceeded("result.GetType(&eltype)");
 					if(eltype == CorElementType.ELEMENT_TYPE_BYREF)
-						return result.CastToReferenceValue().Dereference();
+						Com.QueryInteface<ICorDebugReferenceValue>(result).Dereference(out result).AssertSucceeded("Com.QueryInteface<ICorDebugReferenceValue>(result).Dereference(out result)");;
 					return result;
 				});
 
@@ -1668,15 +1671,25 @@ namespace Mono.Debugging.Win32
 					}
 				}
 			}
-
-			int count = CorDebugUtil.CallHandlingComExceptions (() => ctx.Frame.GetArgumentCount (), "GetArgumentCount()", 0);
-			for (uint n = 0; n < count; n++) {
+			var ilframe = ctx.Frame as ICorDebugILFrame;
+			if(ilframe == null) yield break;
+			uint celtArgs = OnGetParameters_ArgsCount(ilframe); // TODO: consider calling enumArguments.ToList and transforming the list rather than getting args by index then
+			for (uint n = 0; n < celtArgs; n++) {
 				uint locn = n;
 				var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, locn, "arg_" + (locn + 1)),
 					string.Format ("Get parameter {0}", n));
 				if (parameter != null)
 					yield return parameter;
 			}
+		}
+
+		private static uint OnGetParameters_ArgsCount(ICorDebugILFrame ilframe)
+		{
+			ICorDebugValueEnum enumArguments;
+			ilframe.EnumerateArguments(out enumArguments).AssertSucceeded("ilframe.EnumerateArguments(out enumArguments)");
+			uint celt;
+			enumArguments.GetCount(&celt).AssertSucceeded("enumArguments.GetCount(&celt)");
+			return celt;
 		}
 
 		protected override IEnumerable<ValueReference> OnGetLocalVariables (EvaluationContext ctx)
@@ -1742,13 +1755,17 @@ namespace Mono.Debugging.Win32
 			return null;
 		}
 
-		IEnumerable<ValueReference> GetLocalVariables (CorEvaluationContext cx)
+		private IEnumerable<ValueReference> GetLocalVariables(CorEvaluationContext cx)
 		{
-			uint offset;
-			CorDebugMappingResult mr;
-			return CorDebugUtil.CallHandlingComExceptions (() => {
-				cx.Frame.GetIP (out offset, out mr);
-				return GetLocals (cx, null, (int) offset, false);
+			return CorDebugUtil.CallHandlingComExceptions(() =>
+			{
+				uint offset;
+				CorDebugMappingResult mr;
+				var ilframe = cx.Frame as ICorDebugILFrame;
+				if(ilframe == null)
+					return new ValueReference[] { };
+				ilframe.GetIP(&offset, &mr).AssertSucceeded("ilframe.GetIP (&offset, &mr)");
+				return GetLocals(cx, null, (int)offset, false);
 			}, "GetLocalVariables()", new ValueReference[0]);
 		}
 
@@ -1783,13 +1800,17 @@ namespace Mono.Debugging.Win32
 				ISymbolMethod met = framefunction.GetSymbolMethod (ctx.Session);
 				if (met != null)
 					scope = met.RootScope;
-				else {
-					int count = ctx.Frame.GetLocalVariablesCount ();
-					for (uint n = 0; n < count; n++) {
+				else
+				{
+					var ilframe = ctx.Frame as ICorDebugILFrame;
+					if(ilframe == null)
+						yield break;
+					uint celtLocalVars = GetLocals_Count(ilframe); // TODO: use ToList on the enum rather than getting count and then asking by index (?)
+					for(uint n = 0; n < celtLocalVars; n++)
+					{
 						uint locn = n;
-						var localVar = CorDebugUtil.CallHandlingComExceptions (() => CreateLocalVariableReference (ctx, locn, "local_" + (locn + 1)),
-							string.Format ("Get local variable {0}", locn));
-						if (localVar != null)
+						VariableReference localVar = CorDebugUtil.CallHandlingComExceptions(() => CreateLocalVariableReference(ctx, locn, "local_" + (locn + 1)), string.Format("Get local variable {0}", locn));
+						if(localVar != null)
 							yield return localVar;
 					}
 					yield break;
@@ -1820,6 +1841,15 @@ namespace Mono.Debugging.Win32
 						yield return var;
 				}
 			}
+		}
+
+		private static unsafe uint GetLocals_Count(ICorDebugILFrame ilframe)
+		{
+			ICorDebugValueEnum enumLocalVars;
+			ilframe.EnumerateLocalVariables(out enumLocalVars).AssertSucceeded("ilframe.EnumerateLocalVariables(out enumLocalVars)");
+			uint celtLocalVars;
+			enumLocalVars.GetCount(&celtLocalVars).AssertSucceeded("enumLocalVars.GetCount(&celtLocalVars)");
+			return celtLocalVars;
 		}
 
 		protected override TypeDisplayData OnGetTypeDisplayData (EvaluationContext ctx, object gtype)

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 using JetBrains.Annotations;
 
@@ -6,18 +7,18 @@ namespace CorApi.ComInterop
 {
     public static unsafe class ICorDebugClassEx
     {
-        public static ICorDebugType GetParameterizedType([NotNull] this ICorDebugClass corclass, CorElementType elementType, [CanBeNull] ICorDebugType[] typeArguments)
+        public static ICorDebugType GetParameterizedType([NotNull] this ICorDebugClass corclass, CorElementType elementType, [CanBeNull] IList<ICorDebugType> typeArguments)
         {
             if(corclass == null)
                 throw new ArgumentNullException(nameof(corclass));
 
             typeArguments = typeArguments ?? new ICorDebugType[] { };
-            uint nTypeArgs = (uint)typeArguments.Length;
-            var typeargs = new void*[typeArguments.Length];
+            uint nTypeArgs = (uint)typeArguments.Count;
+            var typeargs = new void*[typeArguments.Count];
             try
             {
                 for(uint a = nTypeArgs; a-- > 0;)
-                    typeargs[a] = Com.UnknownAddRef(typeArguments[a]);
+                    typeargs[a] = Com.UnknownAddRef(typeArguments[(int)a]);
 
                 void* pType = null;
                 using(Com.UsingReference(&pType))

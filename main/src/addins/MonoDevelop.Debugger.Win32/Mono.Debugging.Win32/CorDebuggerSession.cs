@@ -341,29 +341,26 @@ namespace Mono.Debugging.Win32
 					OnException2(this, ((CorException2EventArgs)args));
 					break;
 				}
+
+				// NOTE: this autocontinue logic has been borrowed from the previous implementation
+				/**
+				 * Helper for invoking events.  Checks to make sure that handlers
+				 * are hooked up to a handler before the handler is invoked.
+				 *
+				 * We want to allow maximum flexibility by our callers.  As such,
+				 * we don't require that they call <code>e.Controller.Continue</code>,
+				 * nor do we require that this class call it.  <b>Someone</b> needs
+				 * to call it, however.
+				 *
+				 * Consequently, if an exception is thrown and the process is stopped,
+				 * the process is continued automatically.
+				 */
+				if(args.Continue)
+					args.Controller.Continue(0).AssertSucceeded("Could not Continue debugger after processing a debugger managed event callback with event's Continue status set to True.");
+
 				return HResults.S_OK; //TODO: propagate return values where applicable in events
 			};
 			cordbg.SetManagedHandler(new ManagedCallbackEventSink(onEvent, _onerror)).AssertSucceeded("Could not advise sinking of the managed ICorDebug events.");
-
-			// TODO: autocontinue from prev impl
-			/**
-			 * Helper for invoking events.  Checks to make sure that handlers
-			 * are hooked up to a handler before the handler is invoked.
-			 *
-			 * We want to allow maximum flexibility by our callers.  As such,
-			 * we don't require that they call <code>e.Controller.Continue</code>,
-			 * nor do we require that this class call it.  <b>Someone</b> needs
-			 * to call it, however.
-			 *
-			 * Consequently, if an exception is thrown and the process is stopped,
-			 * the process is continued automatically.
-			 */
-			if(e.Continue)
-			{
-				e.Controller.Continue(false);
-			}
-			// end TODO
-
 		}
 
 		protected void CorDebugAttachPid(uint pid)
@@ -784,7 +781,6 @@ namespace Mono.Debugging.Win32
 			_process.GetID(&dwProcessIdOur).AssertSucceeded("Could not get the ID of a Process.");
 			if (dwProcessIdFromEvent == dwProcessIdOur) {
 				lock (terminateLock) {
-					_process.Dispose ();
 					_process = null;
 					ThreadPool.QueueUserWorkItem (delegate
 					{
@@ -1469,8 +1465,12 @@ namespace Mono.Debugging.Win32
 							ICorDebugFunction func;
 							docInfo.ModuleInfo.Module.GetFunctionFromToken (((uint)bestMethod.Token.GetToken ()), out func).AssertSucceeded("docInfo.ModuleInfo.Module.GetFunctionFromToken (((uint)bestMethod.Token.GetToken ()), out func)");;
 
-							ICorDebugFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
-							HandleBreakpointFailure (binfo, hrBp).Assert("Could not activate the breakpoint.");
+							ICorDebugCode ilcode;
+							var hrIlCode = (HResult)func.GetILCode(out ilcode);
+							HandleBreakpointFailure(binfo, hrIlCode).Assert("Could not get the IL Code of a Function to set a Breakpoint.");
+							ICorDebugFunctionBreakpoint corBp ;
+							var hrCreateBp = (HResult)ilcode.CreateBreakpoint (((uint)bestSp.Offset), out corBp);
+							HandleBreakpointFailure (binfo, hrCreateBp).Assert("Could not create the breakpoint.");
 
 							breakpoints[corBp] = binfo;
 
@@ -1478,8 +1478,8 @@ namespace Mono.Debugging.Win32
 								binfo.Handle = new List<ICorDebugFunctionBreakpoint> ();
 							((List<ICorDebugFunctionBreakpoint>)binfo.Handle).Add (corBp);
 
-							var hrBp = (HResult)corBp.Activate (bp.Enabled.ToInt());
-							HandleBreakpointFailure (binfo, hrBp).Assert("Could not activate the breakpoint.");
+							var hrActivateBp = (HResult)corBp.Activate (bp.Enabled.ToInt());
+							HandleBreakpointFailure (binfo, hrActivateBp).Assert("Could not activate the breakpoint.");
 
 							binfo.SetStatus (BreakEventStatus.Bound, null);
 						}
@@ -1580,8 +1580,14 @@ namespace Mono.Debugging.Win32
 					}
 
 					uint offset;
-					CorDebugMappingResult mappingResult;
-					activeframe.GetIP (out offset, out mappingResult);
+					var activeframeIl = activeframe as ICorDebugILFrame;
+					if(activeframeIl == null)
+						offset = 0;
+					else
+					{
+						CorDebugMappingResult mappingResultDummy;
+						activeframeIl.GetIP(&offset, &mappingResultDummy).AssertSucceeded("activeframeIl.GetIP (&offset, &mappingResult)");
+					}
 
 					// Exclude all ranges belonging to the current line
 					List<COR_DEBUG_STEP_RANGE> ranges = new List<COR_DEBUG_STEP_RANGE> ();
@@ -1683,7 +1689,9 @@ namespace Mono.Debugging.Win32
 			}
 			activeThread.CreateStepper(out stepper).AssertSucceeded("activeThread.CreateStepper (out stepper)");
 			stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE).AssertSucceeded("stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE)");
-			stepper.SetJmcStatus(true);
+			var stepper2 = stepper as ICorDebugStepper2;
+			if(stepper2 != null)
+				stepper2.SetJMC(1).AssertSucceeded("Could not set Just My Code on the Stepper.");
 		}
 
 		protected override void OnStepInstruction ( )
@@ -2171,14 +2179,15 @@ namespace Mono.Debugging.Win32
 					offset = firstSpInLine;
 				}
 				if (offset == -1) {
-					throw new NotSupportedException ();
+					throw new NotSupportedException ("Cannot Set Next Statement because the current line has no Sequence Points in it.");
 				}
 				try {
-					activeframe.SetIP (offset);
+					ICorDebugILFrame activeframeIl = (activeframe as ICorDebugILFrame).NotNull("Cannot Set Next Statement because the active Stack Frame is not an IL Frame.");
+					activeframeIl.SetIP(((uint)offset)).AssertSucceeded("activeframeIl.SetIP(((uint)offset))");;
 					OnStopped ();
 					RaiseStopEvent ();
-				} catch {
-					throw new NotSupportedException ();
+				} catch(Exception ex) {
+					throw new NotSupportedException ("Could not Set Next Statement on an IL Stack Frame.", ex);
 				}
 			});
 		}
