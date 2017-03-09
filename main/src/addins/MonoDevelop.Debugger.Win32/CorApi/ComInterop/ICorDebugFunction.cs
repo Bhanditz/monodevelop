@@ -121,7 +121,7 @@ namespace CorApi.ComInterop
     /// </summary>
     /// <param name="pMethodDef"></param>
     [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetToken ([ComAliasName ("mdMethodDef")] UInt32 pMethodDef);
+    [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetToken ([ComAliasName ("mdMethodDef")] UInt32 *pMethodDef);
 
     /// <summary>
     /// GetILCode returns the IL code for the function.  Returns null
