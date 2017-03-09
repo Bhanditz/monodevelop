@@ -29,6 +29,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Diagnostics.SymbolStore;
 using System.Reflection;
 using System.Text;
@@ -81,47 +82,71 @@ namespace Mono.Debugging.Win32
 			return GetRealObject (ctx, val) is ICorDebugStringValue;
 		}
 
-		public override bool IsNull (EvaluationContext ctx, object gval)
+		public override bool IsNull(EvaluationContext ctx, object gval)
 		{
-			if (gval == null)
+			if(gval == null)
 				return true;
 			var val = gval as CorValRef;
-			if (val == null)
+			if(val == null)
 				return true;
-			if (val.Val == null || ((val.Val is ICorDebugReferenceValue) && ((ICorDebugReferenceValue) val.Val).IsNull))
+			if(val.Val == null)
 				return true;
+			if(val.Val is ICorDebugReferenceValue)
+			{
+				int bNull = 0;
+				((ICorDebugReferenceValue)val.Val).IsNull(&bNull).AssertSucceeded("((ICorDebugReferenceValue) val.Val).IsNull(&bNull)");
+				if(bNull != 0)
+					return true;
+			}
 
-			var obj = GetRealObject (ctx, val);
-			return (obj is ICorDebugReferenceValue) && ((ICorDebugReferenceValue)obj).IsNull;
+			ICorDebugValue obj = GetRealObject(ctx, val);
+			if(!(obj is ICorDebugReferenceValue))
+				return false;
+			{
+				int bNull;
+				((ICorDebugReferenceValue)obj).IsNull(&bNull).AssertSucceeded("((ICorDebugReferenceValue)obj).IsNull(&bNull)");
+				return bNull != 0;
+			}
 		}
 
-		public override bool IsValueType (object type)
+		public override bool IsValueType(object type)
 		{
-			return ((ICorDebugType)type).Type == CorElementType.ELEMENT_TYPE_VALUETYPE;
+			CorElementType elementtype;
+			((ICorDebugType)type).GetType(out elementtype).AssertSucceeded("((ICorDebugType)type).GetType(out elementtype)");
+			return elementtype == CorElementType.ELEMENT_TYPE_VALUETYPE;
 		}
 
 		public override bool IsClass (EvaluationContext ctx, object type)
 		{
 			var t = (ICorDebugType) type;
+			CorElementType ty;
+			t.GetType(out ty).AssertSucceeded("t.GetType(out ty)");
 			var cctx = (CorEvaluationContext)ctx;
 			Type tt;
-			if (t.Type == CorElementType.ELEMENT_TYPE_STRING ||
-			   t.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
-			   t.Type == CorElementType.ELEMENT_TYPE_SZARRAY)
+			if (ty == CorElementType.ELEMENT_TYPE_STRING ||
+			   ty == CorElementType.ELEMENT_TYPE_ARRAY ||
+			   ty == CorElementType.ELEMENT_TYPE_SZARRAY)
 				return true;
 			// Primitive check
-			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (t.Type, out tt))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (ty, out tt))
 				return false;
 
 			if (IsIEnumerable (t, cctx.Session))
 				return false;
 
-			return (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class != null) || IsValueType (t);
+			if(ty == CorElementType.ELEMENT_TYPE_CLASS)
+			{
+				ICorDebugClass @class;
+				t.GetClass(out @class).AssertSucceeded("t.GetClass(out @class)");
+				if(@class != null)
+					return true;
+			}
+			return IsValueType (t);
 		}
 
 		public override bool IsGenericType (EvaluationContext ctx, object type)
 		{
-			return (((ICorDebugType)type).Type == CorElementType.ELEMENT_TYPE_GENERICINST) || base.IsGenericType (ctx, type);
+			return (((ICorDebugType)type).Type() == CorElementType.ELEMENT_TYPE_GENERICINST) || base.IsGenericType (ctx, type);
 		}
 
 		public override bool NullableHasValue (EvaluationContext ctx, object type, object obj)
@@ -141,18 +166,32 @@ namespace Mono.Debugging.Win32
 			ICorDebugType type = (ICorDebugType) gtype;
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			Type t;
-			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type, out t))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type(), out t))
 				return t.FullName;
 			try {
-				if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY)
-					return GetTypeName (ctx, type.FirstTypeParameter) + "[" + new string (',', type.Rank - 1) + "]";
+				if (type.Type() == CorElementType.ELEMENT_TYPE_ARRAY || type.Type() == CorElementType.ELEMENT_TYPE_SZARRAY)
+				{
+					uint nRank;
+					type.GetRank(&nRank).AssertSucceeded("Could not get the Rank of a Type.");
+					ICorDebugType firsttypeparam;
+					type.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("Could not get the First Type Parameter of a Type.");
+					return GetTypeName (ctx, firsttypeparam) + "[" + new string (',', (int)nRank - 1) + "]";
+				}
 
-				if (type.Type == CorElementType.ELEMENT_TYPE_BYREF)
-					return GetTypeName (ctx, type.FirstTypeParameter) + "&";
+				if (type.Type() == CorElementType.ELEMENT_TYPE_BYREF)
+				{
+					ICorDebugType firsttypeparam;
+					type.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("Could not get the First Type Parameter of a Type.");
+					return GetTypeName (ctx, firsttypeparam) + "&";
+				}
 
-				if (type.Type == CorElementType.ELEMENT_TYPE_PTR)
-					return GetTypeName (ctx, type.FirstTypeParameter) + "*";
-				
+				if (type.Type() == CorElementType.ELEMENT_TYPE_PTR)
+				{
+					ICorDebugType firsttypeparam;
+					type.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("Could not get the First Type Parameter of a Type.");
+					return GetTypeName (ctx, firsttypeparam) + "*";
+				}
+
 				return type.GetTypeInfo (cctx.Session).FullName;
 			}
 			catch (Exception ex) {
@@ -169,12 +208,14 @@ namespace Mono.Debugging.Win32
 			var realObject = GetRealObject (ctx, val);
 			if (realObject == null)
 				return GetType (ctx, "System.Object");;
-			return realObject.ExactType;
+			return realObject.GetExactType();
 		}
 		
 		public override object GetBaseType (EvaluationContext ctx, object type)
 		{
-			return ((ICorDebugType) type).Base;
+			ICorDebugType basetype;
+			((ICorDebugType) type).GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+			return basetype;
 		}
 
 		protected override object GetBaseTypeWithAttribute (EvaluationContext ctx, object type, object attrType)
@@ -189,16 +230,18 @@ namespace Mono.Debugging.Win32
 				if (t.GetCustomAttributes (attr, false).Any ())
 					return tm;
 
-				tm = tm.Base;
+				ICorDebugType basetype;
+				tm.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				tm = basetype;
 			}
 
 			return null;
 		}
 
+		[SuppressMessage("ReSharper", "CoVariantArrayConversion")]
 		public override object[] GetTypeArgs (EvaluationContext ctx, object type)
 		{
-			ICorDebugType[] types = ((ICorDebugType)type).TypeParameters;
-			return CastArray<object> (types);
+			return ((ICorDebugType)type).TypeParameters();
 		}
 
 		static IEnumerable<Type> GetAllTypes (EvaluationContext gctx)
@@ -243,7 +286,9 @@ namespace Mono.Debugging.Win32
 				return null;
 			ICorDebugType[] typeArgs = CastArray<ICorDebugType> (gtypeArgs);
 			CorEvaluationContext ctx = (CorEvaluationContext)gctx;
-			var callingModule = ctx.Frame.Function.Class.Module;
+			ICorDebugFunction framefunction;
+			ctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			var callingModule = framefunction.Class.Module;
 			var callingDomain = callingModule.Assembly.AppDomain;
 			string domainPrefixedName = string.Format ("{0}:{1}", callingDomain.Id, name);
 			string cacheName = GetCacheName (domainPrefixedName, typeArgs);
@@ -303,7 +348,7 @@ namespace Mono.Debugging.Win32
             var arr = obj as ICorDebugArrayValue;
             if (arr != null)
             {
-                var tn = new StringBuilder (GetDisplayTypeName (ctx, arr.ExactType.FirstTypeParameter));
+                var tn = new StringBuilder (GetDisplayTypeName (ctx, arr.GetExactType().FirstTypeParameter));
                 tn.Append("[");
                 int[] dims = arr.GetDimensions();
                 for (int n = 0; n < dims.Length; n++)
@@ -320,16 +365,16 @@ namespace Mono.Debugging.Win32
             var co = obj as ICorDebugObjectValue;
             if (co != null)
             {
-                if (IsEnum (ctx, co.ExactType))
+                if (IsEnum (ctx, co.GetExactType()))
                 {
-                    MetadataType rt = co.ExactType.GetTypeInfo(cctx.Session) as MetadataType;
+                    MetadataType rt = co.GetExactType().GetTypeInfo(cctx.Session) as MetadataType;
                     bool isFlags = rt != null && rt.ReallyIsFlagsEnum;
-                    string enumName = GetTypeName(ctx, co.ExactType);
+                    string enumName = GetTypeName(ctx, co.GetExactType());
                     ValueReference val = GetMember(ctx, null, objr, "value__");
                     ulong nval = (ulong)System.Convert.ChangeType(val.ObjectValue, typeof(ulong));
                     ulong remainingFlags = nval;
                     string flags = null;
-                    foreach (ValueReference evals in GetMembers(ctx, co.ExactType, null, BindingFlags.Public | BindingFlags.Static))
+                    foreach (ValueReference evals in GetMembers(ctx, co.GetExactType(), null, BindingFlags.Public | BindingFlags.Static))
                     {
                         ulong nev = (ulong)System.Convert.ChangeType(evals.ObjectValue, typeof(ulong));
                         if (nval == nev)
@@ -375,7 +420,11 @@ namespace Mono.Debugging.Win32
 		public override object CreateTypeObject (EvaluationContext ctx, object type)
 		{
 			var t = (ICorDebugType)type;
-			string tname = GetTypeName (ctx, t) + ", " + System.IO.Path.GetFileNameWithoutExtension (t.Class.Module.Assembly.Name);
+			ICorDebugClass typeclass;
+			t.GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+			ICorDebugModule classmodule;
+			typeclass.GetModule(out classmodule).AssertSucceeded("Could not get the Module of a Class.");
+			string tname = GetTypeName (ctx, t) + ", " + System.IO.Path.GetFileNameWithoutExtension (classmodule.Assembly.Name);
 			var stype = (ICorDebugType) GetType (ctx, "System.Type");
 			object[] argTypes = { GetType (ctx, "System.String") };
 			object[] argVals = { CreateValue (ctx, tname) };
@@ -451,23 +500,32 @@ namespace Mono.Debugging.Win32
 
 			CorValRef v = new CorValRef (delegate {
 				ICorDebugModule mod = null;
-				if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY
-					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (methodOwner.Type)) {
-					mod = ((ICorDebugType) ctx.Adapter.GetType (ctx, "System.Object")).Class.Module;
+				if (methodOwner.Type() == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type() == CorElementType.ELEMENT_TYPE_SZARRAY
+					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (methodOwner.Type())) {
+					ICorDebugClass typeclass;
+					((ICorDebugType) ctx.Adapter.GetType (ctx, "System.Object")).GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+					ICorDebugModule classmodule;
+					typeclass.GetModule(out classmodule).AssertSucceeded("Could not get the Module of a Class.");
+					mod = classmodule;
 				}
 				else {
-					mod = methodOwner.Class.Module;
+					ICorDebugClass typeclass;
+					methodOwner.GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+					ICorDebugModule classmodule;
+					typeclass.GetModule(out classmodule).AssertSucceeded("Could not get the Module of a Class.");
+					mod = classmodule;
 				}
-				ICorDebugFunction func = mod.GetFunctionFromToken (method.MetadataToken);
+				ICorDebugFunction func;
+				mod.GetFunctionFromToken (((uint)method.MetadataToken), out func).AssertSucceeded("mod.GetFunctionFromToken (((uint)method.MetadataToken), out func)");;
 				ICorDebugValue[] args = new ICorDebugValue[argValues.Length];
 				for (int n = 0; n < args.Length; n++)
 					args[n] = argValues[n].Val;
-				if (methodOwner.Type == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type == CorElementType.ELEMENT_TYPE_SZARRAY
-					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (methodOwner.Type)) {
+				if (methodOwner.Type() == CorElementType.ELEMENT_TYPE_ARRAY || methodOwner.Type() == CorElementType.ELEMENT_TYPE_SZARRAY
+					|| MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (methodOwner.Type())) {
 					return ctx.RuntimeInvoke (func, new ICorDebugType[0], target != null ? target.Val : null, args);
 				}
 				else {
-					return ctx.RuntimeInvoke (func, methodOwner.TypeParameters, target != null ? target.Val : null, args);
+					return ctx.RuntimeInvoke (func, methodOwner.TypeParameters(), target != null ? target.Val : null, args);
 				}
 			});
 			return v.Val == null ? null : v;
@@ -506,16 +564,18 @@ namespace Mono.Debugging.Win32
 				if (methodName == ".ctor")
 					break; // Can't create objects using constructor from base classes
 				if ((rtype.BaseType == null && rtype.FullName != "System.Object") ||
-				    currentType.Type == CorElementType.ELEMENT_TYPE_ARRAY ||
-				    currentType.Type == CorElementType.ELEMENT_TYPE_SZARRAY ||
-				    currentType.Type == CorElementType.ELEMENT_TYPE_STRING) {
+				    currentType.Type() == CorElementType.ELEMENT_TYPE_ARRAY ||
+				    currentType.Type() == CorElementType.ELEMENT_TYPE_SZARRAY ||
+				    currentType.Type() == CorElementType.ELEMENT_TYPE_STRING) {
 					currentType = ctx.Adapter.GetType (ctx, "System.Object") as ICorDebugType;
 				} else if (rtype.BaseType != null && rtype.BaseType.FullName == "System.ValueType") {
 					currentType = ctx.Adapter.GetType (ctx, "System.ValueType") as ICorDebugType;
 				} else {
 					// if the currentType is not a class .Base throws an exception ArgumentOutOfRange (thx for coreclr repo for figure it out)
 					try {
-						currentType = currentType.Base;
+						ICorDebugType basetype;
+						currentType.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+						currentType = basetype;
 					}
 					catch (Exception) {
 						currentType = null;
@@ -667,10 +727,10 @@ namespace Mono.Debugging.Win32
 			if (tname == ctypeName)
 				return true;
 
-			if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (ctype.Type))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (ctype.Type()))
 				return false;
 
-			switch (ctype.Type) {
+			switch (ctype.Type()) {
 				case CorElementType.ELEMENT_TYPE_ARRAY:
 				case CorElementType.ELEMENT_TYPE_SZARRAY:
 				case CorElementType.ELEMENT_TYPE_BYREF:
@@ -681,7 +741,9 @@ namespace Mono.Debugging.Win32
 			while (ctype != null) {
 				if (GetTypeName (ctx, ctype) == tname)
 					return true;
-				ctype = ctype.Base;
+				ICorDebugType basetype;
+				ctype.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				ctype = basetype;
 			}
 			return false;
 		}
@@ -733,7 +795,7 @@ namespace Mono.Debugging.Win32
             if (obj is ICorDebugObjectValue)
             {
 				var co = (ICorDebugObjectValue)obj;
-				if (IsEnum (ctx, co.ExactType)) {
+				if (IsEnum (ctx, co.GetExactType())) {
 					ValueReference rval = GetMember (ctx, null, val, "value__");
 					return TryCast (ctx, rval.Value, type);
 				}
@@ -742,7 +804,9 @@ namespace Mono.Debugging.Win32
                 {
                     if (GetTypeName(ctx, ctype) == tname)
                         return val;
-                    ctype = ctype.Base;
+	                ICorDebugType basetype;
+	                ctype.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+	                ctype = basetype;
                 }
                 return null;
             }
@@ -751,7 +815,7 @@ namespace Mono.Debugging.Win32
 
 		public bool IsPointer (ICorDebugType targetType)
 		{
-			return targetType.Type == CorElementType.ELEMENT_TYPE_PTR;
+			return targetType.Type() == CorElementType.ELEMENT_TYPE_PTR;
 		}
 
 		public object CreateEnum (EvaluationContext ctx, ICorDebugType type, object val)
@@ -765,7 +829,12 @@ namespace Mono.Debugging.Win32
 
 		public bool IsEnum (EvaluationContext ctx, ICorDebugType targetType)
 		{
-			return (targetType.Type == CorElementType.ELEMENT_TYPE_VALUETYPE || targetType.Type == CorElementType.ELEMENT_TYPE_CLASS) && targetType.Base != null && GetTypeName (ctx, targetType.Base) == "System.Enum";
+			if(targetType.Type() != CorElementType.ELEMENT_TYPE_VALUETYPE && targetType.Type() != CorElementType.ELEMENT_TYPE_CLASS)
+				return false;
+			ICorDebugType basetype;
+			targetType.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+			ICorDebugType targetTypeBase = basetype;
+			return targetTypeBase != null && GetTypeName (ctx, targetTypeBase) == "System.Enum";
 		}
 
 		public override object CreateValue (EvaluationContext gctx, object value)
@@ -804,7 +873,7 @@ namespace Mono.Debugging.Win32
 			ICorDebugType[] targs = new ICorDebugType[args.Length];
 			for (int n = 0; n < args.Length; n++) {
 				vargs [n] = args [n].Val;
-				targs [n] = vargs [n].ExactType;
+				targs [n] = vargs [n].GetExactType();
 			}
 			MethodInfo ctor = null;
 			var ctorInfo = OverloadResolve (cctx, ".ctor", type, targs, BindingFlags.Instance | BindingFlags.Public, false);
@@ -828,14 +897,20 @@ namespace Mono.Debugging.Win32
 			if (ctor == null)
 				return null;
 
-			ICorDebugFunction func = type.Class.Module.GetFunctionFromToken (ctor.MetadataToken);
-			return cctx.RuntimeInvoke (func, type.TypeParameters, null, vargs);
+			ICorDebugClass typeclass;
+			type.GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+			ICorDebugFunction func;
+			ICorDebugModule classmodule;
+			typeclass.GetModule(out classmodule).AssertSucceeded("Could not get the Module of a Class.");
+			classmodule.GetFunctionFromToken (((uint)ctor.MetadataToken), out func).AssertSucceeded("typeclass.Module.GetFunctionFromToken (((uint)ctor.MetadataToken), out func)");;
+			return cctx.RuntimeInvoke (func, type.TypeParameters(), null, vargs);
 		}
 
-		public override object CreateNullValue (EvaluationContext gctx, object type)
+		public override object CreateNullValue(EvaluationContext gctx, object type)
 		{
-			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			return new CorValRef (ctx.Eval.CreateValueForType ((ICorDebugType)type));
+			ICorDebugValue value;
+			Com.QueryInteface<ICorDebugEval2>(((CorEvaluationContext)gctx).Eval).CreateValueForType((ICorDebugType)type, out value).AssertSucceeded("Could not create a NULL value for Type.");
+			return new CorValRef(value);
 		}
 
 		public override ICollectionAdaptor CreateArrayAdaptor (EvaluationContext ctx, object arr)
@@ -902,7 +977,7 @@ namespace Mono.Debugging.Win32
 				if (boxVal != null)
 					return Unbox (ctx, boxVal);
 
-				if (obj.ExactType.Type == CorElementType.ELEMENT_TYPE_STRING)
+				if (obj.GetExactType().Type == CorElementType.ELEMENT_TYPE_STRING)
 					return (CorApi.ComInterop.ICorDebugStringValue)obj;
 
 				if (MetadataHelperFunctionsExtensions.CoreTypes.ContainsKey (obj.Type)) {
@@ -921,32 +996,42 @@ namespace Mono.Debugging.Win32
 			return obj;
 		}
 
-		static ICorDebugValue Unbox (EvaluationContext ctx, ICorDebugBoxValue boxVal)
+		private static ICorDebugValue Unbox(EvaluationContext ctx, ICorDebugBoxValue boxVal)
 		{
-			ICorDebugObjectValue bval = boxVal.GetObject ();
-			Type ptype = Type.GetType (ctx.Adapter.GetTypeName (ctx, bval.ExactType));
-			
-			if (ptype != null && ptype.IsPrimitive) {
-				ptype = bval.ExactType.GetTypeInfo (((CorEvaluationContext)ctx).Session);
-				foreach (FieldInfo field in ptype.GetFields (BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)) {
-					if (field.Name == "m_value") {
-						ICorDebugValue val = bval.GetFieldValue (bval.ExactType.Class, field.MetadataToken);
-						val = GetRealObject (ctx, val);
-						return val;
-					}
+			ICorDebugObjectValue bval;
+			boxVal.GetObject(out bval).AssertSucceeded("boxVal.GetObject (out bval)");
+			Type ptype = Type.GetType(ctx.Adapter.GetTypeName(ctx, bval.GetExactType()));
+
+			if(ptype != null && ptype.IsPrimitive)
+			{
+				ptype = bval.GetExactType().GetTypeInfo(((CorEvaluationContext)ctx).Session);
+				foreach(FieldInfo field in ptype.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance))
+				{
+					if(field.Name != "m_value")
+						continue;
+					ICorDebugClass typeclass;
+					bval.GetExactType().GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+					ICorDebugValue val;
+					bval.GetFieldValue(typeclass, ((uint)field.MetadataToken), out val).AssertSucceeded("bval.GetFieldValue (typeclass, ((uint)field.MetadataToken), out val)");
+					val = GetRealObject(ctx, val);
+					return val;
 				}
 			}
 
-			return GetRealObject (ctx, bval);
+			return GetRealObject(ctx, bval);
 		}
 
 		public override object GetEnclosingType (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			if (ctx.Frame.FrameType != ICorDebugFrameEx.CorFrameType.ILFrame || ctx.Frame.Function == null)
+			if (ctx.Frame.FrameType != ICorDebugFrameEx.CorFrameType.ILFrame)
+				return null;
+			ICorDebugFunction framefunction;
+			ctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			if (framefunction == null)
 				return null;
 
-			ICorDebugClass cls = ctx.Frame.Function.Class;
+			ICorDebugClass cls = framefunction.Class;
 			List<ICorDebugType> tpars = new List<ICorDebugType> ();
 			foreach (ICorDebugType t in ctx.Frame.TypeParameters)
 				tpars.Add (t);
@@ -1007,7 +1092,9 @@ namespace Mono.Debugging.Win32
 				}
 				if (cctx.Adapter.IsPrimitive (ctx, target))
 					break;
-				t = t.Base;
+				ICorDebugType basetype;
+				t.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				t = basetype;
 			}
 
 			var idx = OverloadResolve (cctx, GetTypeName (ctx, targetType), null, types, candidates, true);
@@ -1041,7 +1128,9 @@ namespace Mono.Debugging.Win32
 				if (bindingFlags.HasFlag (BindingFlags.DeclaredOnly))
 					break;
 
-				ct = ct.Base;
+				ICorDebugType basetype;
+				ct.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				ct = basetype;
 			}
 
 			return false;
@@ -1056,8 +1145,13 @@ namespace Mono.Debugging.Win32
 			if (gval != null && (bindingFlags & BindingFlags.Instance) != 0)
 				realType = GetValueType (ctx, gval) as ICorDebugType;
 
-			if (t.Type == CorElementType.ELEMENT_TYPE_CLASS && t.Class == null)
-				yield break;
+			if (t.Type() == CorElementType.ELEMENT_TYPE_CLASS)
+			{
+				ICorDebugClass typeclass;
+				t.GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+				if(typeclass == null)
+					yield break;
+			}
 
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 
@@ -1074,7 +1168,9 @@ namespace Mono.Debugging.Win32
 						continue;
 					subProps [prop.Name] = prop;
 				}
-				realType = realType.Base;
+				ICorDebugType basetype;
+				realType.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				realType = basetype;
 			}
 
 			while (t != null) {
@@ -1126,7 +1222,9 @@ namespace Mono.Debugging.Win32
 				}
 				if ((bindingFlags & BindingFlags.DeclaredOnly) != 0)
 					break;
-				t = t.Base;
+				ICorDebugType basetype;
+				t.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				t = basetype;
 			}
 		}
 
@@ -1199,7 +1297,9 @@ namespace Mono.Debugging.Win32
 					return new PropertyReference (ctx, prop, co as CorValRef, type);
 				}
 
-				type = type.Base;
+				ICorDebugType basetype;
+				type.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				type = basetype;
 			}
 
 			return null;
@@ -1266,7 +1366,11 @@ namespace Mono.Debugging.Win32
 				if (t.BaseType == null && t.FullName != "System.Object")
 					type = ctx.Adapter.GetType (ctx, "System.Object") as ICorDebugType;
 				else
-					type = type.Base;
+				{
+					ICorDebugType basetype;
+					type.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+					type = basetype;
+				}
 			}
 
 			type = vr.Type as ICorDebugType;
@@ -1336,7 +1440,9 @@ namespace Mono.Debugging.Win32
 
 		static bool InGeneratedClosureOrIteratorType (CorEvaluationContext ctx)
 		{
-			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+			ICorDebugFunction framefunction;
+			ctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			MethodInfo mi = framefunction.GetMethodInfo (ctx.Session);
 			if (mi == null || mi.IsStatic)
 				return false;
 
@@ -1438,7 +1544,11 @@ namespace Mono.Debugging.Win32
 		protected override ValueReference OnGetThisReference (EvaluationContext ctx)
 		{
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
-			if (cctx.Frame.FrameType != ICorDebugFrameEx.CorFrameType.ILFrame || cctx.Frame.Function == null)
+			if (cctx.Frame.FrameType != ICorDebugFrameEx.CorFrameType.ILFrame)
+				return null;
+			ICorDebugFunction framefunction;
+			cctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			if (framefunction == null)
 				return null;
 
 			if (InGeneratedClosureOrIteratorType (cctx))
@@ -1450,7 +1560,9 @@ namespace Mono.Debugging.Win32
 
 		ValueReference GetThisReference (CorEvaluationContext ctx)
 		{
-			MethodInfo mi = ctx.Frame.Function.GetMethodInfo (ctx.Session);
+			ICorDebugFunction framefunction;
+			ctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			MethodInfo mi = framefunction.GetMethodInfo (ctx.Session);
 			if (mi == null || mi.IsStatic)
 				return null;
 
@@ -1478,20 +1590,27 @@ namespace Mono.Debugging.Win32
 		protected override IEnumerable<ValueReference> OnGetParameters (EvaluationContext gctx)
 		{
 			CorEvaluationContext ctx = (CorEvaluationContext) gctx;
-			if (ctx.Frame.FrameType == ICorDebugFrameEx.CorFrameType.ILFrame && ctx.Frame.Function != null) {
-				MethodInfo met = ctx.Frame.Function.GetMethodInfo (ctx.Session);
-				if (met != null) {
-					foreach (ParameterInfo pi in met.GetParameters ()) {
-						int pos = pi.Position;
-						if (met.IsStatic)
-							pos--;
+			if (ctx.Frame.FrameType == ICorDebugFrameEx.CorFrameType.ILFrame)
+			{
+				ICorDebugFunction framefunction;
+				ctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+				ICorDebugFunction function = framefunction;
+				if(function != null)
+				{
+					MethodInfo met = function.GetMethodInfo (ctx.Session);
+					if (met != null) {
+						foreach (ParameterInfo pi in met.GetParameters ()) {
+							int pos = pi.Position;
+							if (met.IsStatic)
+								pos--;
 
-						var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, pos, pi.Name),
-							string.Format ("Get parameter {0} of {1}", pi.Name, met.Name));
-						if (parameter != null)
-							yield return parameter;
+							var parameter = CorDebugUtil.CallHandlingComExceptions (() => CreateParameterReference (ctx, pos, pi.Name),
+								string.Format ("Get parameter {0} of {1}", pi.Name, met.Name));
+							if (parameter != null)
+								yield return parameter;
+						}
+						yield break;
 					}
-					yield break;
 				}
 			}
 
@@ -1607,7 +1726,9 @@ namespace Mono.Debugging.Win32
 				yield break;
 
 			if (scope == null) {
-				ISymbolMethod met = ctx.Frame.Function.GetSymbolMethod (ctx.Session);
+				ICorDebugFunction framefunction;
+				ctx.Frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+				ISymbolMethod met = framefunction.GetSymbolMethod (ctx.Session);
 				if (met != null)
 					scope = met.RootScope;
 				else {
@@ -1717,22 +1838,33 @@ namespace Mono.Debugging.Win32
 				return null;
 		}
 
-		public override IEnumerable<object> GetNestedTypes (EvaluationContext ctx, object type)
+		public override IEnumerable<object> GetNestedTypes(EvaluationContext ctx, object type)
 		{
 			var cType = (ICorDebugType)type;
 			var wctx = (CorEvaluationContext)ctx;
-			var mod = cType.Class.Module;
-			int token = cType.Class.Token;
-			var module = wctx.Session.GetMetadataForModule (mod);
-			foreach (var t in module.DefinedTypes) {
-				if (((MetadataType)t).DeclaringType != null && ((MetadataType)t).DeclaringType.MetadataToken == token) {
-					var cls = mod.GetClassFromToken (((MetadataType)t).MetadataToken);
-					var returnType = cls.GetParameterizedType (CorElementType.ELEMENT_TYPE_CLASS, new ICorDebugType[0]);
-					if (!IsGeneratedType (returnType.GetTypeInfo (wctx.Session))) {
-						yield return returnType;
-					}
-				}
+			ICorDebugClass typeclass;
+			cType.GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+			ICorDebugModule mod;
+			typeclass.GetModule(out mod).AssertSucceeded("Could not get the Module of a Class.");
+			uint mdTypeDef;
+			typeclass.GetToken(&mdTypeDef).AssertSucceeded("Could not get the mdTypeDef Token of a Class.");
+			uint token = mdTypeDef;
+			CorMetadataImport module = wctx.Session.GetMetadataForModule(mod);
+			var nesteds = new List<object>();
+			foreach(object t in module.DefinedTypes)
+			{
+				Type declaringType = ((MetadataType)t).DeclaringType;
+				if(declaringType == null)
+					continue;
+				if(declaringType.MetadataToken != token)
+					continue;
+				ICorDebugClass cls;
+				mod.GetClassFromToken(((uint)((MetadataType)t).MetadataToken), out cls).AssertSucceeded("mod.GetClassFromToken (((uint)((MetadataType)t).MetadataToken), out cls)");
+				ICorDebugType returnType = cls.GetParameterizedType(CorElementType.ELEMENT_TYPE_CLASS, new ICorDebugType[0]);
+				if(!IsGeneratedType(returnType.GetTypeInfo(wctx.Session)))
+					nesteds.Add(returnType);
 			}
+			return nesteds;
 		}
 
 		public override IEnumerable<object> GetImplementedInterfaces (EvaluationContext ctx, object type)

@@ -99,11 +99,13 @@ namespace Mono.Debugging.Win32
 
 		public static SequencePoint GetSequencePoint(CorDebuggerSession session, ICorDebugFrame frame)
 		{
-			ISymbolReader reader = session.GetReaderForModule (frame.Function.Module);
+			ICorDebugFunction framefunction;
+			frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			ISymbolReader reader = session.GetReaderForModule (framefunction.Module);
 			if (reader == null)
 				return null;
 
-			ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
+			ISymbolMethod met = reader.GetMethod (new SymbolToken (framefunction.Token));
 			if (met == null)
 				return null;
 
@@ -208,11 +210,13 @@ namespace Mono.Debugging.Win32
 			bool hidden = false;
 			bool external = true;
 
-			if (frame.FrameType == CorFrameType.ILFrame) {
-				if (frame.Function != null) {
-					module = frame.Function.Module.Name;
-					CorMetadataImport importer = new CorMetadataImport (frame.Function.Module);
-					MethodInfo mi = importer.GetMethodInfo (frame.Function.Token);
+			if (frame.FrameType == ICorDebugFrameEx.CorFrameType.ILFrame) {
+				ICorDebugFunction framefunction;
+				frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+				if (framefunction != null) {
+					module = framefunction.Module.Name;
+					CorMetadataImport importer = new CorMetadataImport (framefunction.Module);
+					MethodInfo mi = importer.GetMethodInfo (framefunction.Token);
 					var declaringType = mi.DeclaringType;
 					if (declaringType != null) {
 						method = declaringType.FullName + "." + mi.Name;

@@ -1041,10 +1041,12 @@ namespace Mono.Debugging.Win32
 			// Build up the exception type hierachy
 			ICorDebugValue v = e.Thread.CurrentException;
 			List<string> exceptions = new List<string>();
-			ICorDebugType t = v.ExactType;
+			ICorDebugType t = v.GetExactType();
 			while (t != null) {
 				exceptions.Add(t.GetTypeInfo(this).FullName);
-				t = t.Base;
+				ICorDebugType basetype;
+				t.GetBase(out basetype).AssertSucceeded("Could not get the Base Type of a Type.");
+				t = basetype;
 			}
 			if (exceptions.Count == 0)
 				return false;
@@ -1488,12 +1490,14 @@ namespace Mono.Debugging.Win32
 				ObjectAdapter.CancelAsyncOperations ();
 				if (stepper != null) {
 					ICorDebugFrame frame = activeThread.ActiveFrame;
-					ISymbolReader reader = GetReaderForModule (frame.Function.Module);
+					ICorDebugFunction framefunction;
+					frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+					ISymbolReader reader = GetReaderForModule (framefunction.Module);
 					if (reader == null) {
 						RawContinue (into);
 						return;
 					}
-					ISymbolMethod met = reader.GetMethod (new SymbolToken (frame.Function.Token));
+					ISymbolMethod met = reader.GetMethod (new SymbolToken (framefunction.Token));
 					if (met == null) {
 						RawContinue (into);
 						return;
@@ -1874,7 +1878,7 @@ namespace Mono.Debugging.Win32
 		        ICorDebugObjectValue val = refVal.Dereference().CastToObjectValue(); 
 		        if (val != null) 
 		        { 
-					Type classType = val.ExactType.GetTypeInfo (this);
+					Type classType = val.GetExactType().GetTypeInfo (this);
 		            // Loop through all private instance fields in the thread class 
 		            foreach (FieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
 		            { 
@@ -1984,7 +1988,9 @@ namespace Mono.Debugging.Win32
 				if (frame == null)
 					throw new NotSupportedException ();
 
-				ISymbolMethod met = frame.Function.GetSymbolMethod (this);
+				ICorDebugFunction framefunction;
+				frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+				ISymbolMethod met = framefunction.GetSymbolMethod (this);
 				if (met == null) {
 					throw new NotSupportedException ();
 				}
@@ -2046,7 +2052,7 @@ namespace Mono.Debugging.Win32
 		}
 	}
 
-	static class SequencePointExt
+	static unsafe class SequencePointExt
 	{
 		public static IEnumerable<SequencePoint> GetSequencePoints (this ISymbolMethod met)
 		{
@@ -2074,29 +2080,47 @@ namespace Mono.Debugging.Win32
 		public static Type GetTypeInfo (this ICorDebugType type, CorDebuggerSession session)
 		{
 			Type t;
-			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type, out t))
+			if (MetadataHelperFunctionsExtensions.CoreTypes.TryGetValue (type.Type(), out t))
 				return t;
 
-			if (type.Type == CorElementType.ELEMENT_TYPE_ARRAY || type.Type == CorElementType.ELEMENT_TYPE_SZARRAY) {
+			if (type.Type() == CorElementType.ELEMENT_TYPE_ARRAY || type.Type() == CorElementType.ELEMENT_TYPE_SZARRAY) {
 				List<int> sizes = new List<int> ();
 				List<int> loBounds = new List<int> ();
-				for (int n = 0; n < type.Rank; n++) {
+				uint nRank;
+				type.GetRank(&nRank).AssertSucceeded("Could not get the Rank of a Type.");
+				for (int n = 0; n < (int)nRank; n++) {
 					sizes.Add (1);
 					loBounds.Add (0);
 				}
-				return MetadataExtensions.MakeArray (type.FirstTypeParameter.GetTypeInfo (session), sizes, loBounds);
+				ICorDebugType firsttypeparam;
+				type.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("Could not get the First Type Parameter of a Type.");
+				return MetadataExtensions.MakeArray (firsttypeparam.GetTypeInfo (session), sizes, loBounds);
 			}
 
-			if (type.Type == CorElementType.ELEMENT_TYPE_BYREF)
-				return MetadataExtensions.MakeByRef (type.FirstTypeParameter.GetTypeInfo (session));
+			if (type.Type() == CorElementType.ELEMENT_TYPE_BYREF)
+			{
+				ICorDebugType firsttypeparam;
+				type.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("Could not get the First Type Parameter of a Type.");
+				return MetadataExtensions.MakeByRef (firsttypeparam.GetTypeInfo (session));
+			}
 
-			if (type.Type == CorElementType.ELEMENT_TYPE_PTR)
-				return MetadataExtensions.MakePointer (type.FirstTypeParameter.GetTypeInfo (session));
+			if (type.Type() == CorElementType.ELEMENT_TYPE_PTR)
+			{
+				ICorDebugType firsttypeparam;
+				type.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("Could not get the First Type Parameter of a Type.");
+				return MetadataExtensions.MakePointer (firsttypeparam.GetTypeInfo (session));
+			}
 
-			CorMetadataImport mi = session.GetMetadataForModule (type.Class.Module);
+			ICorDebugClass typeclass;
+			type.GetClass(out typeclass).AssertSucceeded("Could not get the Class of a Type.");
+			ICorDebugModule classmodule;
+			typeclass.GetModule(out classmodule).AssertSucceeded("Could not get the Module of a Class.");
+			CorMetadataImport mi = session.GetMetadataForModule (classmodule);
 			if (mi != null) {
-				t = mi.GetType (type.Class.Token);
-				ICorDebugType[] targs = type.TypeParameters;
+				uint mdTypeDef;
+				typeclass.GetToken(&mdTypeDef).AssertSucceeded("Could not get the mdTypeDef Token of a Class.");
+				t = mi.GetType (mdTypeDef);
+				ICorDebugType[] targs = type.TypeParameters();
 				if (targs.Length > 0) {
 					List<Type> types = new List<Type> ();
 					foreach (ICorDebugType ct in targs)
@@ -2131,7 +2155,7 @@ namespace Mono.Debugging.Win32
 		{
 			CorEvaluationContext cctx = (CorEvaluationContext) ctx;
 			CorObjectAdaptor actx = (CorObjectAdaptor) ctx.Adapter;
-			if (actx.IsEnum (ctx, thisVal.Val.ExactType) && !actx.IsEnum (ctx, val.Val.ExactType)) {
+			if (actx.IsEnum (ctx, thisVal.Val.GetExactType()) && !actx.IsEnum (ctx, val.Val.GetExactType())) {
 				ValueReference vr = actx.GetMember (ctx, null, thisVal, "value__");
 				vr.Value = val;
 				// Required to make sure that var returns an up-to-date value object

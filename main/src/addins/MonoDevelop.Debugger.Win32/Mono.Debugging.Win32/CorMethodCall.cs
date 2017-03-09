@@ -52,7 +52,9 @@ namespace Mono.Debugging.Win32
 			}
 			else {
 				DebuggerLoggingService.LogMessage ("EvalFinished(). Setting the result");
-				tcs.TrySetResult(new OperationResult<ICorDebugValue> (evalArgs.Eval.Result, isException));
+				ICorDebugValue evalresult;
+				evalArgs.Eval.GetResult(out evalresult).AssertSucceeded("evalArgs.Eval.GetResult(out evalresult)");;
+				tcs.TrySetResult(new OperationResult<ICorDebugValue> (evalresult, isException));
 			}
 		}
 
@@ -91,10 +93,10 @@ namespace Mono.Debugging.Win32
 				eval.NewParameterizedObject(function, typeArgs, args);
 			else
 				eval.CallParameterizedFunction(function, typeArgs, args);
-			context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread);
+			context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread).AssertSucceeded("context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread)");
 			context.Session.ClearEvalStatus ();
 			context.Session.OnStartEvaluating ();
-			context.Session.Process.Continue (false);
+			context.Session.Process.Continue (0).AssertSucceeded("context.Session.Process.Continue (0)");;
 			Task = tcs.Task;
 			// Don't pass token here, because it causes immediately task cancellation which must be performed by debugger event or real timeout
 			return Task.ContinueWith (task => {
@@ -109,7 +111,7 @@ namespace Mono.Debugging.Win32
 			try {
 				if (abortCallTimes < 10) {
 					DebuggerLoggingService.LogMessage ("Calling Abort() for {0} time", abortCallTimes);
-					eval.Abort ();
+					eval.Abort ().AssertSucceeded("eval.Abort ()");;
 				}
 				else {
 					if (abortCallTimes == 20) {
@@ -117,14 +119,14 @@ namespace Mono.Debugging.Win32
 						// maybe this can help to abort hanging evaluations
 						DebuggerLoggingService.LogMessage ("RudeAbort() didn't stop eval after {0} times", abortCallTimes - 1);
 						DebuggerLoggingService.LogMessage ("Calling Stop()");
-						context.Session.Process.Stop (0);
+						context.Session.Process.Stop (0).AssertSucceeded("context.Session.Process.Stop (0)");;
 						DebuggerLoggingService.LogMessage ("Calling SetAllThreadsDebugState(THREAD_RUN)");
-						context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
+						context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null).AssertSucceeded("context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null)");;
 						DebuggerLoggingService.LogMessage ("Calling Continue()");
-						context.Session.Process.Continue (false);
+						context.Session.Process.Continue (0).AssertSucceeded("context.Session.Process.Continue (0)");;
 					}
 					DebuggerLoggingService.LogMessage ("Calling RudeAbort() for {0} time", abortCallTimes);
-					eval.RudeAbort();
+					Com.QueryInteface<ICorDebugEval2>(eval).RudeAbort().AssertSucceeded("Com.QueryInteface<ICorDebugEval2>(eval).RudeAbort()");;
 				}
 
 			} catch (COMException e) {

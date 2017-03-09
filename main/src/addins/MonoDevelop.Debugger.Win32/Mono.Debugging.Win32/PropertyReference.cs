@@ -80,7 +80,7 @@ namespace Mono.Debugging.Win32
 			get {
 				if (!prop.CanRead)
 					return null;
-				return ((CorValRef)Value).Val.ExactType;
+				return ((CorValRef)Value).Val.GetExactType();
 			}
 		}
 		

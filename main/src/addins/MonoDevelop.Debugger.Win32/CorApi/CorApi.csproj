@@ -90,6 +90,8 @@
     <Compile Include="ComInterop\Helpers\Eventing\CorUpdateModuleSymbolsEventArgs.cs" />
     <Compile Include="ComInterop\Helpers\Eventing\ManagedCallbackType.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugEx.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugTypeEx.cs" />
+    <Compile Include="ComInterop\Helpers\ICorDebugValueEx.cs" />
     <Compile Include="ComInterop\IEnumUnknown.cs" />
     <Compile Include="ComInterop\CorDebuggerVersion.cs" />
     <Compile Include="ComInterop\CorDebugJITCompilerFlags.cs" />
