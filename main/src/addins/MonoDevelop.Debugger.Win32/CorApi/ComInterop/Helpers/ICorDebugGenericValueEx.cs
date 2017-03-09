@@ -1,12 +1,27 @@
 using System;
 using System.Diagnostics;
 
+using JetBrains.Annotations;
+
 namespace CorApi.ComInterop
 {
     public static unsafe class ICorDebugGenericValueEx
     {
-        public static object GetValue(this ICorDebugGenericValue corvalue, CorElementType type)
+        public static object GetValue([NotNull] this ICorDebugGenericValue corvalue)
         {
+            if(corvalue == null)
+                throw new ArgumentNullException(nameof(corvalue));
+
+            CorElementType eltype;
+            corvalue.GetType(&eltype).AssertSucceeded("Could not get the Element Type of a Generic Value.");
+            return GetValue(corvalue, eltype);
+        }
+
+        public static object GetValue([NotNull] this ICorDebugGenericValue corvalue, CorElementType type)
+        {
+            if(corvalue == null)
+                throw new ArgumentNullException(nameof(corvalue));
+
             uint dwSize;
             corvalue.GetSize(&dwSize).AssertSucceeded("Could not get the value size.");
             switch(type)

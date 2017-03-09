@@ -1871,8 +1871,10 @@ namespace Mono.Debugging.Win32
 			// From http://social.msdn.microsoft.com/Forums/en/netfxtoolsdev/thread/461326fe-88bd-4a6b-82a9-1a66b8e65116
 		    try 
 		    { 
-		        ICorDebugReferenceValue refVal = thread.ThreadVariable.CastToReferenceValue(); 
-		        if (refVal.IsNull) 
+		        ICorDebugReferenceValue refVal = thread.ThreadVariable.CastToReferenceValue();
+			    int bNull = 0;
+			    refVal.IsNull(&bNull).AssertSucceeded("Could not get if the Reference Value is NULL.");
+			    if (bNull != 0) 
 		            return string.Empty; 
 		        
 		        ICorDebugObjectValue val = refVal.Dereference().CastToObjectValue(); 
@@ -1884,9 +1886,11 @@ namespace Mono.Debugging.Win32
 		            { 
 		                if (fi.Name == "m_Name")
 						{
-		                        ICorDebugReferenceValue fieldValue = val.GetFieldValue(val.Class, fi.MetadataToken).CastToReferenceValue(); 
-							
-								if (fieldValue.IsNull)
+		                        ICorDebugReferenceValue fieldValue = val.GetFieldValue(val.Class, fi.MetadataToken).CastToReferenceValue();
+
+							int bNull1 = 0;
+							fieldValue.IsNull(&bNull1).AssertSucceeded("Could not get if the Reference Value is NULL.");
+							if (bNull1 != 0)
 									return string.Empty;
 								else
 									return fieldValue.Dereference().CastToStringValue().String;
