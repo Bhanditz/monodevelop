@@ -383,7 +383,7 @@ namespace Mono.Debugging.Win32
 			_processId = pid;
 
 			// _cordbgevents.NotNull("CorDebugEvents must have been set up with the main debugger interface.").Resume(); // NOTE: looks like the Resume were for a generic case, and we start sinking events even before we do anything about a Process in the debugger interface
-			_process.Continue(0).AssertSucceeded("Could not continue the initially stopped process.");
+			//_process.Continue(0).AssertSucceeded("Could not continue the initially stopped process."); // TODO: this is an artifact from the old impl, probably not needed
 		}
 
 		/// <summary>
@@ -418,7 +418,9 @@ namespace Mono.Debugging.Win32
 			} 
 			finally
 			{
-				corprocess =  mDebugger.CreateProcess(applicationName,
+				corprocess =  mDebugger.CreateProcess
+				(
+					applicationName,
 					commandLine, 
 					default(SECURITY_ATTRIBUTES),
 					default(SECURITY_ATTRIBUTES),
@@ -428,7 +430,9 @@ namespace Mono.Debugging.Win32
 					currentDirectory,
 					si,     // startup info
 					ref pi, // process information
-					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS);
+					CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS
+				)
+				.NotNull("CreateProcess has failed to yield an instance.");
 				if(pi.hProcess != null)
 					Kernel32Dll.CloseHandle(pi.hProcess);
 				if(pi.hThread != null)
@@ -1538,6 +1542,9 @@ namespace Mono.Debugging.Win32
 
 		private static HResults HandleBreakpointFailure(BreakEventInfo binfo, HResult hr)
 		{
+			if(((HResults)hr).Succeeded())
+				return ((HResults)hr);
+
 			switch(hr)
 			{
 			case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
@@ -2057,7 +2064,7 @@ namespace Mono.Debugging.Win32
 
 				ICorDebugValue refValDereferenced;
 				refVal.Dereference(out refValDereferenced).AssertSucceeded("refVal.Dereference(out refValDereferenced)");
-				var val = Com.QueryInteface<ICorDebugObjectValue>(refVal);
+				var val = refVal as ICorDebugObjectValue;
 				if(val != null)
 				{
 					Type classType = val.GetExactType().GetTypeInfo(this);
