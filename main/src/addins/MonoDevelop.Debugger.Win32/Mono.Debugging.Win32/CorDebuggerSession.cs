@@ -482,11 +482,33 @@ namespace Mono.Debugging.Win32
 		void OnEvalException (object sender, CorEvalEventArgs e)
 		{
 			evaluationTimestamp++;
+			foreach(EvalEventsUnadvise.Sinks sink in _onEvalSinks)
+			{
+				try
+				{
+					sink.OnException(this, e);
+				}
+				catch(Exception ex)
+				{
+					_onerror(ex);
+				}
+			}
 		}
 
-		void OnEvalComplete (object sender, CorEvalEventArgs e)
+		private void OnEvalComplete(object sender, CorEvalEventArgs e)
 		{
 			evaluationTimestamp++;
+			foreach(EvalEventsUnadvise.Sinks sink in _onEvalSinks)
+			{
+				try
+				{
+					sink.OnComplete(this, e);
+				}
+				catch(Exception ex)
+				{
+					_onerror(ex);
+				}
+			}
 		}
 
 		void OnNameChange (object sender, CorThreadEventArgs e)
@@ -1814,43 +1836,48 @@ namespace Mono.Debugging.Win32
 				}
 				eargs.Continue = false;
 			};
-			_process.OnEvalComplete += completeHandler;
-			_process.OnEvalException += exceptionHandler;
 
-			try
+			using(AdviseEvalEvents(completeHandler, exceptionHandler))
 			{
-				createCall(eval);
-				_process.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, ctx.Thread).AssertSucceeded("_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread)");
-				;
-				OnStartEvaluating();
-				ClearEvalStatus();
-				_process.Continue(0).AssertSucceeded("_process.Continue (0)");
-				;
-
-				if(doneEvent.WaitOne(ctx.Options.EvaluationTimeout, false))
-					return result;
-				else
+				try
 				{
-					eval.Abort().AssertSucceeded("eval.Abort ()");
-					return null;
+					createCall(eval);
+					_process.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, ctx.Thread).AssertSucceeded("_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread)");
+					OnStartEvaluating();
+					ClearEvalStatus();
+					_process.Continue(0).AssertSucceeded("_process.Continue (0)");
+
+					if(doneEvent.WaitOne(ctx.Options.EvaluationTimeout, false))
+						return result;
+					else
+					{
+						eval.Abort().AssertSucceeded("eval.Abort ()");
+						return null;
+					}
+				}
+				catch(COMException ex)
+				{
+					EvaluatorException evalException = TryConvertToEvalException(ex);
+					// eval exception is a 'good' exception that should be shown in value box
+					// all other exceptions must be thrown to error log
+					if(evalException != null)
+						throw evalException;
+					throw;
+				}
+				finally
+				{
+					OnEndEvaluating();
 				}
 			}
-			catch(COMException ex)
-			{
-				EvaluatorException evalException = TryConvertToEvalException(ex);
-				// eval exception is a 'good' exception that should be shown in value box
-				// all other exceptions must be thrown to error log
-				if(evalException != null)
-					throw evalException;
-				throw;
-			}
-			finally
-			{
-				_process.OnEvalComplete -= completeHandler;
-				_process.OnEvalException -= exceptionHandler;
-				OnEndEvaluating();
-			}
 		}
+
+		[MustUseReturnValue]
+		public EvalEventsUnadvise AdviseEvalEvents(DebugEventHandler<CorEvalEventArgs> onComplete, DebugEventHandler<CorEvalEventArgs> onException)
+		{
+			return new EvalEventsUnadvise(this, onComplete, onException);
+		}
+
+		readonly HashSet<EvalEventsUnadvise.Sinks> _onEvalSinks = new HashSet<EvalEventsUnadvise.Sinks>();
 
 		public ICorDebugValue NewString (CorEvaluationContext ctx, string value)
 		{
@@ -2196,6 +2223,52 @@ namespace Mono.Debugging.Win32
 		{
 			public CorApi.ComInterop.ICorDebugProcess Process;
 			public CorDebugProcessOutputRedirection OutputRedirection;
+		}
+
+		public struct EvalEventsUnadvise : IDisposable
+		{
+			private readonly CorDebuggerSession myOwner;
+
+			private readonly Sinks mySinks;
+
+			public EvalEventsUnadvise(CorDebuggerSession owner, DebugEventHandler<CorEvalEventArgs> onComplete, DebugEventHandler<CorEvalEventArgs> onException)
+			{
+				myOwner = owner;
+				mySinks = new Sinks(onComplete, onException);
+				lock(myOwner._onEvalSinks)
+					myOwner._onEvalSinks.Add(mySinks);
+			}
+
+			/// <inheritdoc />
+			public void Dispose()
+			{
+				CorDebuggerSession owner = myOwner;
+				Sinks sinks = mySinks;
+				if((owner != null) && (sinks != null))
+				{
+					lock(owner._onEvalSinks)
+						owner._onEvalSinks.Remove(sinks);
+				}
+			}
+
+			public class Sinks
+			{
+				[NotNull]
+				internal readonly DebugEventHandler<CorEvalEventArgs> OnComplete;
+
+				[NotNull]
+				internal readonly DebugEventHandler<CorEvalEventArgs> OnException;
+
+				public Sinks([NotNull] DebugEventHandler<CorEvalEventArgs> onComplete, [NotNull] DebugEventHandler<CorEvalEventArgs> onException)
+				{
+					if(onComplete == null)
+						throw new ArgumentNullException(nameof(onComplete));
+					if(onException == null)
+						throw new ArgumentNullException(nameof(onException));
+					OnComplete = onComplete;
+					OnException = onException;
+				}
+			}
 		}
 	}
 

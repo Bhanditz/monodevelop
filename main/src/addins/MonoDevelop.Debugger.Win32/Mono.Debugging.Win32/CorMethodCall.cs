@@ -30,16 +30,6 @@ namespace Mono.Debugging.Win32
 			eval = context.Eval;
 		}
 
-		void ProcessOnEvalComplete (object sender, CorEvalEventArgs evalArgs)
-		{
-			DoProcessEvalFinished (evalArgs, false);
-		}
-
-		void ProcessOnEvalException (object sender, CorEvalEventArgs evalArgs)
-		{
-			DoProcessEvalFinished (evalArgs, true);
-		}
-
 		void DoProcessEvalFinished (CorEvalEventArgs evalArgs, bool isException)
 		{
 			if (evalArgs.Eval != eval)
@@ -58,16 +48,10 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		void SubscribeOnEvals ()
-		{
-			context.Session.Process.OnEvalComplete += ProcessOnEvalComplete;
-			context.Session.Process.OnEvalException += ProcessOnEvalException;
-		}
-
 		void UnSubcribeOnEvals ()
 		{
-			context.Session.Process.OnEvalComplete -= ProcessOnEvalComplete;
-			context.Session.Process.OnEvalException -= ProcessOnEvalException;
+//			context.Session.Process.OnEvalComplete -= ProcessOnEvalComplete;
+//			context.Session.Process.OnEvalException -= ProcessOnEvalException;
 		}
 
 		public override string Description
@@ -85,24 +69,22 @@ namespace Mono.Debugging.Win32
 
 		readonly TaskCompletionSource<OperationResult<ICorDebugValue>> tcs = new TaskCompletionSource<OperationResult<ICorDebugValue>> ();
 
-		protected override Task<OperationResult<ICorDebugValue>> InvokeAsyncImpl ()
+		protected override async Task<OperationResult<ICorDebugValue>> InvokeAsyncImpl()
 		{
-			SubscribeOnEvals ();
-
-			if (function.GetMethodInfo (context.Session).Name == ".ctor")
-				eval.NewParameterizedObject(function, typeArgs, args);
-			else
-				eval.CallParameterizedFunction(function, typeArgs, args);
-			context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread).AssertSucceeded("context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread)");
-			context.Session.ClearEvalStatus ();
-			context.Session.OnStartEvaluating ();
-			context.Session.Process.Continue (0).AssertSucceeded("context.Session.Process.Continue (0)");;
-			Task = tcs.Task;
-			// Don't pass token here, because it causes immediately task cancellation which must be performed by debugger event or real timeout
-			return Task.ContinueWith (task => {
-				UnSubcribeOnEvals ();
-				return task.Result;
-			});
+			using(context.Session.AdviseEvalEvents((o, ea) => DoProcessEvalFinished(ea, false), (o, ea) => DoProcessEvalFinished(ea, true)))
+			{
+				if(function.GetMethodInfo(context.Session).Name == ".ctor")
+					eval.NewParameterizedObject(function, typeArgs, args);
+				else
+					eval.CallParameterizedFunction(function, typeArgs, args);
+				context.Session.Process.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, context.Thread).AssertSucceeded("context.Session.Process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, context.Thread)");
+				context.Session.ClearEvalStatus();
+				context.Session.OnStartEvaluating();
+				context.Session.Process.Continue(0).AssertSucceeded("context.Session.Process.Continue (0)");
+				Task = tcs.Task;
+				// Don't pass token here, because it causes immediately task cancellation which must be performed by debugger event or real timeout
+				return await Task;
+			}
 		}
 
 
