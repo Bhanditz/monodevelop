@@ -24,6 +24,8 @@
 // THE SOFTWARE.
 // 
 
+using CorApi.ComInterop;
+
 using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32
@@ -40,18 +42,22 @@ namespace Mono.Debugging.Win32
 			this.str = str;
 			this.obj = obj;
 		}
-		
-		public int Length {
-			get { return str.Length; }
+
+		public int Length
+		{
+			get
+			{
+				uint cch;
+				str.GetLength(&cch).AssertSucceeded("Cannot take the string value length.");
+				return ((int)cch);
+			}
 		}
 		
-		public string Value {
-			get { return str.String; }
-		}
-		
+		public string Value => LpcwstrHelper.GetString(str.GetString, "Cannot take the characters of a string value.");
+
 		public string Substring (int index, int length)
 		{
-			return str.String.Substring (index, length);
+			return Value.Substring (index, length);
 		}
 	}
 }

@@ -8,7 +8,7 @@ using Mono.Debugging.Client;
 
 namespace Mono.Debugging.Win32
 {
-	public unsafe class CorValRef : CorValRef<ICorDebugValue>
+	public class CorValRef : CorValRef<ICorDebugValue>
 	{
 		public CorValRef (ICorDebugValue val) : base (val)
 		{
@@ -20,91 +20,6 @@ namespace Mono.Debugging.Win32
 
 		public CorValRef (ValueLoader loader) : base (loader)
 		{
-		}
-	}
-
-	public unsafe class CorValRef<TValue> where TValue : ICorDebugValue
-	{
-		TValue val;
-		readonly ValueLoader loader;
-		bool needToReload = false;
-
-		public delegate TValue ValueLoader ( );
-
-		public CorValRef (TValue val)
-		{
-			this.val = val;
-		}
-
-		public CorValRef (TValue val, ValueLoader loader)
-		{
-			this.val = val;
-			this.loader = loader;
-		}
-
-		public CorValRef (ValueLoader loader)
-		{
-			this.val = loader ();
-			this.loader = loader;
-		}
-
-		bool IsAlive ()
-		{
-			if (val == null)
-				return true;
-			try {
-				// ReSharper disable once UnusedVariable
-
-				// https://msdn.microsoft.com/en-us/library/ms232466(v=vs.110).aspx
-				// MSDN says that ICorDebugValue doesn't guarantee that it alives between process Continue and Stop (which occur while evaluating).
-				// But in the most of cases the value remains valid.
-				// Instead of reloading it every time when evalTimestamp changes we try to call GetExactType (because it pure for the value)
-				// and if it fails we reload the value
-				var valExactType = val.ExactType;
-			}
-			catch (COMException e) {
-				if (e.ErrorCode == (int)HResult.CORDBG_E_OBJECT_NEUTERED) {
-					DebuggerLoggingService.LogMessage (string.Format ("Value is out of date: {0}", e.Message));
-					return false;
-				}
-				throw;
-			}
-			return true;
-		}
-
-		public bool IsValid {
-			get
-			{
-				if (needToReload)
-					return false;
-				return IsAlive ();
-			}
-		}
-
-		public void Invalidate ()
-		{
-			needToReload = true;
-		}
-
-		public void Reload ()
-		{
-			if (loader != null) {
-				// Obsolete value, get a new one
-				var v = loader ();
-				if (v != null) {
-					val = v;
-					needToReload = false;
-				}
-			}
-		}
-
-		public TValue Val {
-			get {
-				if (!IsValid) {
-					Reload ();
-				}
-				return val;
-			}
 		}
 	}
 }

@@ -16,7 +16,7 @@ namespace Mono.Debugging.Win32
 		int evalTimestamp;
 		readonly CorBacktrace backtrace;
 		ICorDebugThread thread;
-		int threadId;
+		uint threadId;
 
 		public CorDebuggerSession Session { get; set; }
 
@@ -44,25 +44,31 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public ICorDebugThread Thread {
-			get {
-				CheckTimestamp ();
-				if (thread == null)
-					thread = Session.GetThread (threadId);
+		public ICorDebugThread Thread
+		{
+			get
+			{
+				CheckTimestamp();
+				if(thread == null)
+					thread = Session.GetThread((int)threadId);
 				return thread;
 			}
-			set {
+			set
+			{
 				thread = value;
-				threadId = thread.Id;
+				uint dwThreadId = 0u;
+				thread.GetID(&dwThreadId).AssertSucceeded("thread.GetID(&dwThreadId)");
+				threadId = dwThreadId;
 			}
 		}
 
-		public ICorDebugChain ActiveChain {
-			get {
-				CheckTimestamp ();
-				if (activeChain == null) {
-					activeChain = Thread.ActiveChain;
-				}
+		public ICorDebugChain ActiveChain
+		{
+			get
+			{
+				CheckTimestamp();
+				if(activeChain == null)
+					Thread.GetActiveChain(out activeChain).AssertSucceeded("Thread.GetActiveChain(out activeChain)");
 				return activeChain;
 			}
 		}
@@ -77,11 +83,13 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		public ICorDebugEval Eval {
-			get {
-				CheckTimestamp ();
-				if (corEval == null)
-					corEval = Thread.CreateEval ();
+		public ICorDebugEval Eval
+		{
+			get
+			{
+				CheckTimestamp();
+				if(corEval == null)
+					Thread.CreateEval(out corEval).AssertSucceeded("Thread.CreateEval (out corEval)");
 				return corEval;
 			}
 		}

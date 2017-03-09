@@ -1,0 +1,91 @@
+﻿using CorApi.ComInterop;
+
+using CorApi2.debug;
+
+using Mono.Debugging.Client;
+
+namespace Mono.Debugging.Win32
+{
+	public class CorValRef<TValue> where TValue : ICorDebugValue
+	{
+		TValue val;
+		readonly ValueLoader loader;
+		bool needToReload;
+
+		public delegate TValue ValueLoader ( );
+
+		public CorValRef (TValue val)
+		{
+			this.val = val;
+		}
+
+		public CorValRef (TValue val, ValueLoader loader)
+		{
+			this.val = val;
+			this.loader = loader;
+		}
+
+		public CorValRef (ValueLoader loader)
+		{
+			this.val = loader ();
+			this.loader = loader;
+		}
+
+		private bool IsAlive()
+		{
+			if(val == null)
+				return true;
+
+			// https://msdn.microsoft.com/en-us/library/ms232466(v=vs.110).aspx
+			// MSDN says that ICorDebugValue doesn't guarantee that it alives between process Continue and Stop (which occur while evaluating).
+			// But in the most of cases the value remains valid.
+			// Instead of reloading it every time when evalTimestamp changes we try to call GetExactType (because it pure for the value)
+			// and if it fails we reload the value
+			ICorDebugType valExactType;
+			int hrExactType = ((ICorDebugValue2)val).GetExactType(out valExactType);
+			if(hrExactType == (int)HResult.CORDBG_E_OBJECT_NEUTERED)
+			{
+				DebuggerLoggingService.LogMessage($"Value is out of date: {HResultHelpers.GetExceptionIfFailed(hrExactType).NotNull("Is Failed.").Message}.");
+				return false;
+			}
+			hrExactType.AssertSucceeded("((ICorDebugValue2)val).GetExactType for IsAlive on a value.");
+
+			return true;
+		}
+
+		public bool IsValid {
+			get
+			{
+				if (needToReload)
+					return false;
+				return IsAlive ();
+			}
+		}
+
+		public void Invalidate ()
+		{
+			needToReload = true;
+		}
+
+		public void Reload ()
+		{
+			if (loader != null) {
+				// Obsolete value, get a new one
+				var v = loader ();
+				if (v != null) {
+					val = v;
+					needToReload = false;
+				}
+			}
+		}
+
+		public TValue Val {
+			get {
+				if (!IsValid) {
+					Reload ();
+				}
+				return val;
+			}
+		}
+	}
+}

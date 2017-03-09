@@ -25,6 +25,8 @@
 //
 //
 
+using CorApi.ComInterop;
+
 using DC = Mono.Debugging.Client;
 using Mono.Debugging.Evaluation;
 
@@ -33,15 +35,13 @@ namespace Mono.Debugging.Win32
 	public unsafe class VariableReference: ValueReference
 	{
 		readonly CorValRef var;
-		readonly DC.ObjectValueFlags flags;
-		readonly string name;
 
 		public VariableReference (EvaluationContext ctx, CorValRef var, string name, DC.ObjectValueFlags flags)
 			: base (ctx)
 		{
-			this.flags = flags;
+			this.Flags = flags;
 			this.var = var;
-			this.name = name;
+			this.Name = name;
 		}
 		
 		public override object Value {
@@ -53,22 +53,18 @@ namespace Mono.Debugging.Win32
 			}
 		}
 		
-		public override string Name {
-			get {
-				return name;
+		public override string Name { get; }
+
+		public override object Type
+		{
+			get
+			{
+				ICorDebugType type;
+				Com.QueryInteface<ICorDebugValue2>(var.Val).GetExactType(out type).AssertSucceeded("Com.QueryInteface<ICorDebugValue2>(var.Val).GetExactType(out type)");
+				return type; // TODO: see if we got to have it wrapped
 			}
 		}
 		
-		public override object Type {
-			get {
-				return var.Val.ExactType;
-			}
-		}
-		
-		public override DC.ObjectValueFlags Flags {
-			get {
-				return flags;
-			}
-		}
+		public override DC.ObjectValueFlags Flags { get; }
 	}
 }

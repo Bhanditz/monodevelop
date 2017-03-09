@@ -25,8 +25,11 @@
 //
 //
 
+using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
+
+using CorApi.ComInterop;
 
 using CorApi2.debug;
 
@@ -66,8 +69,11 @@ namespace Mono.Debugging.Win32
 		}
 		
 		public override object Type {
-			get {
-				return ((CorValRef)Value).Val.ExactType;
+			get
+			{
+				ICorDebugType exacttype;
+				Com.QueryInteface<ICorDebugValue2>(((CorValRef)Value).Val).GetExactType(out exacttype).AssertSucceeded("Com.QueryInteface<ICorDebugValue2>(((CorValRef)Value).Val).GetExactType(out exacttype)");
+				return exacttype;
 			}
 		}
 		
@@ -94,7 +100,9 @@ namespace Mono.Debugging.Win32
 					val = CorObjectAdaptor.GetRealObject (ctx, thisobj);
 					if (val is ICorDebugObjectValue) {
 						cval = (ICorDebugObjectValue)val;
-						val = cval.GetFieldValue (type.Class, field.MetadataToken);
+						ICorDebugClass @class;
+						type.GetClass(out @class).AssertSucceeded("type.GetClass(out @class)");
+						cval.GetFieldValue (@class, ((uint)field.MetadataToken), out val).AssertSucceeded("cval.GetFieldValue (@class, ((uint)field.MetadataToken), out val)");
 						return new CorValRef (val, loader);
 					}
 					if (val is ICorDebugReferenceValue) {
@@ -113,7 +121,7 @@ namespace Mono.Debugging.Win32
 					return Context.Adapter.CreateValue (ctx, oval);
 				}
 				try {
-					val = type.GetStaticFieldValue (field.MetadataToken, ctx.Frame);
+					type.GetStaticFieldValue (((uint)field.MetadataToken), ctx.Frame, out val);
 					return new CorValRef (val, loader);
 				} catch (COMException e) {
 					if (e.ErrorCode == (int)HResult.CORDBG_E_STATIC_VAR_NOT_AVAILABLE)
@@ -121,13 +129,18 @@ namespace Mono.Debugging.Win32
 					throw;
 				}
 			}
-			set {
-				((CorValRef)Value).SetValue (Context, (CorValRef) value);
-				if (thisobj != null) {
-					ICorDebugObjectValue cob = CorObjectAdaptor.GetRealObject (Context, thisobj) as ICorDebugObjectValue;
-					if (cob != null && cob.IsValueClass)
-						thisobj.Invalidate (); // Required to make sure that thisobj returns an up-to-date value object
-				}
+			set
+			{
+				((CorValRef)Value).SetValue(Context, (CorValRef)value);
+				if(thisobj == null)
+					return;
+				var cob = CorObjectAdaptor.GetRealObject(Context, thisobj) as ICorDebugObjectValue;
+				if(cob == null)
+					return;
+				int isValueClass;
+				cob.IsValueClass(&isValueClass).AssertSucceeded("cob.IsValueClass(&isValueClass)");
+				if(isValueClass != 0)
+					thisobj.Invalidate(); // Required to make sure that thisobj returns an up-to-date value object
 			}
 		}
 

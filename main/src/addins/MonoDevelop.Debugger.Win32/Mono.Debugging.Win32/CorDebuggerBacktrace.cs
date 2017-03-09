@@ -11,10 +11,6 @@ using System.Runtime.InteropServices;
 
 using CorApi2.Metadata;
 
-using ICorDebugChain = Microsoft.Samples.Debugging.CorDebug.ICorDebugChain;
-using ICorDebugFrame = Microsoft.Samples.Debugging.CorDebug.ICorDebugFrame;
-using ICorDebugThread = Microsoft.Samples.Debugging.CorDebug.ICorDebugThread;
-
 namespace Mono.Debugging.Win32
 {
 	class CorBacktrace: BaseBacktrace

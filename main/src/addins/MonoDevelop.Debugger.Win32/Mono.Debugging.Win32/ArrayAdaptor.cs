@@ -30,11 +30,13 @@ using System.Collections;
 
 using CorApi.ComInterop;
 
+using JetBrains.Annotations;
+
 using Mono.Debugging.Evaluation;
 
 namespace Mono.Debugging.Win32
 {
-	class ArrayAdaptor: ICollectionAdaptor
+	unsafe class ArrayAdaptor: ICollectionAdaptor
 	{
 		readonly CorEvaluationContext ctx;
 		readonly CorValRef<ICorDebugArrayValue> valRef;
@@ -45,33 +47,80 @@ namespace Mono.Debugging.Win32
 			this.valRef = valRef;
 		}
 
-		public int[] GetLowerBounds ()
+		public int[] GetLowerBounds()
 		{
-			var array = valRef.Val;
-			if (array != null && array.HasBaseIndicies) {
-				return array.GetBaseIndicies ();
-			} else {
-				return new int[GetDimensions ().Length];
-			}
+			ICorDebugArrayValue array = valRef.Val;
+			if(array == null)
+				return new int[] { };
+
+			uint nRank = 0;
+			array.GetRank(&nRank).AssertSucceeded("array.GetRank(&nRank)");
+
+			int isHasBaseIndicies;
+			array.HasBaseIndicies(&isHasBaseIndicies).AssertSucceeded("array.HasBaseIndicies(&isHasBaseIndicies)");
+			if(isHasBaseIndicies == 0)
+				return new int[nRank];
+
+			var baseindices = new uint[nRank];
+			fixed(uint* pind = baseindices)
+				array.GetBaseIndicies(((uint)baseindices.Length), pind).AssertSucceeded("array.GetBaseIndicies (((uint)baseindices.Length), pind)");
+			var baseindicesAsInts = new int[nRank];
+			for(uint a = nRank; a-- > 0;)
+				baseindicesAsInts[a] = ((int)baseindices[a]);
+			return baseindicesAsInts;
 		}
-		
-		public int[] GetDimensions ()
+
+		public int[] GetDimensions()
 		{
-			var array = valRef.Val;
-			return array != null ? array.GetDimensions () : new int[0];
+			ICorDebugArrayValue array = valRef.Val;
+			if(array == null)
+				return new int[] { };
+
+			uint nRank = 0;
+			array.GetRank(&nRank).AssertSucceeded("array.GetRank(&nRank)");
+
+			var dims = new uint[nRank];
+			fixed(uint* pdims = dims)
+				array.GetDimensions(((uint)dims.Length), pdims).AssertSucceeded("array.GetDimensions(((uint)dims.Length), pdims)");
+			var dimsAsInts = new int[nRank];
+			for(uint a = nRank; a-- > 0;)
+				dimsAsInts[a] = ((int)dims[a]);
+			return dimsAsInts;
 		}
-		
-		public object GetElement (int[] indices)
+
+		public object GetElement([NotNull] int[] indicesAsInts)
 		{
-			return new CorValRef (delegate {
-				var array = valRef.Val;
-				return array != null ? array.GetElement (indices) : null;
+			if(indicesAsInts == null)
+				throw new ArgumentNullException(nameof(indicesAsInts));
+			return new CorValRef(() =>
+			{
+				ICorDebugArrayValue array = valRef.Val;
+				if(array == null)
+					return null;
+
+				if(indicesAsInts.Length == 0)
+					throw new ArgumentOutOfRangeException(nameof(indicesAsInts), indicesAsInts, "The indices array must not be empty.");
+
+				uint nRank = 0;
+				array.GetRank(&nRank).AssertSucceeded("array.GetRank(&nRank)");
+				if(indicesAsInts.Length != nRank)
+					throw new ArgumentOutOfRangeException(nameof(indicesAsInts), indicesAsInts, $"The number of indices supplied, {indicesAsInts.Length:N0}, does not match the array rank of {nRank:N0}.");
+
+				var indices = new uint[nRank];
+				for(uint a = nRank; a-- > 0;)
+					indices[a] = ((uint)indicesAsInts[a]);
+				fixed(uint* pindices = indices)
+				{
+					ICorDebugValue value;
+					array.GetElement(nRank, pindices, out value).AssertSucceeded("array.GetElement (nRank, pindices, out value)");
+					return value;
+				}
 			});
 		}
 
 		public Array GetElements (int[] indices, int count)
 		{
-			// FIXME: the point of this method is to be more efficient than getting 1 array element at a time...
+			// TODO: FIXME: the point of this method is to be more efficient than getting 1 array element at a time...
 			var elements = new ArrayList ();
 
 			int[] idx = new int[indices.Length];
@@ -92,10 +141,16 @@ namespace Mono.Debugging.Win32
 			valRef.Invalidate ();
 			it.SetValue (ctx, (CorValRef) val);
 		}
-		
-		public object ElementType {
-			get {
-				return valRef.Val.ExactType.FirstTypeParameter;
+
+		public object ElementType
+		{
+			get
+			{
+				ICorDebugType exacttype;
+				Com.QueryInteface<ICorDebugValue2>(valRef.Val).GetExactType(out exacttype).AssertSucceeded("Com.QueryInteface<ICorDebugValue2>(valRef.Val).GetExactType(out exacttype)");
+				ICorDebugType firsttypeparam;
+				exacttype.GetFirstTypeParameter(out firsttypeparam).AssertSucceeded("exacttype.GetFirstTypeParameter(out firsttypeparam)");
+				return firsttypeparam;
 			}
 		}
 	}
