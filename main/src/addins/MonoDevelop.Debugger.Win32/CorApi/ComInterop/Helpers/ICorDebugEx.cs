@@ -34,7 +34,7 @@ namespace CorApi.ComInterop
             fixed(char* pCurrentDirectory = currentDirectory)
             fixed(char* pEnv = environment)
             fixed(PROCESS_INFORMATION* ppi = &processInformation)
-                cordebug.CreateProcess((ushort*)pApplicationName, (ushort*)pCommandLine, &processAttributes, &threadAttributes, inheritHandles ? 1 : 0, (uint)creationFlags, pEnv, (ushort*)pCurrentDirectory, &startupInfo, ppi, debuggingFlags, out proc);
+                cordebug.CreateProcess((ushort*)pApplicationName, (ushort*)pCommandLine, &processAttributes, &threadAttributes, inheritHandles ? 1 : 0, (uint)creationFlags, null, (ushort*)pCurrentDirectory, &startupInfo, ppi, debuggingFlags, out proc).AssertSucceeded($"The debugger has failed to run a process for {applicationName} {commandLine}.");
 
             return proc;
         }
