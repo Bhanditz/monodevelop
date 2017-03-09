@@ -140,7 +140,7 @@ namespace CorApi.ComInterop
       /// </summary>
       /// <param name="ty"></param>
         [MethodImpl (MethodImplOptions.InternalCall, MethodCodeType = MethodCodeType.Runtime)]
-        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType ([Out] CorElementType *ty);
+        [System.Runtime.InteropServices.PreserveSigAttribute] [JetBrains.Annotations.MustUseReturnValueAttribute] System.Int32 GetType (out CorElementType ty);
 
       /// <summary>
       /// GetClass is used if the CorElementType returned by GetType is ELEMENT_TYPE_CLASS,

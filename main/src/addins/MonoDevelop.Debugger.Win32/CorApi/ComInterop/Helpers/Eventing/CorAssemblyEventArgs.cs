@@ -26,9 +26,9 @@ namespace CorApi.ComInterop.Eventing
             switch (CallbackType)
             {
             case ManagedCallbackType.OnAssemblyLoad:
-                return "Assembly loaded: " + LpcwstrHelper.GetString(Assembly.GetName, "Could not get the assembly name.");
+                return "Assembly loaded: " + LpwstrHelper.GetString(Assembly.GetName, "Could not get the assembly name.");
             case ManagedCallbackType.OnAssemblyUnload:
-                return "Assembly unloaded: " + LpcwstrHelper.GetString(Assembly.GetName, "Could not get the assembly name.");
+                return "Assembly unloaded: " + LpwstrHelper.GetString(Assembly.GetName, "Could not get the assembly name.");
             }
             return base.ToString();
         }

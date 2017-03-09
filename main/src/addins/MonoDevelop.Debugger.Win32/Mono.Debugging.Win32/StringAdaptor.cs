@@ -53,7 +53,7 @@ namespace Mono.Debugging.Win32
 			}
 		}
 		
-		public string Value => LpcwstrHelper.GetString(str.GetString, "Cannot take the characters of a string value.");
+		public string Value => LpwstrHelper.GetString(str.GetString, "Cannot take the characters of a string value.");
 
 		public string Substring (int index, int length)
 		{

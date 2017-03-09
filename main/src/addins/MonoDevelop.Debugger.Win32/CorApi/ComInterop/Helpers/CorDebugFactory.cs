@@ -46,7 +46,7 @@ namespace CorApi.ComInterop
             Debug.Assert(!string.IsNullOrEmpty(pathToExe));
             if(string.IsNullOrEmpty(pathToExe))
                 throw new ArgumentException("Value cannot be null or empty.", "pathToExe");
-            return LpcwstrHelper.GetString((x, y, z) =>
+            return LpwstrHelper.GetString((x, y, z) =>
             {
                 fixed(char* pchPathCopy = pathToExe.ToCharArray() /*declared as a mutable string, so shan't pass the original*/)
                     return MscoreeDll.GetRequestedRuntimeVersion((ushort*)pchPathCopy, y, x, z);
@@ -60,7 +60,7 @@ namespace CorApi.ComInterop
             {
                 if(hProcess.IsInvalid)
                     throw new Win32Exception(Marshal.GetLastWin32Error());
-                return LpcwstrHelper.GetString((x, y, z) => MscoreeDll.GetVersionFromProcess(hProcess.Value, y, x, z), $"Could not get the debugger version from a running process with PID {pid:N0}.");
+                return LpwstrHelper.GetString((x, y, z) => MscoreeDll.GetVersionFromProcess(hProcess.Value, y, x, z), $"Could not get the debugger version from a running process with PID {pid:N0}.");
             }
         }
 

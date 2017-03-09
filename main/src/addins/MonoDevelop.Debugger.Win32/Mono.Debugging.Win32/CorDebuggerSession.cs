@@ -54,11 +54,11 @@ namespace Mono.Debugging.Win32
 		readonly SymbolBinder symbolBinder = MtaThread.Run (() => new SymbolBinder ());
 		readonly object appDomainsLock = new object ();
 
-		Dictionary<int, AppDomainInfo> appDomains = new Dictionary<int, AppDomainInfo> ();
-		Dictionary<int, ProcessInfo> processes = new Dictionary<int, ProcessInfo> ();
-		Dictionary<int, ThreadInfo> threads = new Dictionary<int,ThreadInfo> ();
+		Dictionary<uint, AppDomainInfo> appDomains = new Dictionary<uint, AppDomainInfo> ();
+		Dictionary<uint, ProcessInfo> processes = new Dictionary<uint, ProcessInfo>();
+		Dictionary<uint, ThreadInfo> threads = new Dictionary<uint, ThreadInfo>();
 		readonly Dictionary<ICorDebugBreakpoint, BreakEventInfo> breakpoints = new Dictionary<ICorDebugBreakpoint, BreakEventInfo> ();
-		readonly Dictionary<long, ICorDebugHandleValue> handles = new Dictionary<long, ICorDebugHandleValue>();
+		readonly Dictionary<ulong, ICorDebugHandleValue> handles = new Dictionary<ulong, ICorDebugHandleValue>();
 
 		readonly BlockingCollection<Action> helperOperationsQueue = new BlockingCollection<Action>(new ConcurrentQueue<Action>());
 		readonly CancellationTokenSource helperOperationsCancellationTokenSource = new CancellationTokenSource ();
@@ -187,7 +187,7 @@ namespace Mono.Debugging.Win32
 			var breakpointsCopy = breakpoints.Keys.ToList ();
 			foreach (var corBreakpoint in breakpointsCopy) {
 				try {
-					corBreakpoint.Activate (false);
+					corBreakpoint.Activate (0).AssertSucceeded("corBreakpoint.Activate (0)");
 				}
 				catch (Exception e) {
 					DebuggerLoggingService.LogMessage ("Exception in DeactivateBreakpoints(): {0}", e);
@@ -209,12 +209,12 @@ namespace Mono.Debugging.Win32
 					// Process already running. Stop it. In the ProcessExited event the
 					// debugger engine will be terminated
 					try {
-						_process.Stop (0);
+						_process.Stop (0).AssertSucceeded("_process.Stop (0)");;
 						if (attaching) {
-							_process.Detach ();
+							_process.Detach ().AssertSucceeded("_process.Detach ()");;
 						}
 						else {
-							_process.Terminate (1);
+							_process.Terminate (1).AssertSucceeded("_process.Terminate (1)");;
 						}
 					}
 					catch (COMException e) {
@@ -385,7 +385,7 @@ namespace Mono.Debugging.Win32
 			_process.GetID(&pid).AssertSucceeded("Could not get the PID of the newly-created process.");
 			_processId = pid;
 
-			_cordbgevents.NotNull("CorDebugEvents must have been set up with the main debugger interface.").Resume();
+			// _cordbgevents.NotNull("CorDebugEvents must have been set up with the main debugger interface.").Resume(); // NOTE: looks like the Resume were for a generic case, and we start sinking events even before we do anything about a Process in the debugger interface
 			_process.Continue(0).AssertSucceeded("Could not continue the initially stopped process.");
 		}
 
@@ -573,7 +573,11 @@ namespace Mono.Debugging.Win32
 			bool localStepInsideDebuggerHidden = stepInsideDebuggerHidden;
 			stepInsideDebuggerHidden = false;
 
-			if (e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
+			int isQueued;
+			ICorDebugProcess process;
+			e.AppDomain.GetProcess(out process).AssertSucceeded("Could not get the Process of the AppDomain.");
+			process.HasQueuedCallbacks (e.Thread, &isQueued).AssertSucceeded("e.AppDomain.Process.HasQueuedCallbacks (e.Thread, &isQueued)");
+			if (isQueued.ToBool()) {
 				e.Continue = true;
 				return;
 			}
@@ -584,30 +588,35 @@ namespace Mono.Debugging.Win32
 				return;
 			}
 
-			if (ContinueOnStepIn (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+			ICorDebugFrame activeframe;
+			e.Thread.GetActiveFrame(out activeframe).AssertSucceeded("Could not get the Active Frame of a Thread.");
+			ICorDebugFunction framefunction;
+			activeframe.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+			var function = framefunction;
+			if (ContinueOnStepIn (function.GetMethodInfo (this))) {
 				e.Continue = true;
 				return;
 			}
 
-			var currentSequence = CorBacktrace.GetSequencePoint (this, e.Thread.ActiveFrame);
+			var currentSequence = CorBacktrace.GetSequencePoint (this, activeframe);
 			if (currentSequence == null) {
-				stepper.StepOut ();
+				stepper.StepOut ().AssertSucceeded("stepper.StepOut ()");;
 				autoStepInto = true;
 				e.Continue = true;
 				return;
 			}
 
-			if (StepThrough (e.Thread.ActiveFrame.Function.GetMethodInfo (this))) {
+			if (StepThrough (function.GetMethodInfo (this))) {
 				stepInsideDebuggerHidden = e.StepReason == CorDebugStepReason.STEP_CALL;
 				RawContinue (true, true);
 				e.Continue = true;
 				return;
 			}
 
-			if ((Options.StepOverPropertiesAndOperators || IsCompilerGenerated(e.Thread.ActiveFrame.Function.GetMethodInfo (this))) &&
-			    IsPropertyOrOperatorMethod (e.Thread.ActiveFrame.Function.GetMethodInfo (this)) &&
+			if ((Options.StepOverPropertiesAndOperators || IsCompilerGenerated(function.GetMethodInfo (this))) &&
+			    IsPropertyOrOperatorMethod (function.GetMethodInfo (this)) &&
 				e.StepReason == CorDebugStepReason.STEP_CALL) {
-				stepper.StepOut ();
+				stepper.StepOut ().AssertSucceeded("stepper.StepOut ()");;
 				autoStepInto = true;
 				e.Continue = true;
 				return;
@@ -638,7 +647,9 @@ namespace Mono.Debugging.Win32
 		void OnThreadExit (object sender, CorThreadEventArgs e)
 		{
 			lock (threads) {
-				threads.Remove (e.Thread.Id);
+				uint dwThreadId;
+				e.Thread.GetID(&dwThreadId).AssertSucceeded("Could not get the ID of a Thread.");
+				threads.Remove (dwThreadId);
 			}
 		}
 
@@ -658,7 +669,9 @@ namespace Mono.Debugging.Win32
 			QueueToHelperThread (() => {
 				BreakEventInfo binfo;
 				BreakEvent breakEvent = null;
-				if (e.Controller.IsRunning ())
+				int isRunning;
+				e.Controller.IsRunning (&isRunning).AssertSucceeded("e.Controller.IsRunning (&isRunning)");
+				if (isRunning.ToBool())
 					throw new InvalidOperationException ("Debuggee isn't stopped to perform breakpoint calculations");
 
 				var shouldContinue = false;
@@ -672,16 +685,26 @@ namespace Mono.Debugging.Win32
 					}
 				}
 
-				if (shouldContinue || e.AppDomain.Process.HasQueuedCallbacks (e.Thread)) {
-					e.Controller.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-					e.Controller.Continue (false);
+				int isQueued;
+				ICorDebugProcess process;
+				e.AppDomain.GetProcess(out process).AssertSucceeded("Could not get the Process of the AppDomain.");
+				process.HasQueuedCallbacks(e.Thread, &isQueued).AssertSucceeded("e.AppDomain.Process.HasQueuedCallbacks (e.Thread, &isQueued)");
+				if(shouldContinue || isQueued.ToBool())
+				{
+					e.Controller.SetAllThreadsDebugState(CorDebugThreadState.THREAD_RUN, null).AssertSucceeded("e.Controller.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null)");
+					e.Controller.Continue(0).AssertSucceeded("e.Controller.Continue (0)");
 					return;
 				}
 
 				OnStopped ();
 				// If a breakpoint is hit while stepping, cancel the stepping operation
-				if (stepper != null && stepper.IsActive ())
-					stepper.Deactivate ();
+				if (stepper != null)
+				{
+					int isStepperActive;
+					stepper.IsActive(&isStepperActive).AssertSucceeded("Could not get if a Stepper is Active.");
+					if(isStepperActive.ToBool())
+						stepper.Deactivate ().AssertSucceeded("stepper.Deactivate ()");
+				}
 				autoStepInto = false;
 				SetActiveThread (e.Thread);
 				var args = new TargetEventArgs (TargetEventType.TargetHitBreakpoint) {
@@ -755,14 +778,18 @@ namespace Mono.Debugging.Win32
 			TargetEventArgs args = new TargetEventArgs (TargetEventType.TargetExited);
 
 			// If the main thread stopped, terminate the debugger session
-			if (e.Process.Id == _process.Id) {
+			uint dwProcessIdFromEvent;
+			e.Process.GetID(&dwProcessIdFromEvent).AssertSucceeded("Could not get the ID of a Process.");
+			uint dwProcessIdOur;
+			_process.GetID(&dwProcessIdOur).AssertSucceeded("Could not get the ID of a Process.");
+			if (dwProcessIdFromEvent == dwProcessIdOur) {
 				lock (terminateLock) {
 					_process.Dispose ();
 					_process = null;
 					ThreadPool.QueueUserWorkItem (delegate
 					{
 						// The Terminate call will fail if called in the event handler
-						_dbg.Terminate ();
+						_dbg.Terminate ().AssertSucceeded("_dbg.Terminate ()");;
 						_dbg = null;
 						GC.Collect ();
 					});
@@ -774,7 +801,7 @@ namespace Mono.Debugging.Win32
 
 		void OnAssemblyUnload (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Unloaded Module '{0}'\n", LpcwstrHelper.GetString(e.Assembly.GetName, "Could not get the assembly name.")));
+			OnDebuggerOutput (false, string.Format ("Unloaded Module '{0}'\n", LpwstrHelper.GetString(e.Assembly.GetName, "Could not get the assembly name.")));
 			e.Continue = true;
 		}
 
@@ -785,15 +812,21 @@ namespace Mono.Debugging.Win32
 
 			try {
 				// Required to avoid the jit to get rid of variables too early
-				currentModule.JITCompilerFlags = CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION;
+				Com.QueryInteface<ICorDebugModule2>(currentModule).SetJITCompilerFlags((uint)CorDebugJITCompilerFlags.CORDEBUG_JIT_DISABLE_OPTIMIZATION).AssertSucceeded("Could not set the JIT Compiler Flags to disable optimization.");
 			}
 			catch {
 				// Some kind of modules don't allow JIT flags to be changed.
 			}
 
 			var currentDomain = e.AppDomain;
-			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}\n", currentModule.Name, currentDomain.Id, currentDomain.Name));
-			string file = currentModule.Assembly.Name;
+			uint currentDomainId=0;
+			currentDomain.GetID(&currentDomainId).AssertSucceeded("Could not get the ID of an AppDomain.");
+			string currentDomainName = LpwstrHelper.GetString(currentDomain.GetName, "Could not get the Name of an AppDomain.");
+			string currentModuleName = LpwstrHelper.GetString(currentModule.GetName, "Could not get the Name of a Module.");
+			OnDebuggerOutput (false, String.Format("Loading module {0} in application domain {1}:{2}\n", currentModuleName, currentDomainId, currentDomainName));
+			ICorDebugAssembly moduleassembly;
+			currentModule.GetAssembly(out moduleassembly).AssertSucceeded("Could not get the Assembly of a Module.");
+			string file = LpwstrHelper.GetString(moduleassembly.GetName, "Could not get the Name of an Assembly.");
 			var newDocuments = new Dictionary<string, DocInfo> ();
 			var justMyCode = false;
 			ISymbolReader reader = null;
@@ -827,15 +860,15 @@ namespace Mono.Debugging.Win32
 					{
 						OnDebuggerOutput(false, string.Format("Failed to load pdb for assembly {0}. Error code {1}(0x{2:X})\n", file, ex.ErrorCode, ex.ErrorCode));
 						if(!typeof(PdbHResult).IsEnumDefined(ex.ErrorCode))
-							DebuggerLoggingService.LogError(string.Format("Loading symbols of module {0} failed", e.Module.Name), ex);
+							DebuggerLoggingService.LogError(string.Format("Loading symbols of module {0} failed", currentModuleName), ex);
 					}
 				}
 				catch (Exception ex) {
-					DebuggerLoggingService.LogError (string.Format ("Loading symbols of module {0} failed", e.Module.Name), ex);
+					DebuggerLoggingService.LogError (string.Format ("Loading symbols of module {0} failed", currentModuleName), ex);
 				}
 			}
 			try {
-				currentModule.SetJmcStatus (justMyCode, null);
+				Com.QueryInteface<ICorDebugModule2>(currentModule).SetJMCStatus(justMyCode.ToInt(), 0, null).AssertSucceeded("Could not set JustMyCode status for the module.");
 			}
 			catch (COMException ex) {
 				// somewhen exceptions is thrown
@@ -844,33 +877,33 @@ namespace Mono.Debugging.Win32
 
 			lock (appDomainsLock) {
 				AppDomainInfo appDomainInfo;
-				if (!appDomains.TryGetValue (currentDomain.Id, out appDomainInfo)) {
-				  DebuggerLoggingService.LogMessage ("OnCreatedAppDomain was not fired for domain {0} (id {1})", currentDomain.Name, currentDomain.Id);
+				if (!appDomains.TryGetValue (currentDomainId, out appDomainInfo)) {
+				  DebuggerLoggingService.LogMessage ("OnCreatedAppDomain was not fired for domain {0} (id {1})", currentDomainName, currentDomainId);
 					appDomainInfo = new AppDomainInfo {
 						AppDomain = currentDomain,
 						Documents = new Dictionary<string, DocInfo> (StringComparer.InvariantCultureIgnoreCase),
 						Modules = new Dictionary<string, ModuleInfo> (StringComparer.InvariantCultureIgnoreCase)
 					};
-					appDomains[currentDomain.Id] = appDomainInfo;
+					appDomains[currentDomainId] = appDomainInfo;
 				}
 				var modules = appDomainInfo.Modules;
-				if (modules.ContainsKey (currentModule.Name)) {
+				if (modules.ContainsKey (currentModuleName)) {
 				  DebuggerLoggingService.LogMessage ("Module {0} was already added for app domain {1} (id {2}). Replacing\n",
-						currentModule.Name, currentDomain.Name, currentDomain.Id);
+						currentModuleName, currentDomainName, currentDomainId);
 				}
 				var newModuleInfo = new ModuleInfo {
 					Module = currentModule,
 					Reader = reader,
 					Importer = mi,
 				};
-				modules[currentModule.Name] = newModuleInfo;
+				modules[currentModuleName] = newModuleInfo;
 				var existingDocuments = appDomainInfo.Documents;
 				foreach (var newDocument in newDocuments) {
 					var documentFile = newDocument.Key;
 					var newDocInfo = newDocument.Value;
 					if (existingDocuments.ContainsKey (documentFile)) {
 					  DebuggerLoggingService.LogMessage ("Document {0} was already added for module {1} in domain {2} (id {3}). Replacing\n",
-							documentFile, currentModule.Name, currentDomain.Name, currentDomain.Id);
+							documentFile, currentModuleName, currentDomainName, currentDomainId);
 					}
 					newDocInfo.ModuleInfo = newModuleInfo;
 					existingDocuments[documentFile] = newDocInfo;
@@ -888,29 +921,33 @@ namespace Mono.Debugging.Win32
 		void OnModuleUnload (object sender, CorModuleEventArgs e)
 		{
 			var currentDomain = e.AppDomain;
+			uint currentDomainId=0;
+			currentDomain.GetID(&currentDomainId).AssertSucceeded("Could not get the ID of an AppDomain.");
 			var currentModule = e.Module;
+			string currentDomainName = LpwstrHelper.GetString(currentDomain.GetName, "Could not get the Name of an AppDomain.");
+			string currentModuleName = LpwstrHelper.GetString(currentModule.GetName, "Could not get the Name of a Module.");
 			var documentsToRemove = new List<string> ();
 			lock (appDomainsLock) {
 				AppDomainInfo appDomainInfo;
-				if (!appDomains.TryGetValue (currentDomain.Id, out appDomainInfo)) {
-				  DebuggerLoggingService.LogMessage ("Failed unload module {0} for app domain {1} (id {2}) because app domain was not found or already unloaded\n",
-							currentModule.Name, currentDomain.Name, currentDomain.Id);
+				if (!appDomains.TryGetValue (currentDomainId, out appDomainInfo)) {
+					DebuggerLoggingService.LogMessage ("Failed unload module {0} for app domain {1} (id {2}) because app domain was not found or already unloaded\n",
+							currentModuleName, currentDomainName, currentDomainId);
 					return;
 				}
 				ModuleInfo moi;
-				if (!appDomainInfo.Modules.TryGetValue (currentModule.Name, out moi)) {
-				  DebuggerLoggingService.LogMessage ("Failed unload module {0} for app domain {1} (id {2}) because the module was not found or already unloaded\n",
-						currentModule.Name, currentDomain.Name, currentDomain.Id);
+				if (!appDomainInfo.Modules.TryGetValue (currentModuleName, out moi)) {
+					DebuggerLoggingService.LogMessage ("Failed unload module {0} for app domain {1} (id {2}) because the module was not found or already unloaded\n",
+						currentModuleName, currentDomainName, currentDomainId);
 				}
 				else {
-					appDomainInfo.Modules.Remove (currentModule.Name);
+					appDomainInfo.Modules.Remove (currentModuleName);
 					var disposableReader = moi.Reader as IDisposable;
 					if (disposableReader != null)
 						disposableReader.Dispose ();
 				}
 
 				foreach (var docInfo in appDomainInfo.Documents) {
-					if (docInfo.Value.ModuleInfo.Module.Name == currentModule.Name)
+					if (LpwstrHelper.GetString(docInfo.Value.ModuleInfo.Module.GetName, "Could not get the Name of a Module.") == currentModuleName)
 						documentsToRemove.Add (docInfo.Key);
 				}
 				foreach (var file in documentsToRemove) {
@@ -924,7 +961,9 @@ namespace Mono.Debugging.Win32
 
 		void OnCreateAppDomain (object sender, CorAppDomainEventArgs e)
 		{
-			var appDomainId = e.AppDomain.Id;
+			uint appDomainId=0;
+			e.AppDomain.GetID(&appDomainId).AssertSucceeded("Could not get the ID of an AppDomain.");
+			string appDomainName = LpwstrHelper.GetString(e.AppDomain.GetName, "Could not get the Name of an AppDomain.");
 			lock (appDomainsLock) {
 				if (!appDomains.ContainsKey (appDomainId)) {
 					appDomains[appDomainId] = new AppDomainInfo {
@@ -934,26 +973,28 @@ namespace Mono.Debugging.Win32
 					};
 				}
 				else {
-					DebuggerLoggingService.LogMessage ("App domain {0} (id {1}) was already loaded", e.AppDomain.Name, appDomainId);
+					DebuggerLoggingService.LogMessage ("App domain {0} (id {1}) was already loaded", appDomainName, appDomainId);
 				}
 			}
-			e.AppDomain.Attach();
+			e.AppDomain.Attach().AssertSucceeded("e.AppDomain.Attach()");;
 			e.Continue = true;
-			OnDebuggerOutput (false, string.Format("Loaded application domain '{0} (id {1})'\n", e.AppDomain.Name, appDomainId));
+			OnDebuggerOutput (false, string.Format("Loaded application domain '{0} (id {1})'\n", appDomainName, appDomainId));
 		}
 
 		private void OnAppDomainExit (object sender, CorAppDomainEventArgs e)
 		{
-			var appDomainId = e.AppDomain.Id;
+			uint appDomainId=0;
+			e.AppDomain.GetID(&appDomainId).AssertSucceeded("Could not get the ID of an AppDomain.");
+			string appDomainName = LpwstrHelper.GetString(e.AppDomain.GetName, "Could not get the Name of an AppDomain.");
 			lock (appDomainsLock) {
 				if (!appDomains.Remove (appDomainId)) {
-				  DebuggerLoggingService.LogMessage ("Failed to unload app domain {0} (id {1}) because it's not found in map. Possibly already unloaded.", e.AppDomain.Name, appDomainId);
+				  DebuggerLoggingService.LogMessage ("Failed to unload app domain {0} (id {1}) because it's not found in map. Possibly already unloaded.", appDomainName, appDomainId);
 				}
 			}
 			// Detach is not implemented for ICorDebugAppDomain, it's valid only for ICorDebugProcess
 			//e.AppDomain.Detach ();
 			e.Continue = true;
-			OnDebuggerOutput (false, string.Format("Unloaded application domain '{0} (id {1})'\n", e.AppDomain.Name, appDomainId));
+			OnDebuggerOutput (false, string.Format("Unloaded application domain '{0} (id {1})'\n", appDomainName, appDomainId));
 		}
 
 		private void OnCreateProcess(object sender, CorProcessEventArgs e)
@@ -970,13 +1011,15 @@ namespace Mono.Debugging.Win32
 
 		void OnCreateThread (object sender, CorThreadEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Started Thread {0}\n", e.Thread.Id));
+			uint dwThreadId;
+			e.Thread.GetID(&dwThreadId).AssertSucceeded("Could not get the ID of a Thread.");
+			OnDebuggerOutput (false, string.Format ("Started Thread {0}\n", dwThreadId));
 			e.Continue = true;
 		}
 
 		void OnAssemblyLoad (object sender, CorAssemblyEventArgs e)
 		{
-			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", LpcwstrHelper.GetString(e.Assembly.GetName, "Could not get the assembly name.")));
+			OnDebuggerOutput (false, string.Format ("Loaded Assembly '{0}'\n", LpwstrHelper.GetString(e.Assembly.GetName, "Could not get the assembly name.")));
 			e.Continue = true;
 		}
 		
@@ -1011,8 +1054,14 @@ namespace Mono.Debugging.Win32
 				OnStopped ();
 				e.Continue = false;
 				// If an exception is thrown while stepping, cancel the stepping operation
-				if (stepper != null && stepper.IsActive ())
-					stepper.Deactivate ();
+				if (stepper != null)
+				{
+					int isStepperActive;
+					stepper.IsActive(&isStepperActive).AssertSucceeded("Could not get if a Stepper is Active.");
+					if(isStepperActive.ToBool())
+						stepper.Deactivate ().AssertSucceeded("stepper.Deactivate ()");
+				}
+				;
 				autoStepInto = false;
 				SetActiveThread (e.Thread);
 				
@@ -1039,7 +1088,8 @@ namespace Mono.Debugging.Win32
 		private bool IsCatchpoint (CorException2EventArgs e)
 		{
 			// Build up the exception type hierachy
-			ICorDebugValue v = e.Thread.CurrentException;
+			ICorDebugValue v;
+			e.Thread.GetCurrentException(out v).AssertSucceeded("e.Thread.GetCurrentException(out v)");
 			List<string> exceptions = new List<string>();
 			ICorDebugType t = v.GetExactType();
 			while (t != null) {
@@ -1101,8 +1151,8 @@ namespace Mono.Debugging.Win32
 			{
 				ClearEvalStatus ();
 				ClearHandles ();
-				_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-				_process.Continue (false);
+				_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null).AssertSucceeded("_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null)");;
+				_process.Continue (0).AssertSucceeded("_process.Continue (0)");;
 			});
 		}
 
@@ -1114,20 +1164,17 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		protected override void OnEnableBreakEvent (BreakEventInfo binfo, bool enable)
+		protected override void OnEnableBreakEvent(BreakEventInfo binfo, bool enable)
 		{
-			MtaThread.Run (delegate
+			MtaThread.Run(delegate
 			{
 				var bpList = binfo.Handle as List<ICorDebugFunctionBreakpoint>;
-				if (bpList != null) {
-					foreach (var bp in bpList) {
-						try {
-							bp.Activate (enable);
-						}
-						catch (COMException e) {
-							HandleBreakpointException (binfo, e);
-						}
-					}
+				if(bpList == null)
+					return;
+				foreach(ICorDebugFunctionBreakpoint bp in bpList)
+				{
+					var hrBp = (HResult)bp.Activate(enable.ToInt());
+					HandleBreakpointFailure(binfo, hrBp).Assert("Failed to activate the breakpoint.");
 				}
 			});
 		}
@@ -1145,10 +1192,10 @@ namespace Mono.Debugging.Win32
 			MtaThread.Run (delegate
 			{
 				if (stepper != null) {
-					stepper.StepOut ();
+					stepper.StepOut ().AssertSucceeded("stepper.StepOut ()");;
 					ClearEvalStatus ();
-					_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-					_process.Continue (false);
+					_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null).AssertSucceeded("_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null)");;
+					_process.Continue (0).AssertSucceeded("_process.Continue (0)");;
 				}
 			});
 		}
@@ -1162,8 +1209,10 @@ namespace Mono.Debugging.Win32
 		{
 			return MtaThread.Run (delegate
 			{
-				foreach (ICorDebugThread t in _process.Threads) {
-					if (t.Id == threadId) {
+				foreach (ICorDebugThread t in _process.GetThreads()) {
+					uint dwThreadId;
+					t.GetID(&dwThreadId).AssertSucceeded("Could not get the ID of a Thread.");
+					if (dwThreadId == threadId) {
 						return new Backtrace (new CorBacktrace (t, this));
 					}
 				}
@@ -1176,33 +1225,47 @@ namespace Mono.Debugging.Win32
 			return MtaThread.Run (delegate
 			{
 				List<ThreadInfo> list = new List<ThreadInfo> ();
-				foreach (ICorDebugThread t in _process.Threads)
+				foreach (ICorDebugThread t in _process.GetThreads())
 					list.Add (GetThread (t));
 				return list.ToArray ();
 			});
 		}
 
-		internal ISymbolReader GetReaderForModule (ICorDebugModule module)
+		internal ISymbolReader GetReaderForModule(ICorDebugModule module)
 		{
-			lock (appDomainsLock) {
+			lock(appDomainsLock)
+			{
 				AppDomainInfo appDomainInfo;
-				if (!appDomains.TryGetValue (module.Assembly.AppDomain.Id, out appDomainInfo))
+				uint appdomainid;
+				ICorDebugAppDomain assemblyappdomain;
+				ICorDebugAssembly moduleassembly;
+				module.GetAssembly(out moduleassembly).AssertSucceeded("Could not get the Assembly of a Module.");
+				moduleassembly.GetAppDomain(out assemblyappdomain).AssertSucceeded("Could not get the AppDomain of an Assembly.");
+				assemblyappdomain.GetID(&appdomainid).AssertSucceeded("Could not get the ID of an AppDomain.");
+				if(!appDomains.TryGetValue(appdomainid, out appDomainInfo))
 					return null;
 				ModuleInfo moduleInfo;
-				if (!appDomainInfo.Modules.TryGetValue (module.Name, out moduleInfo))
+				if(!appDomainInfo.Modules.TryGetValue(LpwstrHelper.GetString(module.GetName, "Could not get the Name of a Module."), out moduleInfo))
 					return null;
 				return moduleInfo.Reader;
 			}
 		}
 
-		internal CorMetadataImport GetMetadataForModule (ICorDebugModule module)
+		internal CorMetadataImport GetMetadataForModule(ICorDebugModule module)
 		{
-			lock (appDomainsLock) {
+			lock(appDomainsLock)
+			{
 				AppDomainInfo appDomainInfo;
-				if (!appDomains.TryGetValue (module.Assembly.AppDomain.Id, out appDomainInfo))
+				uint appdomainid;
+				ICorDebugAppDomain assemblyappdomain;
+				ICorDebugAssembly moduleassembly;
+				module.GetAssembly(out moduleassembly).AssertSucceeded("Could not get the Assembly of a Module.");
+				moduleassembly.GetAppDomain(out assemblyappdomain).AssertSucceeded("Could not get the AppDomain of an Assembly.");
+				assemblyappdomain.GetID(&appdomainid).AssertSucceeded("Could not get the ID of an AppDomain.");
+				if(!appDomains.TryGetValue(appdomainid, out appDomainInfo))
 					return null;
 				ModuleInfo mod;
-				if (!appDomainInfo.Modules.TryGetValue (module.Name, out mod))
+				if(!appDomainInfo.Modules.TryGetValue(LpwstrHelper.GetString(module.GetName, "Could not get the Name of a Module."), out mod))
 					return null;
 				return mod.Importer;
 			}
@@ -1238,7 +1301,9 @@ namespace Mono.Debugging.Win32
 			lock (appDomainsLock) {
 				List<ICorDebugModule> mods = new List<ICorDebugModule> ();
 				AppDomainInfo appDomainInfo;
-				if (appDomains.TryGetValue (appDomain.Id, out appDomainInfo)) {
+				uint appDomainId=0;
+				appDomain.GetID(&appDomainId).AssertSucceeded("Could not get the ID of an AppDomain.");
+				if (appDomains.TryGetValue (appDomainId, out appDomainInfo)) {
 					foreach (ModuleInfo mod in appDomainInfo.Modules.Values) {
 						mods.Add (mod.Module);
 					}
@@ -1258,19 +1323,24 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal ICorDebugHandleValue GetHandle (ICorDebugValue val)
+		internal ICorDebugHandleValue GetHandle(ICorDebugValue val)
 		{
-			ICorDebugHandleValue handleVal = null;
-			if (!handles.TryGetValue (val.Address, out handleVal)) {
-				handleVal = (ICorDebugHandleValue)(val as CorApi.ComInterop.ICorDebugHandleValue);
-				if (handleVal == null)
+			ICorDebugHandleValue handleVal;
+			ulong qwAddress = 0;
+			val.GetAddress(&qwAddress).AssertSucceeded("val.GetAddress(&qwAddress)");
+			if(!handles.TryGetValue(qwAddress, out handleVal))
+			{
+				handleVal = val as ICorDebugHandleValue;
+				if(handleVal == null)
 				{
 					// Create a handle
-					ICorDebugReferenceValue refVal = val as CorApi.ComInterop.ICorDebugReferenceValue;
-					ICorDebugHeapValue heapVal = refVal.Dereference ().CastToHeapValue ();
-					handleVal = heapVal.CreateHandle (CorDebugHandleType.HANDLE_STRONG);
+					var refVal = Com.QueryInteface<ICorDebugReferenceValue>(val);
+					ICorDebugValue deref;
+					refVal.Dereference(out deref).AssertSucceeded("refVal.Dereference (out deref)");
+					var heapVal = Com.QueryInteface<ICorDebugHeapValue2>(deref);
+					heapVal.CreateHandle(CorDebugHandleType.HANDLE_STRONG, out handleVal).AssertSucceeded("heapVal.CreateHandle (CorDebugHandleType.HANDLE_STRONG, out handleVal)");
 				}
-				handles.Add (val.Address, handleVal);	
+				handles.Add(qwAddress, handleVal);
 			}
 			return handleVal;
 		}
@@ -1396,21 +1466,22 @@ namespace Mono.Debugging.Win32
 						}
 
 						foreach (var docInfo in docInfos) {
-							ICorDebugFunction func = docInfo.ModuleInfo.Module.GetFunctionFromToken (bestMethod.Token.GetToken ());
+							ICorDebugFunction func;
+							docInfo.ModuleInfo.Module.GetFunctionFromToken (((uint)bestMethod.Token.GetToken ()), out func).AssertSucceeded("docInfo.ModuleInfo.Module.GetFunctionFromToken (((uint)bestMethod.Token.GetToken ()), out func)");;
 
-							try {
-								ICorDebugFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
-								breakpoints[corBp] = binfo;
+							ICorDebugFunctionBreakpoint corBp = func.ILCode.CreateBreakpoint (bestSp.Offset);
+							HandleBreakpointFailure (binfo, hrBp).Assert("Could not activate the breakpoint.");
 
-								if (binfo.Handle == null)
-									binfo.Handle = new List<ICorDebugFunctionBreakpoint> ();
-								(binfo.Handle as List<ICorDebugFunctionBreakpoint>).Add (corBp);
-								corBp.Activate (bp.Enabled);
-								binfo.SetStatus (BreakEventStatus.Bound, null);
-							}
-							catch (COMException e) {
-								HandleBreakpointException (binfo, e);
-							}
+							breakpoints[corBp] = binfo;
+
+							if (binfo.Handle == null)
+								binfo.Handle = new List<ICorDebugFunctionBreakpoint> ();
+							((List<ICorDebugFunctionBreakpoint>)binfo.Handle).Add (corBp);
+
+							var hrBp = (HResult)corBp.Activate (bp.Enabled.ToInt());
+							HandleBreakpointFailure (binfo, hrBp).Assert("Could not activate the breakpoint.");
+
+							binfo.SetStatus (BreakEventStatus.Bound, null);
 						}
 						return binfo;
 					}
@@ -1443,24 +1514,24 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		private static void HandleBreakpointException (BreakEventInfo binfo, COMException e)
+		private static HResults HandleBreakpointFailure(BreakEventInfo binfo, HResult hr)
 		{
-			switch(((HResult)e.ErrorCode))
+			switch(hr)
 			{
 			case HResult.CORDBG_E_UNABLE_TO_SET_BREAKPOINT:
 				binfo.SetStatus(BreakEventStatus.Invalid, "Invalid breakpoint position");
-				break;
+				return HResults.S_OK;
 			case HResult.CORDBG_E_PROCESS_TERMINATED:
 				binfo.SetStatus(BreakEventStatus.BindError, "Process terminated");
-				break;
+				return HResults.S_OK;
 			case HResult.CORDBG_E_CODE_NOT_AVAILABLE:
 				binfo.SetStatus(BreakEventStatus.BindError, "Module is not loaded");
-				break;
+				return HResults.S_OK;
 			default:
-				binfo.SetStatus(BreakEventStatus.BindError, e.Message);
-				if(!typeof(HResult).IsEnumDefined(e.ErrorCode))
-					DebuggerLoggingService.LogError("Unknown exception when setting breakpoint", e);
-				break;
+				binfo.SetStatus(BreakEventStatus.BindError, HResultHelpers.GetExceptionIfFailed(((int)hr)).NotNull("It failed.").Message);
+				if(!typeof(HResult).IsEnumDefined(((int)hr)))
+					DebuggerLoggingService.LogError("Unknown exception when setting breakpoint.", HResultHelpers.GetExceptionIfFailed(((int)hr)));
+				return HResults.S_OK;
 			}
 		}
 
@@ -1484,28 +1555,33 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		void Step (bool into)
+		void Step (bool isInto)
 		{
 			try {
 				ObjectAdapter.CancelAsyncOperations ();
 				if (stepper != null) {
-					ICorDebugFrame frame = activeThread.ActiveFrame;
+					ICorDebugFrame activeframe;
+					activeThread.GetActiveFrame(out activeframe).AssertSucceeded("Could not get the Active Frame of a Thread.");
 					ICorDebugFunction framefunction;
-					frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
-					ISymbolReader reader = GetReaderForModule (framefunction.Module);
+					activeframe.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+					ICorDebugModule functionmodule;
+					framefunction.GetModule(out functionmodule).AssertSucceeded("Could not get the Module of a Function.");
+					ISymbolReader reader = GetReaderForModule (functionmodule);
 					if (reader == null) {
-						RawContinue (into);
+						RawContinue (isInto);
 						return;
 					}
-					ISymbolMethod met = reader.GetMethod (new SymbolToken (framefunction.Token));
+					uint mdMethodDef;
+					framefunction.GetToken(&mdMethodDef).AssertSucceeded("framefunction.GetToken(&mdMethodDef)");
+					ISymbolMethod met = reader.GetMethod (new SymbolToken (((int)mdMethodDef)));
 					if (met == null) {
-						RawContinue (into);
+						RawContinue (isInto);
 						return;
 					}
 
 					uint offset;
 					CorDebugMappingResult mappingResult;
-					frame.GetIP (out offset, out mappingResult);
+					activeframe.GetIP (out offset, out mappingResult);
 
 					// Exclude all ranges belonging to the current line
 					List<COR_DEBUG_STEP_RANGE> ranges = new List<COR_DEBUG_STEP_RANGE> ();
@@ -1526,45 +1602,46 @@ namespace Mono.Debugging.Win32
 						ranges.Add (r);
 					}
 
-					stepper.StepRange (into, ranges.ToArray ());
+					fixed(COR_DEBUG_STEP_RANGE* pranges = ranges.ToArray())
+						stepper.StepRange(isInto.ToInt(), pranges, ((uint)ranges.Count)).AssertSucceeded($"Could not Step {(isInto ? "Into" : "Over")}.");
 
 					ClearEvalStatus ();
-					_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null);
-					_process.Continue (false);
+					_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null).AssertSucceeded("_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_RUN, null)");;
+					_process.Continue (0).AssertSucceeded("_process.Continue (0)");;
 				}
 			} catch (Exception e) {
 				DebuggerLoggingService.LogError ("Exception on Step()", e);
 			}
 		}
 
-		private void RawContinue (bool into, bool stepOverAll = false)
+		private void RawContinue(bool isInto, bool stepOverAll = false)
 		{
-			if (stepOverAll)
-				stepper.StepRange (into, new[]{ new COR_DEBUG_STEP_RANGE (){ startOffset = 0, endOffset = uint.MaxValue } });
+			if(stepOverAll)
+			{
+				var range = new COR_DEBUG_STEP_RANGE() {startOffset = 0, endOffset = uint.MaxValue};
+				stepper.StepRange(isInto.ToInt(), &range, 1).AssertSucceeded($"Could not Step {(isInto ? "Into" : "Over")}.");
+			}
 			else
-				stepper.Step (into);
-			ClearEvalStatus ();
-			_process.Continue (false);
+				stepper.Step(isInto.ToInt()).AssertSucceeded($"Could not Step {(isInto ? "Into" : "Over")}.");
+			ClearEvalStatus();
+			_process.Continue(false.ToInt()).AssertSucceeded("_process.Continue (false.ToInt())");
 		}
 
-		protected override void OnRemoveBreakEvent (BreakEventInfo bi)
+		protected override void OnRemoveBreakEvent(BreakEventInfo bi)
 		{
-			if (terminated)
-				return;
-			
-			if (bi.Status != BreakEventStatus.Bound || bi.Handle == null)
+			if(terminated)
 				return;
 
-			MtaThread.Run (delegate
+			if(bi.Status != BreakEventStatus.Bound || bi.Handle == null)
+				return;
+
+			MtaThread.Run(delegate
 			{
 				var corBpList = (List<ICorDebugFunctionBreakpoint>)bi.Handle;
-				foreach (var corBp in corBpList) {
-					try {
-						corBp.Activate (false);
-					}
-					catch (COMException e) {
-						HandleBreakpointException (bi, e);
-					}
+				foreach(ICorDebugFunctionBreakpoint corBp in corBpList)
+				{
+					var hrBp = ((HResult)corBp.Activate(false.ToInt()));
+					HandleBreakpointFailure(bi, hrBp).Assert("Could not deactivate the breakpoint.");
 				}
 			});
 		}
@@ -1575,11 +1652,18 @@ namespace Mono.Debugging.Win32
 			MtaThread.Run (delegate
 			{
 				activeThread = null;
-				if (stepper != null && stepper.IsActive ())
-					stepper.Deactivate ();
+				if (stepper != null)
+				{
+					int isStepperActive;
+					stepper.IsActive(&isStepperActive).AssertSucceeded("Could not get if a Stepper is Active.");
+					if(isStepperActive.ToBool())
+						stepper.Deactivate ().AssertSucceeded("stepper.Deactivate ()");
+				}
 				stepper = null;
-				foreach (ICorDebugThread t in _process.Threads) {
-					if (t.Id == threadId) {
+				foreach (ICorDebugThread t in _process.GetThreads()) {
+					uint dwThreadId;
+					t.GetID(&dwThreadId).AssertSucceeded("Could not get the ID of a Thread.");
+					if (dwThreadId == threadId) {
 						SetActiveThread (t);
 						break;
 					}
@@ -1587,15 +1671,19 @@ namespace Mono.Debugging.Win32
 			});
 		}
 
-		void SetActiveThread (ICorDebugThread t)
+		private void SetActiveThread(ICorDebugThread t)
 		{
 			activeThread = t;
-			if (stepper != null && stepper.IsActive ()) {
-				stepper.Deactivate ();
+			if(stepper != null)
+			{
+				int isStepperActive;
+				stepper.IsActive(&isStepperActive).AssertSucceeded("Could not get if a Stepper is Active.");
+				if(isStepperActive.ToBool())
+					stepper.Deactivate().AssertSucceeded("stepper.Deactivate ()");
 			}
-			stepper = activeThread.CreateStepper (); 
-			stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE);
-			stepper.SetJmcStatus (true);
+			activeThread.CreateStepper(out stepper).AssertSucceeded("activeThread.CreateStepper (out stepper)");
+			stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE).AssertSucceeded("stepper.SetUnmappedStopMask (CorDebugUnmappedStop.STOP_NONE)");
+			stepper.SetJmcStatus(true);
 		}
 
 		protected override void OnStepInstruction ( )
@@ -1619,10 +1707,10 @@ namespace Mono.Debugging.Win32
 
 			MtaThread.Run (delegate
 			{
-				_process.Stop (0);
+				_process.Stop (0).AssertSucceeded("_process.Stop (0)");;
 				OnStopped ();
 				ICorDebugThread currentThread = null;
-				foreach (ICorDebugThread t in _process.Threads) {
+				foreach (ICorDebugThread t in _process.GetThreads()) {
 					currentThread = t;
 					break;
 				}
@@ -1684,67 +1772,96 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		ICorDebugValue NewSpecialObject (CorEvaluationContext ctx, Action<ICorDebugEval> createCall)
+		private ICorDebugValue NewSpecialObject(CorEvaluationContext ctx, Action<ICorDebugEval> createCall)
 		{
-			ManualResetEvent doneEvent = new ManualResetEvent (false);
+			var doneEvent = new ManualResetEvent(false);
 			ICorDebugValue result = null;
-			var eval = ctx.Eval;
-			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate (object o, CorEvalEventArgs eargs) {
-				if (eargs.Eval != eval)
-					return;
-				result = eargs.Eval.Result;
-				doneEvent.Set ();
+			ICorDebugEval eval = ctx.Eval;
+			DebugEventHandler<CorEvalEventArgs> completeHandler = delegate(object o, CorEvalEventArgs eargs)
+			{
+				try
+				{
+					if(eargs.Eval != eval)
+						return;
+					eargs.Eval.GetResult(out result).AssertSucceeded("eargs.Eval.GetResult(out result)");
+				}
+				finally
+				{
+					doneEvent.Set();
+				}
 				eargs.Continue = false;
 			};
 
 			DebugEventHandler<CorEvalEventArgs> exceptionHandler = delegate(object o, CorEvalEventArgs eargs)
 			{
-				if (eargs.Eval != eval)
-					return;
-				result = eargs.Eval.Result;
-				doneEvent.Set ();
+				try
+				{
+					if(eargs.Eval != eval)
+						return;
+					eargs.Eval.GetResult(out result).AssertSucceeded("eargs.Eval.GetResult(out result)");
+				}
+				finally
+				{
+					doneEvent.Set();
+				}
 				eargs.Continue = false;
 			};
 			_process.OnEvalComplete += completeHandler;
 			_process.OnEvalException += exceptionHandler;
 
-			try {
-				createCall (eval);
-				_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread);
-				OnStartEvaluating ();
-				ClearEvalStatus ();
-				_process.Continue (false);
+			try
+			{
+				createCall(eval);
+				_process.SetAllThreadsDebugState(CorDebugThreadState.THREAD_SUSPEND, ctx.Thread).AssertSucceeded("_process.SetAllThreadsDebugState (CorDebugThreadState.THREAD_SUSPEND, ctx.Thread)");
+				;
+				OnStartEvaluating();
+				ClearEvalStatus();
+				_process.Continue(0).AssertSucceeded("_process.Continue (0)");
+				;
 
-				if (doneEvent.WaitOne (ctx.Options.EvaluationTimeout, false))
+				if(doneEvent.WaitOne(ctx.Options.EvaluationTimeout, false))
 					return result;
-				else {
-					eval.Abort ();
+				else
+				{
+					eval.Abort().AssertSucceeded("eval.Abort ()");
 					return null;
 				}
 			}
-			catch (COMException ex) {
-				var evalException = TryConvertToEvalException (ex);
+			catch(COMException ex)
+			{
+				EvaluatorException evalException = TryConvertToEvalException(ex);
 				// eval exception is a 'good' exception that should be shown in value box
 				// all other exceptions must be thrown to error log
-				if (evalException != null)
+				if(evalException != null)
 					throw evalException;
 				throw;
 			}
-			finally {
+			finally
+			{
 				_process.OnEvalComplete -= completeHandler;
 				_process.OnEvalException -= exceptionHandler;
-				OnEndEvaluating ();
+				OnEndEvaluating();
 			}
 		}
 
 		public ICorDebugValue NewString (CorEvaluationContext ctx, string value)
 		{
-			return NewSpecialObject (ctx, eval => eval.NewString (value));
+			return NewSpecialObject (ctx, eval =>
+			{
+				fixed(char *pch = value)
+					eval.NewString(((ushort*)pch)).AssertSucceeded("eval.NewString(((ushort*)pch))");
+			});
 		}
 
-		public ICorDebugValue NewArray (CorEvaluationContext ctx, ICorDebugType elemType, int size)
+		public ICorDebugValue NewArray(CorEvaluationContext ctx, ICorDebugType elemType, int size)
 		{
-			return NewSpecialObject (ctx, eval => eval.NewParameterizedArray (elemType, 1, 1, 0));
+			return NewSpecialObject(ctx, eval =>
+			{
+				uint nRank = 1;
+				uint nSingleDim = ((uint)size);
+				uint nSingleLowBound = 0;
+				Com.QueryInteface<ICorDebugEval2>(eval).NewParameterizedArray(elemType, nRank, &nSingleDim, &nSingleLowBound).AssertSucceeded($"Could not create a new array of size {size:N0}.");
+			});
 		}
 
 		private static EvaluatorException TryConvertToEvalException(COMException ex)
@@ -1782,13 +1899,19 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		internal void ClearEvalStatus ( )
+		internal void ClearEvalStatus()
 		{
-			foreach (ICorDebugProcess p in _dbg.Processes) {
-				if (p.Id == _processId) {
-					_process = p;
-					break;
-				}
+			ICorDebugProcessEnum enumProcesses;
+			_dbg.EnumerateProcesses(out enumProcesses).AssertSucceeded("Could not enumerate all processes in the debugger.");
+			IList<ICorDebugProcess> procs = enumProcesses.ToList<ICorDebugProcessEnum, ICorDebugProcess>((corenum, celt, values, fetched) => corenum.Next(celt, values, fetched));
+			foreach(ICorDebugProcess p in procs)
+			{
+				uint dwProcessId;
+				p.GetID(&dwProcessId).AssertSucceeded("Could not get the ID of a Process.");
+				if(dwProcessId != _processId)
+					continue;
+				_process = p;
+				break;
 			}
 		}
 		
@@ -1809,18 +1932,23 @@ namespace Mono.Debugging.Win32
 				catch
 				{
 					// swallow all
+					// TODO: log to Logger
 				}
 			}
 			handles.Clear ();
 		}
 
-		ProcessInfo GetProcess (ICorDebugProcess proc)
+		private ProcessInfo GetProcess(ICorDebugProcess proc)
 		{
 			ProcessInfo info;
-			lock (processes) {
-				if (!processes.TryGetValue (proc.Id, out info)) {
-					info = new ProcessInfo (proc.Id, "");
-					processes[proc.Id] = info;
+			lock(processes)
+			{
+				uint dwProcessId;
+				proc.GetID(&dwProcessId).AssertSucceeded("proc.GetID(&dwProcessId)");
+				if(!processes.TryGetValue(dwProcessId, out info))
+				{
+					info = new ProcessInfo(dwProcessId, "");
+					processes[dwProcessId] = info;
 				}
 			}
 			return info;
@@ -1830,12 +1958,17 @@ namespace Mono.Debugging.Win32
 		{
 			ThreadInfo info;
 			lock (threads) {
-				if (!threads.TryGetValue (thread.Id, out info)) {
+				uint dwThreadId;
+				thread.GetID(&dwThreadId).AssertSucceeded("Could not get the ID of a Thread.");
+				if (!threads.TryGetValue (dwThreadId, out info)) {
 					string loc = string.Empty;
-					try {
-						if (thread.ActiveFrame != null) {
-							StackFrame frame = CorBacktrace.CreateFrame (this, thread.ActiveFrame);
-							loc = frame.ToString ();
+					try
+					{
+						ICorDebugFrame activeframe;
+						thread.GetActiveFrame(out activeframe).AssertSucceeded("Could not get the Active Frame of a Thread.");
+						if (activeframe != null) {
+							StackFrame stackframe = CorBacktrace.CreateFrame (this, activeframe);
+							loc = stackframe.ToString ();
 						}
 						else {
 							loc = "<Unknown>";
@@ -1844,9 +1977,13 @@ namespace Mono.Debugging.Win32
 					catch {
 						loc = "<Unknown>";
 					}
-					
-					info = new ThreadInfo (thread.Process.Id, thread.Id, GetThreadName (thread), loc);
-					threads[thread.Id] = info;
+
+					uint dwProcessId;
+					ICorDebugProcess process;
+					thread.GetProcess(out process).AssertSucceeded("Could not get the Process of a Thread.");
+					process.GetID(&dwProcessId).AssertSucceeded("Could not get the ID of a Process.");
+					info = new ThreadInfo (dwProcessId, dwThreadId, GetThreadName (thread), loc);
+					threads[dwThreadId] = info;
 				}
 				return info;
 			}
@@ -1856,9 +1993,13 @@ namespace Mono.Debugging.Win32
 		{
 			try {
 				WaitUntilStopped ();
-				foreach (ICorDebugThread t in _process.Threads)
-					if (t.Id == id)
+				foreach (ICorDebugThread t in _process.GetThreads())
+				{
+					uint dwThreadId;
+					t.GetID(&dwThreadId).AssertSucceeded("Could not get the ID of a Thread.");
+					if (dwThreadId == id)
 						return t;
+				}
 				throw new InvalidOperationException ("Invalid thread id " + id);
 			}
 			catch {
@@ -1866,41 +2007,53 @@ namespace Mono.Debugging.Win32
 			}
 		}
 
-		string GetThreadName (ICorDebugThread thread)
+		private string GetThreadName(ICorDebugThread thread)
 		{
 			// From http://social.msdn.microsoft.com/Forums/en/netfxtoolsdev/thread/461326fe-88bd-4a6b-82a9-1a66b8e65116
-		    try 
-		    { 
-		        ICorDebugReferenceValue refVal = thread.ThreadVariable.CastToReferenceValue();
-			    int bNull = 0;
-			    refVal.IsNull(&bNull).AssertSucceeded("Could not get if the Reference Value is NULL.");
-			    if (bNull != 0) 
-		            return string.Empty; 
-		        
-		        ICorDebugObjectValue val = refVal.Dereference().CastToObjectValue(); 
-		        if (val != null) 
-		        { 
-					Type classType = val.GetExactType().GetTypeInfo (this);
-		            // Loop through all private instance fields in the thread class 
-		            foreach (FieldInfo fi in classType.GetFields (BindingFlags.NonPublic | BindingFlags.Instance))
-		            { 
-		                if (fi.Name == "m_Name")
+			try
+			{
+				ICorDebugValue threadobject;
+				thread.GetObject(out threadobject).AssertSucceeded("thread.GetObject(out threadobject)");
+				var refVal = Com.QueryInteface<ICorDebugReferenceValue>(threadobject);
+				int bNull = 0;
+				refVal.IsNull(&bNull).AssertSucceeded("Could not get if the Reference Value is NULL.");
+				if(bNull != 0)
+					return string.Empty;
+
+				ICorDebugValue refValDereferenced;
+				refVal.Dereference(out refValDereferenced).AssertSucceeded("refVal.Dereference(out refValDereferenced)");
+				var val = Com.QueryInteface<ICorDebugObjectValue>(refVal);
+				if(val != null)
+				{
+					Type classType = val.GetExactType().GetTypeInfo(this);
+					// Loop through all private instance fields in the thread class 
+					foreach(FieldInfo fi in classType.GetFields(BindingFlags.NonPublic | BindingFlags.Instance))
+					{
+						if(fi.Name == "m_Name")
 						{
-		                        ICorDebugReferenceValue fieldValue = val.GetFieldValue(val.Class, fi.MetadataToken).CastToReferenceValue();
+							ICorDebugValue fieldValueRaw;
+							ICorDebugClass @class;
+							val.GetClass(out @class).AssertSucceeded("val.GetClass(out @class)");
+							val.GetFieldValue(@class, ((uint)fi.MetadataToken), out fieldValueRaw).AssertSucceeded("val.GetFieldValue(val.Class, ((uint)fi.MetadataToken),out fieldValue)");
+							var fieldValue = (ICorDebugReferenceValue)fieldValueRaw;
 
 							int bNull1 = 0;
 							fieldValue.IsNull(&bNull1).AssertSucceeded("Could not get if the Reference Value is NULL.");
-							if (bNull1 != 0)
-									return string.Empty;
-								else
-									return fieldValue.Dereference().CastToStringValue().String;
-		                } 
-		            } 
-		        } 
-		    } catch (Exception) {
-				// Ignore
+							if(bNull1 != 0)
+								return string.Empty;
+							ICorDebugValue fieldValueDereferenced;
+							fieldValue.Dereference(out fieldValueDereferenced).AssertSucceeded("fieldValue.Dereference(out dereferenced)");
+							var fieldValueDereferencedString = Com.QueryInteface<ICorDebugStringValue>(fieldValueDereferenced);
+							return LpwstrHelper.GetString(fieldValueDereferencedString.GetString, "Could not get the Thread Name string.");
+						}
+					}
+				}
 			}
-			
+			catch(Exception)
+			{
+				// TODO: write to the Logger
+			}
+
 			return string.Empty;
 		}
 		
@@ -1939,7 +2092,9 @@ namespace Mono.Debugging.Win32
 		string EvaluateExpression (ICorDebugThread thread, string exp)
 		{
 			try {
-				if (thread.ActiveFrame == null)
+				ICorDebugFrame activeframe;
+				thread.GetActiveFrame(out activeframe).AssertSucceeded("Could not get the Active Frame of a Thread.");
+				if (activeframe == null)
 					return string.Empty;
 				EvaluationOptions ops = Options.EvaluationOptions.Clone ();
 				ops.AllowTargetInvoke = true;
@@ -1988,12 +2143,13 @@ namespace Mono.Debugging.Win32
 				if (thread == null)
 					throw new ArgumentException ("Unknown thread.");
 
-				ICorDebugFrame frame = thread.ActiveFrame;
-				if (frame == null)
+				ICorDebugFrame activeframe;
+				thread.GetActiveFrame(out activeframe).AssertSucceeded("Could not get the Active Frame of a Thread.");
+				if (activeframe == null)
 					throw new NotSupportedException ();
 
 				ICorDebugFunction framefunction;
-				frame.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
+				activeframe.GetFunction(out framefunction).AssertSucceeded("Could not get the Function of a Frame.");
 				ISymbolMethod met = framefunction.GetSymbolMethod (this);
 				if (met == null) {
 					throw new NotSupportedException ();
@@ -2018,7 +2174,7 @@ namespace Mono.Debugging.Win32
 					throw new NotSupportedException ();
 				}
 				try {
-					frame.SetIP (offset);
+					activeframe.SetIP (offset);
 					OnStopped ();
 					RaiseStopEvent ();
 				} catch {
@@ -2140,19 +2296,26 @@ namespace Mono.Debugging.Win32
 
 		public static ISymbolMethod GetSymbolMethod (this ICorDebugFunction func, CorDebuggerSession session)
 		{
-			ISymbolReader reader = session.GetReaderForModule (func.Module);
+			ICorDebugModule functionmodule;
+			func.GetModule(out functionmodule).AssertSucceeded("Could not get the Module of a Function.");
+			ISymbolReader reader = session.GetReaderForModule (functionmodule);
 			if (reader == null)
 				return null;
-			return reader.GetMethod (new SymbolToken (func.Token));
+			uint mdMethodDef;
+			func.GetToken(&mdMethodDef).AssertSucceeded("func.GetToken(&mdMethodDef)");
+			return reader.GetMethod (new SymbolToken (((int)mdMethodDef)));
 		}
 
-		public static MethodInfo GetMethodInfo (this ICorDebugFunction func, CorDebuggerSession session)
+		public static MethodInfo GetMethodInfo(this ICorDebugFunction func, CorDebuggerSession session)
 		{
-			CorMetadataImport mi = session.GetMetadataForModule (func.Module);
-			if (mi != null)
-				return mi.GetMethodInfo (func.Token);
-			else
+			ICorDebugModule functionmodule;
+			func.GetModule(out functionmodule).AssertSucceeded("Could not get the Module of a Function.");
+			CorMetadataImport mi = session.GetMetadataForModule(functionmodule);
+			if(mi == null)
 				return null;
+			uint mdMethodDef;
+			func.GetToken(&mdMethodDef).AssertSucceeded();
+			return mi.GetMethodInfo(mdMethodDef);
 		}
 
 		public static void SetValue (this CorValRef thisVal, EvaluationContext ctx, CorValRef val)
@@ -2166,12 +2329,16 @@ namespace Mono.Debugging.Win32
 				thisVal.Invalidate ();
 				return;
 			}
-				
-			ICorDebugReferenceValue s = thisVal.Val as CorApi.ComInterop.ICorDebugReferenceValue;
-			if (s != null) {
-				ICorDebugReferenceValue v = val.Val as CorApi.ComInterop.ICorDebugReferenceValue;
-				if (v != null) {
-					s.Value = v.Value;
+
+			var s = thisVal.Val as ICorDebugReferenceValue;
+			if(s != null)
+			{
+				var v = val.Val as ICorDebugReferenceValue;
+				if(v != null)
+				{
+					ulong value;
+					v.GetValue(&value).AssertSucceeded("v.GetValue(&value)");
+					s.SetValue(value).AssertSucceeded("s.SetValue(value)");
 					return;
 				}
 			}

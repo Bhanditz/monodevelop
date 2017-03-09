@@ -23,9 +23,9 @@ namespace CorApi.ComInterop.Eventing
             switch (CallbackType)
             {
             case ManagedCallbackType.OnCreateAppDomain:
-                return "AppDomain Created: " + LpcwstrHelper.GetString(AppDomain.GetName, "Could not get appdomain name.");
+                return "AppDomain Created: " + LpwstrHelper.GetString(AppDomain.GetName, "Could not get appdomain name.");
             case ManagedCallbackType.OnAppDomainExit:
-                return "AppDomain Exited: " + LpcwstrHelper.GetString(AppDomain.GetName, "Could not get appdomain name.");
+                return "AppDomain Exited: " + LpwstrHelper.GetString(AppDomain.GetName, "Could not get appdomain name.");
             }
             return base.ToString();
         }

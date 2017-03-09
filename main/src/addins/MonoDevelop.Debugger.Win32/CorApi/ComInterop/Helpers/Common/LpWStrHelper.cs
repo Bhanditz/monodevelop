@@ -8,7 +8,7 @@ using JetBrains.Annotations;
 namespace CorApi.ComInterop
 {
     [SuppressMessage("ReSharper", "BuiltInTypeReferenceStyle")]
-    public static unsafe class LpcwstrHelper
+    public static unsafe class LpwstrHelper
     {
         [ThreadStatic]
         private static UInt16[] _buffer;

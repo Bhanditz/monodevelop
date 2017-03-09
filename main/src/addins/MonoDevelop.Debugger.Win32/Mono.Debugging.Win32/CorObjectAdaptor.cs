@@ -356,7 +356,7 @@ namespace Mono.Debugging.Win32
 
 	        var stringVal = obj as ICorDebugStringValue;
             if (stringVal != null)
-                return LpcwstrHelper.GetString(stringVal.GetString, "Could not get the String Value string.");
+                return LpwstrHelper.GetString(stringVal.GetString, "Could not get the String Value string.");
 
 			var genericVal = obj as ICorDebugGenericValue;
 			if (genericVal != null)
@@ -430,7 +430,7 @@ namespace Mono.Debugging.Win32
 					object ores = RuntimeInvoke (ctx, targetType, objr, "ToString", new object[0], args, args);
 					var res = GetRealObject (ctx, ores) as ICorDebugStringValue;
                     if (res != null)
-                        return LpcwstrHelper.GetString(res.GetString, "Could not get the String Value string value.");
+                        return LpwstrHelper.GetString(res.GetString, "Could not get the String Value string value.");
                 }
 
 				return GetDisplayTypeName (ctx, targetType);
@@ -448,7 +448,7 @@ namespace Mono.Debugging.Win32
 			typeclass.GetModule(out classmodule).AssertSucceeded("Could not get the Module of a Class.");
 			ICorDebugAssembly assembly;
 			classmodule.GetAssembly(out assembly).AssertSucceeded("classmodule.GetAssembly(out assembly)");
-			string tname = GetTypeName (ctx, t) + ", " + System.IO.Path.GetFileNameWithoutExtension (LpcwstrHelper.GetString(assembly.GetName, "Could not get the Assembly Name."));
+			string tname = GetTypeName (ctx, t) + ", " + System.IO.Path.GetFileNameWithoutExtension (LpwstrHelper.GetString(assembly.GetName, "Could not get the Assembly Name."));
 			var stype = (ICorDebugType) GetType (ctx, "System.Type");
 			object[] argTypes = { GetType (ctx, "System.String") };
 			object[] argVals = { CreateValue (ctx, tname) };
@@ -1457,12 +1457,12 @@ namespace Mono.Debugging.Win32
 				string str;
 				if(ctx.Options.EllipsizeStrings)
 				{
-					str = LpcwstrHelper.GetString(stringVal.GetString, "Could not get the String Value string.");
+					str = LpwstrHelper.GetString(stringVal.GetString, "Could not get the String Value string.");
 					if(str.Length > ctx.Options.EllipsizedLength)
 						str = str.Substring(0, ctx.Options.EllipsizedLength) + EvaluationOptions.Ellipsis;
 				}
 				else
-					str = LpcwstrHelper.GetString(stringVal.GetString, "Could not get the String Value string.");
+					str = LpwstrHelper.GetString(stringVal.GetString, "Could not get the String Value string.");
 				return str;
 			}
 

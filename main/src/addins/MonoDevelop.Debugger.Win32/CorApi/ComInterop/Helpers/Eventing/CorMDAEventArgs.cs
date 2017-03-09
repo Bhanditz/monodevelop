@@ -27,8 +27,8 @@ namespace CorApi.ComInterop.Eventing
             if (CallbackType == ManagedCallbackType.OnMDANotification)
             {
                 return "MDANotification" + "\n" +
-                    "Name=" + LpcwstrHelper.GetString(MDA.GetName, "MDA Name.") + "\n" +
-                    "XML=" + LpcwstrHelper.GetString(MDA.GetXML, "MDA XML");
+                    "Name=" + LpwstrHelper.GetString(MDA.GetName, "MDA Name.") + "\n" +
+                    "XML=" + LpwstrHelper.GetString(MDA.GetXML, "MDA XML");
             }
             return base.ToString();
         }

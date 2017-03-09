@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ComInterop\Helpers\Common\ValueTypeEx.cs" />
     <Compile Include="ComInterop\Helpers\Eventing\InternalErrorDelegate.cs" />
     <Compile Include="ComInterop\Helpers\Eventing\ManagedCallbackEventSink.cs" />
     <Compile Include="ComInterop\Helpers\Common\Assertion.cs" />
@@ -121,7 +122,7 @@
     <Compile Include="ComInterop\COR_DEBUG_STEP_RANGE.cs" />
     <Compile Include="ComInterop\Helpers\Common\Com.cs" />
     <Compile Include="ComInterop\Helpers\Common\HResults2.cs" />
-    <Compile Include="ComInterop\Helpers\Common\LpcwstrHelper.cs" />
+    <Compile Include="ComInterop\Helpers\Common\LpwstrHelper.cs" />
     <Compile Include="ComInterop\Helpers\CorDebugFactory.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugAppDomainEx.cs" />
     <Compile Include="ComInterop\Helpers\ICorDebugChainEx.cs" />

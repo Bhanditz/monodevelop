@@ -22,9 +22,9 @@ namespace CorApi.ComInterop.Eventing
             switch (CallbackType)
             {
             case ManagedCallbackType.OnModuleLoad:
-                return "Module loaded: " + LpcwstrHelper.GetString(Module.GetName, "Could not get the managed module name.");
+                return "Module loaded: " + LpwstrHelper.GetString(Module.GetName, "Could not get the managed module name.");
             case ManagedCallbackType.OnModuleUnload:
-                return "Module unloaded: " + LpcwstrHelper.GetString(Module.GetName, "Could not get the managed module name.");
+                return "Module unloaded: " + LpwstrHelper.GetString(Module.GetName, "Could not get the managed module name.");
             }
             return base.ToString();
         }

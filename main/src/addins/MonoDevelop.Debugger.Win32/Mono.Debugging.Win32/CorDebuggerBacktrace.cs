@@ -239,7 +239,7 @@ namespace Mono.Debugging.Win32
 				{
 					ICorDebugModule functionmodule;
 					framefunction.GetModule(out functionmodule).AssertSucceeded("framefunction.GetModule(out functionmodule)");
-					module = LpcwstrHelper.GetString(functionmodule.GetName, "Could not get the Frame Function Module Name.");
+					module = LpwstrHelper.GetString(functionmodule.GetName, "Could not get the Frame Function Module Name.");
 					var importer = new CorMetadataImport(functionmodule);
 					uint mdMethodDef;
 					framefunction.GetToken(&mdMethodDef).AssertSucceeded("framefunction.GetToken(&mdMethodDef)");
